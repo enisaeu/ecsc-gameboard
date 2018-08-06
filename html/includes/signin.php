@@ -65,7 +65,7 @@ END;
                         </form>
                     </div>
         <!--            <div class="modal-footer">Don't have an account?&nbsp;<a href="#">Create one</a></div>-->
-                    <div class="modal-footer">ECSC 2018 platform</div>
+                    <div class="modal-footer"><?php echo TITLE; ?> platform</div>
                 </div>
             </div>
         </div>

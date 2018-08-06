@@ -1,11 +1,11 @@
 # mysql -t -u root -p < schema.sql
 
-DROP DATABASE IF EXISTS ecsc2018;
+DROP DATABASE IF EXISTS ecsc;
 
-CREATE DATABASE ecsc2018 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; -- Reference: https://dba.stackexchange.com/a/76789
-GRANT ALL ON ecsc2018.* TO ecsc@localhost IDENTIFIED BY '<blank>';
+CREATE DATABASE ecsc CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; -- Reference: https://dba.stackexchange.com/a/76789
+GRANT ALL ON ecsc.* TO ecsc@localhost IDENTIFIED BY '<blank>';
 
-USE ecsc2018;
+USE ecsc;
 
 ###
 

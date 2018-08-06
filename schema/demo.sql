@@ -1,3 +1,5 @@
+USE ecsc;
+
 INSERT INTO notifications(content, category) VALUES("Competition has officially started. Good luck and have fun!", "light");
 INSERT INTO contracts(title, description, categories) VALUES("Secret messages", "A mysterious message has appeared in your inbox. Can you decode it?", "Crypto");
 INSERT INTO tasks(contract_id, title, description, answer, cash, awareness) VALUES((SELECT MAX(contract_id) FROM contracts), "Looks like junk mail?", "The message just says <code>Rm9sbG93IHRoZSB3aGl0ZSByYWJiaXQ=</code>", "Follow the white rabbit", 10, 15);

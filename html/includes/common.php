@@ -3,12 +3,12 @@
     define("MYSQL_SERVER", "localhost");
     define("MYSQL_USERNAME", "ecsc");
     define("MYSQL_PASSWORD", "<blank>");
-    define("MYSQL_DATABASE", "ecsc2018");
+    define("MYSQL_DATABASE", "ecsc");
     define("PATHDIR", dirname(htmlspecialchars($_SERVER["PHP_SELF"], ENT_QUOTES, "utf-8")));
     define("ANSWER_TIME_LIMIT", 10);
     define("MOMENTUM_STEPS", 30);
     define("ADMIN_LOGIN_NAME", "admin");
-    define("TITLE", "ECSC 2018 platform");
+    define("TITLE", "ECSC " . date("Y"));
     define("CHAT_FILEPATH", "/var/run/shm/chat.htm");
 
     session_start();

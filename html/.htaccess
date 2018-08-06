@@ -2,7 +2,7 @@ Options -Indexes
 ErrorDocument 403 " "
 ErrorDocument 404 " "
 ErrorDocument 500 " "
-<FilesMatch ".*\.(?i:db|sh|sqlite|sql)$">
+<FilesMatch ".*\.(?i:sh|sql)$">
     Order Deny,Allow
     Deny from all
 </FilesMatch>

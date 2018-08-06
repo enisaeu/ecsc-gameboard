@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>ECSC 2018</title>
+        <title><?php echo TITLE; ?></title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"/>
-        <meta name="description" content="ECSC 2018 - European Cyber Security Challenge">
+        <meta name="description" content="<?php echo TITLE; ?> - European Cyber Security Challenge">
         <meta name="keywords" content="CTF,Capture the Flag,Challenges,Competition,Puzzles,Security,Cybersecurity,ENISA,EU">
         <link rel="shortcut icon" href="<?php echo joinPaths(PATHDIR, '/favicon.ico');?>">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">

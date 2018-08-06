@@ -2,7 +2,7 @@
     require_once("includes/common.php");
 
     if (!isset($_SESSION["team_id"])) {
-        if (empty($_SERVER['HTTP_X_REQUESTED_WITH']))
+        if (empty($_SERVER["HTTP_X_REQUESTED_WITH"]))
             include_once("includes/signin.php");
         else
             header("HTTP/1.1 401 Unauthorized");
@@ -114,7 +114,7 @@ END;
                 <div class="row">
                     <div class="col-md-9">
                         <div style="overflow: auto;">
-                            <h1 class="display-4 float-left" style="font-family: 'Agency FB'; font-size: 64px; letter-spacing: 4px;"><?php echo TITLE; ?></h1>
+                            <h1 class="display-4 float-left" style="font-family: 'Agency FB'; font-size: 64px; letter-spacing: 4px;"><?php echo TITLE . " platform"; ?></h1>
                             <img id="logo" src="<?php echo joinPaths(PATHDIR, '/resources/logo.jpg');?>" class="ml-3" width="70px"/>
                         </div>
 
