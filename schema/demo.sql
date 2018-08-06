@@ -13,7 +13,6 @@ INSERT INTO tasks(contract_id, title, description, answer, cash, awareness) VALU
 INSERT INTO constraints(contract_id, min_cash, min_awareness) VALUES((SELECT MAX(contract_id) FROM contracts), NULL, 10);
 
 INSERT INTO teams(login_name, full_name, country_code, email, password_hash) VALUES("plaid", "Plaid Parliament of Pwning", "US", "foobar@foobar.com", "$2y$10$0Yc0b.xecXY/UMaZvzSnQuv/ur1oX3cQif09rqAp2eW6yJPlHRNV2");  -- - <?php echo password_hash("passw0rd", PASSWORD_BCRYPT); ?>
-INSERT INTO teams(login_name, full_name, country_code, email, password_hash) VALUES("chinz", "Chinese Rulz", "CN", "cn@hack.com", "$2y$10$0Yc0b.xecXY/UMaZvzSnQuv/ur1oX3cQif09rqAp2eW6yJPlHRNV2");  -- - <?php echo password_hash("passw0rd", PASSWORD_BCRYPT); ?>
 INSERT INTO teams(login_name, full_name, country_code, email, password_hash) VALUES("tokyo", "TokyoWesterns", "JP", "cn@hack.com", "$2y$10$0Yc0b.xecXY/UMaZvzSnQuv/ur1oX3cQif09rqAp2eW6yJPlHRNV2");  -- - <?php echo password_hash("passw0rd", PASSWORD_BCRYPT); ?>
 INSERT INTO teams(login_name, full_name, country_code, email, password_hash) VALUES("cykor", "CyKOR", "KR", "cn@hack.com", "$2y$10$0Yc0b.xecXY/UMaZvzSnQuv/ur1oX3cQif09rqAp2eW6yJPlHRNV2");  -- - <?php echo password_hash("passw0rd", PASSWORD_BCRYPT); ?>
 INSERT INTO teams(login_name, full_name, country_code, email, password_hash) VALUES("p4", "P4", "PL", "cn@hack.com", "$2y$10$0Yc0b.xecXY/UMaZvzSnQuv/ur1oX3cQif09rqAp2eW6yJPlHRNV2");  -- - <?php echo password_hash("passw0rd", PASSWORD_BCRYPT); ?>
