@@ -10,7 +10,7 @@ TODO
 
 ## Installation
 
-On Debian or Ubuntu OS run the following commands:
+On fresh installation of Debian or Ubuntu OS run the following commands:
 
 `git clone --depth 1 https://github.com/enisaeu/ecsc-gameboard.git /var/www && cd /var/www && ./setup.sh`
 
