@@ -11,7 +11,7 @@ if [ $? -ne 0 ]; then
 fi
 
 if [ ! -d ".git" ]; then
-    echo "[!] Git cloned repository is missing (Note: git clone https://github.com/enisaeu/ecsc-gameboard.git /var/www && cd /var/www && ./setup.sh)"
+    echo "[!] Git cloned repository is missing"
     exit 1
 fi
 
