@@ -2,23 +2,16 @@
 
 DEPLOYMENT_HTML="html"
 DEPLOYMENT_SCHEMA="schema/main.sql"
-DEMO_SCHEMA="schema/demo.sql"
 
-grep Debian /etc/issue.net > /dev/null
+grep -E "Debian|Ubuntu" /etc/issue.net > /dev/null
 
 if [ $? -ne 0 ]; then
-    echo "[!] Debian distribution required"
-    exit 1
-fi
-
-result=`apt-cache search --names-only '^php5$'`
-if [ -z "$result" ] ; then
-    echo "[!] Incompatible version of Debian detected (Note: package 'php5' is missing)"
+    echo "[!] Debian or Ubuntu distribution required"
     exit 1
 fi
 
 if [ ! -d ".git" ]; then
-    echo "[!] Git cloned repository is missing (.git)"
+    echo "[!] Git cloned repository is missing (Note: git clone https://github.com/enisaeu/ecsc-gameboard.git /var/www && cd /var/www && ./setup.sh)"
     exit 1
 fi
 
@@ -32,7 +25,13 @@ if [ ! -f "$DEPLOYMENT_SCHEMA" ]; then
     exit 1
 fi
 
-DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive mysql-server mysql-client php5-mysql unattended-upgrades
+result=`apt-cache search --names-only '^php5$'`
+if [ -z "$result" ] ; then
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive mysql-server mysql-client php-mysql unattended-upgrades
+else
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive mysql-server mysql-client php5-mysql unattended-upgrades
+fi
+
 sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 sed -i 's/Options Indexes.*/Options FollowSymLinks/g' /etc/apache2/apache2.conf
 
@@ -50,11 +49,20 @@ dpkg-statoverride --update --add root sudo 4750 /bin/su &>/dev/null
 
 touch /var/log/wtmp
 
-sed -i 's/^expose_php.*/expose_php = Off/g' /etc/php5/apache2/php.ini
-sed -i 's/^html_errors.*/html_errors = Off/g' /etc/php5/apache2/php.ini
-sed -i 's/^allow_url_fopen.*/allow_url_fopen = Off/g' /etc/php5/apache2/php.ini
-sed -i 's/^allow_url_include.*/allow_url_include = Off/g' /etc/php5/apache2/php.ini
-sed -i 's/^disable_functions.*/disable_functions = exec,passthru,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,show_source,shell_exec/g' /etc/php5/apache2/php.ini
+if [ -f "/etc/php5/apache2/php.ini" ]; then
+    PHP_INI="/etc/php5/apache2/php.ini"
+elif [ -f "/etc/php/7.0/apache2/php.ini" ]; then
+    PHP_INI="/etc/php/7.0/apache2/php.ini"
+else
+    echo "[!] Configuration file 'php.ini' can not be located"
+    exit 1
+fi
+
+sed -i 's/^expose_php.*/expose_php = Off/g' $PHP_INI
+sed -i 's/^html_errors.*/html_errors = Off/g' $PHP_INI
+sed -i 's/^allow_url_fopen.*/allow_url_fopen = Off/g' $PHP_INI
+sed -i 's/^allow_url_include.*/allow_url_include = Off/g' $PHP_INI
+sed -i 's/^disable_functions.*/disable_functions = exec,passthru,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,show_source,shell_exec/g' $PHP_INI
 
 if [ ! -d "/var/log/mod_evasive" ]; then
     mkdir /var/log/mod_evasive
@@ -82,7 +90,6 @@ FileETag None
 EOF
 
 mysql < $DEPLOYMENT_SCHEMA
-mysql < $DEMO_SCHEMA
 
 chown -R www-data:www-data /var/www
 chown -R root:root /var/www/setup.sh
