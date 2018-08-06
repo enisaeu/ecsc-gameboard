@@ -48,9 +48,9 @@
             else
                 $constraints = array("min_cash" => "", "min_awareness" => "");
 
-            $title = "<input name='contract_id' value='" . cleanReflectedValue($_POST["contract_id"]) . "' type='hidden'><input name='title' value='" . $contract["title"] . "' class='form-control' style='display: block'><label class='info-label'>Contract title</label>";
-            $categories = "<input name='categories' value='" . $contract["categories"] . "' class='form-control'><label class='info-label'>Contract categories (Note: comma-splitted)</label><div class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' id='constraint'><label class='custom-control-label' for='constraint'>Constraints</label></div>";
-            $description = "<textarea name='description' class='form-control' style='display: block'>" . $contract["description"] . "</textarea><label class='info-label'>Contract description</label>";
+            $title = "<input name='contract_id' value='" . cleanReflectedValue($_POST["contract_id"]) . "' type='hidden'><input name='title' value='" . cleanReflectedValue($contract["title"]) . "' class='form-control' style='display: block'><label class='info-label'>Contract title</label>";
+            $categories = "<input name='categories' value='" . cleanReflectedValue($contract["categories"]) . "' class='form-control'><label class='info-label'>Contract categories (Note: comma-splitted)</label><div class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' id='constraint'><label class='custom-control-label' for='constraint'>Constraints</label></div>";
+            $description = "<textarea name='description' class='form-control' style='display: block'>" . cleanReflectedValue($contract["description"]) . "</textarea><label class='info-label'>Contract description</label>";
 
             $template = file_get_contents("templates/accepted.html");
             $html = format($template, array("title" => $title, "categories" => $categories, "cash" => "", "awareness" => "", "description" => $description, "contract_id" => cleanReflectedValue($_POST["contract_id"])));
@@ -69,13 +69,13 @@
 //             array_push($rows, array("task_id" => -1, "title" => "", "description" => "", "cash" => 0, "awareness" => 0, "answer" => ""));
             foreach ($rows as $row) {
                 $template = file_get_contents("templates/task.html");
-                $title = "<input name='title' value='" . $row["title"] . "' class='form-control' style='display: block'><label class='info-label'>Task title</label>";
-                $description = "<textarea name='description' class='form-control' style='display: block'>" . $row["description"] . "</textarea><label class='info-label'>Task description</label>";
+                $title = "<input name='title' value='" . cleanReflectedValue($row["title"]) . "' class='form-control' style='display: block'><label class='info-label'>Task title</label>";
+                $description = "<textarea name='description' class='form-control' style='display: block'>" . cleanReflectedValue($row["description"]) . "</textarea><label class='info-label'>Task description</label>";
                 $values = sprintf("</div><div><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Task cash</label><input type='number' value='%s' class='form-control' style='width: initial'><label class='info-label'>Task awareness</label>", $row["cash"], $row["awareness"]);
                 $task = format($template, array("title" => $title, "values" => $values, "description" => $description, "task_id" => $row["task_id"]));
                 $task = preg_replace("/.*<input name=\"token.+/", "", $task);
                 $task = preg_replace("/\s*<button.+<\/button>\s*/", "", $task);
-                $task = preg_replace('/<input name="answer".+/', "<input name='answer' value='" . $row["answer"] . "' class='form-control' style='display: block'><label class='info-label'>Task answer</label>", $task);
+                $task = preg_replace('/<input name="answer".+/', "<input name='answer' value='" . cleanReflectedValue($row["answer"]) . "' class='form-control' style='display: block'><label class='info-label'>Task answer</label>", $task);
                 $task = preg_replace("/\s*<\/?form.*>\s*/", "", $task);
                 if ($row["task_id"] == -1)
                     $task = str_replace('<div class="task ', '<div class="task new-task ', $task);
