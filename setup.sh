@@ -54,8 +54,7 @@ if [ -f "/etc/php5/apache2/php.ini" ]; then
 elif [ -f "/etc/php/7.0/apache2/php.ini" ]; then
     PHP_INI="/etc/php/7.0/apache2/php.ini"
 else
-    echo "[!] Configuration file 'php.ini' can not be located"
-    exit 1
+    PHP_INI=$(find /etc -iname php.ini 2>/dev/null | grep apache2)
 fi
 
 sed -i 's/^expose_php.*/expose_php = Off/g' $PHP_INI
