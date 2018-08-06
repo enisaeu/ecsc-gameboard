@@ -1,0 +1,499 @@
+#noscript {
+    position: absolute;
+    top: 50%;
+    text-align: center;
+    width: 100%;
+}
+
+.hover-hidden {
+    display: none;
+}
+
+.hover-trigger:hover + .hover-hidden {
+    display: block;
+}
+
+[data-toggle="collapse"]:before {
+    display: inline-block;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 16px;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    content: "\f054";
+    transform: rotate(90deg) ;
+    transition: all linear 0.25s;
+    float: right;
+    margin-top: 18px;
+}
+
+[data-toggle="collapse"].collapsed:before {
+    transform: rotate(0deg) ;
+}
+
+.modal {
+  text-align: center;
+  padding: 0 !important;
+}
+
+.modal:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -4px;
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+
+/*.badge {
+    text-shadow: 1px 1px 1px #eee;
+}
+
+.btn, .badge-success {
+    text-shadow: 1px 1px 1px #333;
+}*/
+
+.hidden {
+    display: none;
+}
+
+#main_container {
+    background-image: url(background.jpg);
+    background-repeat: no-repeat;
+    background-position: right 100px top 100px;
+    min-height: 860px;  /*because of background image*/
+}
+
+/* Reference: https://stackoverflow.com/a/14390213 */
+body::after {
+    position:absolute; width:0; height:0; overflow:hidden; z-index:-1;
+    content:url(background.jpg) url(logo.jpg);
+}
+
+.modal-login {
+    width: 350px;
+}
+
+.modal-login .modal-content {
+    padding: 20px;
+    border-radius: 5px;
+    border: none;
+}
+
+.modal-login .modal-header {
+    border-bottom: none;
+    position: relative;
+    justify-content: center;
+}
+
+.modal-login .close {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+}
+
+.modal-login h4 {
+    color: rgb(33, 37, 41);
+    text-align: center;
+    font-size: 26px;
+    margin-top: 0;
+}
+
+.modal-login .modal-content {
+    color: #999;
+    border-radius: 1px;
+    margin-bottom: 15px;
+    background: #fff;
+    border: 1px solid #f3f3f3;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    padding: 25px;
+}
+
+.modal-login .form-group {
+    margin-bottom: 20px;
+}
+
+.modal-login label {
+    font-weight: normal;
+    font-size: 13px;
+}
+
+.modal-login .form-control {
+    min-height: 38px;
+    padding-left: 5px;
+    box-shadow: none !important;
+    border-width: 0 0 1px 0;
+    border-radius: 0;
+}
+
+.modal-login .form-control:focus {
+    border-color: #ccc;
+}
+
+.modal-login .input-group-addon {
+    max-width: 42px;
+    text-align: center;
+    background: none;
+    border-width: 0 0 1px 0;
+    padding-left: 5px;
+    border-radius: 0;
+}
+
+.modal-login .btn {        
+    font-size: 16px;
+    font-weight: bold;
+    background: #007bff;
+    border-radius: 3px;
+    border: none;
+    min-width: 140px;
+    outline: none !important;
+}
+
+.modal-login .btn:hover, .modal-login .btn:focus {
+    background: #0056b3;
+}
+
+.modal-login .hint-text {
+    text-align: center;
+    padding-top: 5px;
+    font-size: 13px;
+}
+
+.modal-login .modal-footer {
+    color: #999;
+    border-color: #dee4e7;
+    text-align: center;
+    margin: 0 -25px -25px;
+    font-size: 13px;
+    justify-content: center;
+}
+
+.modal-login a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.modal-login a:hover {
+    text-decoration: none;
+    color: #0056b3;
+}
+
+.modal-login a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.modal-login a:hover {
+    text-decoration: underline;
+}
+
+.modal-login .fa {
+    font-size: 21px;
+}
+
+.trigger-btn {
+    display: inline-block;
+    margin: 100px auto;
+}
+
+/* Reference: http://allfont.net/download/agency-fb/ */
+@font-face {
+    font-family: "Agency FB";
+    font-style: normal;
+    font-weight: 400;
+    src: local('Agency FB'), local('AgencyFB-Regular'),
+        url(agency-fb.woff) format('woff'),
+        url(agency-fb.ttf) format('truetype');
+}
+
+.smaller {
+    font-size: 90%;
+}
+
+#scoreboard {
+    background: white;
+}
+
+#scoreboard th:nth-child(1), #scoreboard td:nth-child(1), #scoreboard th:nth-child(4), #scoreboard td:nth-child(4), #scoreboard th:nth-child(5), #scoreboard td:nth-child(5) {
+    text-align: right;
+}
+
+#scoreboard th:nth-child(3), #scoreboard td:nth-child(3), th:nth-child(6), #scoreboard td:nth-child(6) {
+    text-align: center;
+    width: 20px;
+}
+
+#scoreboard th:nth-child(4), #scoreboard td:nth-child(4), #scoreboard th:nth-child(5), #scoreboard td:nth-child(5) {
+    text-align: right;
+    width: 15ch;
+}
+
+#scoreboard th {
+    color: white;
+    background-color: #0074e8;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #333;
+}
+
+th {
+    cursor: pointer;
+}
+
+td.min {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.contract {
+    width: 33%;
+}
+
+.time {
+    font-size: small;
+    float: right;
+    line-height: 24px;
+    white-space: nowrap;
+}
+
+@media only screen and (max-width: 990px) {
+    #side_bar {
+        display: none;
+    }
+
+    .col-md-9 {
+        max-width: 100%;
+        flex: 0 0 100%;
+    }
+
+    .container {
+        max-width: initial;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    #side_bar, #line_momentum {
+        display: none;
+    }
+
+    h1 {
+        font-size: 36px !important;
+    }
+
+    #logo {
+        width: 40px;
+        margin-left: 4px !important;
+    }
+
+    .contract {
+        width: 100%;
+    }
+
+    .time {
+        float: initial;
+    }
+
+    .time::before {
+        content: "\00a0";
+    }
+
+    #scoreboard td, #scoreboard th {
+        padding: 5px;
+    }
+
+    #scoreboard td:nth-child(2) {
+/*         font-size: 90% !important; */
+    }
+
+    #scoreboard th:nth-child(6), #scoreboard td:nth-child(6) {
+        display: none;
+    }
+
+    .container {
+        padding: 10px;
+    }
+}
+
+table { 
+    border: 1px solid #ddd;
+    border-collapse: separate;
+    border-radius: 4px;
+    border-spacing: 0px;
+}
+
+input.disabled::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+.btn {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
+}
+
+.submit {
+    box-shadow: none;
+}
+
+h1, h4 {
+    text-shadow: 1px 1px 1px #ccc;
+}
+
+.scroll-box {
+    overflow-y: auto;
+    height: 200px;
+}
+
+#scoreboard {
+    border-collapse: collapse;
+}
+
+/*.current td:nth-child(1) span {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    border: 2px dotted white;
+    padding: 2px;
+}*/
+/*.current td:nth-child(1) span {
+    font-weight: bold;
+    padding: 1px;
+    border: 2px dashed red;
+}*/
+
+.current {
+    border-left: 5px double red !important;
+    border-right: 5px double red !important;
+}
+
+.current sup {
+    font-weight: bold;
+}
+
+.flag-icon {
+    box-shadow: 0 0 1px gray, 0 0 1px gray, 0 0 1px gray;
+    background-size: cover;
+}
+
+.not-active {
+  pointer-events: none;
+  cursor: default;
+  color: black;
+  opacity: 0.5;
+}
+
+.active {
+    text-shadow: 1px 1px 1px #ddd;
+    font-weight: bold;
+}
+
+#chat_messages {
+    font-size: 12px;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+/*     padding: 10px; */
+}
+
+#chat_message {
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 12px;
+    border: none;
+    border-radius: .25rem;
+    height: 24px;
+    vertical-align: middle;
+}
+
+.edit-input {
+    display: block;
+    width: 100%;
+    min-height: 28px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, .125);
+}
+
+#info_table {
+    border: none;
+    width: 100%;
+}
+
+#info_table td:nth-child(2) {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.border-red {
+    border: 1px solid red !important;
+}
+
+
+input:after {
+  bottom: -3.8em;
+  color: #888;
+  content: attr(placeholder);
+  left: 0;
+  position: absolute;
+}
+
+.info-label {
+    color: #888;
+    font-size: 80%;
+    margin-left: 12px;
+    display: block;
+}
+
+#contract_editor .form-control {
+    width: 100%;
+}
+
+/* Reference: https://stackoverflow.com/a/1202542 */
+/* Note: dirty patch to prevent moving of main container when switching pages */
+html {
+    overflow-y:scroll;
+}
+
+/* Note: dirty patch to make upper thing working without any problems with the modal dialogs (e.g. send private message) */
+.modal-open {
+    padding-right: 0px !important;
+}
+
+.new-task {
+    display: none;
+}
+
+.highlight {
+    outline: 2px dashed #dc3545 !important;
+    border-color: white !important;
+}
+
+.card .close {
+    padding-bottom: 10px;
+}
+
+.card .closed {
+    display: none;
+}
+
+.solved * {
+    background-color: #e9ecef;
+    color: gray !important;
+}
+
+.solved .badge {
+    background-color: #e9ecef;
+}
+
+.solved .border {
+    border: 1px solid #ced4da !important;
+}
+
+.country {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: url(selectbox_arrow.png) right center no-repeat;
+}

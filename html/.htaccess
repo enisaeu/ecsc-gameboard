@@ -1,0 +1,31 @@
+Options -Indexes
+ErrorDocument 403 " "
+ErrorDocument 404 " "
+ErrorDocument 500 " "
+<FilesMatch ".*\.(?i:db|sh|sqlite|sql)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+<FilesMatch ".git\b">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options SAMEORIGIN
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "same-origin"
+    Header set Strict-Transport-Security "max-age=31536000" env=HTTPS
+</IfModule>
+<IfModule php5_module>
+    php_flag session.cookie_httponly on
+</IfModule>
+<IfModule php7_module>
+    php_flag session.cookie_httponly on
+</IfModule>
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteRule ^(robots.txt|favicon.ico)$ $1 [L]
+    RewriteRule ^(files|resources)/(.*) $1/$2 [L]
+    RewriteRule .* index.php [L]
+</IfModule>

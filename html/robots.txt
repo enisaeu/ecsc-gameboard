@@ -1,0 +1,7 @@
+User-Agent: *
+
+# Laws
+
+Disallow: /may/not/injure/humans
+Disallow: /may/not/ignore/human/orders
+Disallow: /may/not/harm/itself

@@ -1,0 +1,266 @@
+<?php
+    if (!isAdmin()) {
+        $_ = getActiveContracts($_SESSION["team_id"]);
+
+        if (count($_) > 0) {
+            echo "                                <div id=\"accordion\">\n";
+
+            foreach ($_ as $contract_id) {
+                $contract = fetchAll("SELECT contracts.title, contracts.description, contracts.categories, SUM(tasks.cash) AS cash, SUM(tasks.awareness) AS awareness FROM contracts JOIN tasks ON contracts.contract_id=tasks.contract_id WHERE contracts.contract_id=:contract_id GROUP BY(contracts.contract_id)", array("contract_id" => $contract_id))[0];
+                $template = file_get_contents("templates/accepted.html");
+                $accepted = format($template, array("title" => $contract["title"], "categories" => generateCategoriesHtml(explode(',', $contract["categories"])), "cash" => number_format($contract["cash"]), "awareness" => number_format($contract["awareness"]), "description" => $contract["description"], "contract_id" => $contract_id));
+
+                $solved = getSolvedTasks($_SESSION["team_id"]);
+                $rows = fetchAll("SELECT * FROM tasks WHERE contract_id=:contract_id ORDER BY task_id ASC", array("contract_id" => $contract_id));
+                $tasks = "";
+                foreach ($rows as $row) {
+                    $template = file_get_contents("templates/task.html");
+                    $task = format($template, array("title" => $row["title"], "values" => generateValuesHtml($row["cash"], $row["awareness"]), "description" => $row["description"], "task_id" => $row["task_id"]));
+                    if (in_array($row["task_id"], $solved)) {
+                        $task = str_replace("<div class=\"task card ", "<div class=\"task card solved ", $task);
+                        $task = str_replace("Task answer", "Solved", $task);
+                        $task = str_replace(" autocomplete", " disabled=\"disabled\" autocomplete", $task);
+                        $task = str_replace(" type=\"submit\"", " disabled=\"disabled\" style=\"pointer-events: none\"", $task);
+                        $task = str_replace("class=\"form-control\"", "class=\"form-control disabled\"", $task);
+                    }
+                    $tasks = $tasks . ($tasks ? "\n" : "") . $task;
+                }
+                $accepted = format($accepted, array("tasks" => $tasks));
+                echo $accepted;
+            }
+
+            echo "                                </div>\n";
+        }
+        else
+            echo '                                <script>showMessageBox("Information", "There are no active contracts");</script>' . "\n";
+    }
+    else {
+        if (isset($_POST["contract_id"]) && isset($_POST["edit"])) {
+            if ($_POST["contract_id"] != -1)
+                $contract = fetchAll("SELECT * FROM contracts WHERE contracts.contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]))[0];
+            else
+                $contract = array("title" => "", "description" => "", "categories" => "");
+
+            $result = fetchAll("SELECT min_cash, min_awareness FROM constraints WHERE contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]));
+
+            if ($result)
+                $constraints = $result[0];
+            else
+                $constraints = array("min_cash" => "", "min_awareness" => "");
+
+            $title = "<input name='contract_id' value='" . cleanReflectedValue($_POST["contract_id"]) . "' type='hidden'><input name='title' value='" . $contract["title"] . "' class='form-control' style='display: block'><label class='info-label'>Contract title</label>";
+            $categories = "<input name='categories' value='" . $contract["categories"] . "' class='form-control'><label class='info-label'>Contract categories (Note: comma-splitted)</label><div class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' id='constraint'><label class='custom-control-label' for='constraint'>Constraints</label></div>";
+            $description = "<textarea name='description' class='form-control' style='display: block'>" . $contract["description"] . "</textarea><label class='info-label'>Contract description</label>";
+
+            $template = file_get_contents("templates/accepted.html");
+            $html = format($template, array("title" => $title, "categories" => $categories, "cash" => "", "awareness" => "", "description" => $description, "contract_id" => cleanReflectedValue($_POST["contract_id"])));
+            $html = str_replace('<div class="card ', '<div id="contract_editor" class="card ', $html);
+            $html = str_replace('col-sm-8 ', '', $html);
+            $html = str_replace('<div class="row">', '<div>', $html);
+            $html = preg_replace("/<div class=\"col-sm-4 text-right hover-hidden\">.+?<\/div>/s", "", $html);
+            $html = str_replace('data-toggle="collapse" ', "", $html);
+            $html = str_replace('<span class="h3">', "<span>", $html);
+            $html = str_replace('card mb-3', "card", $html);
+//             $html = str_replace('<div class="card-header">', '<div class="card-header"><button class="close" data-dismiss="modal" aria-label="Delete contract" title="Delete contract" data-toggle="tooltip"><span aria-hidden="true">×</span></button>', $html);
+
+            $tasks = "";
+            $rows = fetchAll("SELECT * FROM tasks WHERE contract_id=:contract_id ORDER BY task_id ASC", array("contract_id" => $_POST["contract_id"]));
+            array_push($rows, array("title" => "", "description" => "", "cash" => 0, "awareness" => 0, "answer" => "", "task_id" => -1));
+//             array_push($rows, array("task_id" => -1, "title" => "", "description" => "", "cash" => 0, "awareness" => 0, "answer" => ""));
+            foreach ($rows as $row) {
+                $template = file_get_contents("templates/task.html");
+                $title = "<input name='title' value='" . $row["title"] . "' class='form-control' style='display: block'><label class='info-label'>Task title</label>";
+                $description = "<textarea name='description' class='form-control' style='display: block'>" . $row["description"] . "</textarea><label class='info-label'>Task description</label>";
+                $values = sprintf("</div><div><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Task cash</label><input type='number' value='%s' class='form-control' style='width: initial'><label class='info-label'>Task awareness</label>", $row["cash"], $row["awareness"]);
+                $task = format($template, array("title" => $title, "values" => $values, "description" => $description, "task_id" => $row["task_id"]));
+                $task = preg_replace("/.*<input name=\"token.+/", "", $task);
+                $task = preg_replace("/\s*<button.+<\/button>\s*/", "", $task);
+                $task = preg_replace('/<input name="answer".+/', "<input name='answer' value='" . $row["answer"] . "' class='form-control' style='display: block'><label class='info-label'>Task answer</label>", $task);
+                $task = preg_replace("/\s*<\/?form.*>\s*/", "", $task);
+                if ($row["task_id"] == -1)
+                    $task = str_replace('<div class="task ', '<div class="task new-task ', $task);
+                $task = str_replace('<div class="card-header">', '<div class="card-header"><button class="close" data-dismiss="modal" aria-label="Delete task" title="Delete task" data-toggle="tooltip"><span aria-hidden="true">×</span></button>', $task);
+                $tasks = $tasks . ($tasks ? "\n" : "") . $task;
+            }
+
+            $html = format($html, array("tasks" => $tasks));
+
+            $footer = sprintf('<div class="ml-4 mb-3"><button class="btn btn-info">New task</button></div><div class="modal-footer"><button class="btn btn-primary">%s</button><button class="btn btn-secondary" data-dismiss="modal" onclick="reload()">Cancel</button></div>', $_POST["contract_id"] != -1 ? "Update" : "Create");
+            $html = preg_replace("/(<\/div>\s*)$/", $footer . "$1", $html);
+
+            echo $html;
+
+            $script = <<<END
+                                    <script>
+                                        $(document).ready(function() {
+                                            var setupValidation = function(element) {
+                                                $(element).find("label:contains('Contract title'),label:contains('Task title'),label:contains('Contract description'),label:contains('Task description'),label:contains('Task answer'),label:contains('Task cash'),label:contains('Task awareness')").prev().change(validator).keyup(validator).focusout(validator).each(validator);
+                                            };
+
+                                            $(".active").text("%s contract");
+
+                                            $("#contract_editor input").keypress(function(e) {
+                                                if(e.which == 13) {
+                                                    $("#contract_editor .btn-primary").click();
+                                                }
+                                            });
+
+                                            $(".close").click(function() {
+                                                var contract = $(this).closest(".card").addClass("closed");
+                                            });
+
+                                            $(".btn-info:contains('New task')").click(function() {
+                                                var task = $(".new-task").clone();
+                                                $(task).removeClass("new-task");
+                                                $(".new-task").parent().append(task);
+                                                setupValidation(task);
+                                                $(task).find(".close").prop("title", "Delete task").click(function() {
+                                                    $(task).remove();
+                                                }).hover(
+                                                    function() { $(this).closest(".card").addClass("highlight") },
+                                                    function() { $(this).closest(".card").removeClass("highlight") }
+                                                );
+                                            });
+
+                                            $("#constraint").change(function() {
+                                                if ($(this).prop("checked")) {
+                                                    var constraints = $("<div id='constraints'><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum cash</label><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum awareness</label></div>");
+                                                    $(this).closest(".custom-control").before(constraints);
+                            //                         setupValidation($("#constraints"));  // disabled because constraints can be unset individually
+                                                }
+                                                else
+                                                    $("#constraints").remove();
+                                            });
+
+                                            if (%s) {
+                                                $("#constraint").trigger("click");
+                                            }
+
+                                            setupValidation($("#contract_editor"));
+
+                                            $("#contract_editor .btn-primary").click(function() {
+                                                invalid = null;
+
+                                                $(".is-invalid").each(function() {
+                                                    if (!$(this).closest(".task").is(".new-task, .closed")) {
+                                                        if (invalid === null)
+                                                            invalid = $(this);
+                                                    }
+                                                });
+
+                                                if (invalid) {
+                                                    $([document.documentElement, document.body]).animate({scrollTop: $(invalid).offset().top}, "fast", function() {
+                                                        $(invalid).focus()
+                                                    });
+                                                }
+                                                else {
+                                                    var contract = {};
+                                                    contract["contract_id"] = $("[name='contract_id']").val();
+                                                    contract["title"] = $("label:contains('Contract title')").prev().val();
+                                                    contract["categories"] = $("label:contains('Contract categories')").prev().val();
+                                                    contract["description"] = $("label:contains('Contract description')").prev().val();
+                                                    contract["tasks"] = [];
+
+                                                    if ($("#constraints").length > 0)
+                                                        contract["constraints"] = {"min_cash": $("#constraints").find("label:contains('Minimum cash')").prev().val(), "min_awareness": $("#constraints").find("label:contains('Minimum awareness')").prev().val()};
+
+                                                    $(".task").not(".new-task").not(".closed").each(function() {
+                                                        var task = {};
+                                                        task["task_id"] = $(this).find("[name='task_id']").val();
+                                                        task["title"] = $(this).find("label:contains('Task title')").prev().val();
+                                                        task["cash"] = $(this).find("label:contains('Task cash')").prev().val();
+                                                        task["awareness"] = $(this).find("label:contains('Task awareness')").prev().val();
+                                                        task["description"] = $(this).find("label:contains('Task description')").prev().val();
+                                                        task["answer"] = $(this).find("label:contains('Task answer')").prev().val();
+                                                        contract["tasks"].push(task);
+                                                    });
+
+                                                    $.post(window.location.href.split('#')[0], {token: document.token, action: "update", contract: JSON.stringify(contract)}, function(content) {
+                                                        if (content !== "OK")
+                                                            alert("Something went wrong ('" + content + "')!");
+                                                        else
+                                                            reload();
+                                                    });
+                                                }
+                                            });
+
+                                            $(".close").hover(
+                                                function() { $(this).closest(".card").addClass("highlight") },
+                                                function() { $(this).closest(".card").removeClass("highlight") }
+                                            );
+                                        });
+                                    </script>
+
+END;
+            echo sprintf($script, $_POST["contract_id"] != -1 ? "Edit" : "New", $constraints["min_cash"], $constraints["min_awareness"], (($constraints["min_cash"] == $constraints["min_awareness"]) && ($constraints["min_awareness"] == "")) ? "false" : "true");
+        }
+        else {
+            $template = file_get_contents("templates/contract.html");
+            $_ = getAllContracts($_SESSION["team_id"]);
+            $__ = getConstraintedContracts($_SESSION["team_id"]);
+
+            define("CLEARFIX_HTML", "                                <div class=\"clearfix\"></div>\n");
+            $counter = 0;
+
+            array_push($_, -1);
+
+            foreach ($_ as $contract_id) {
+                if ($contract_id === -1) {
+                    $html = format($template, array("title" => "???", "values" => generateValuesHtml("?", "?"), "description" => "", "categories" => "", "contract_id" => $contract_id));
+                    $html = preg_replace("/Take contract/s", "New contract", $html);
+                    $html = preg_replace("/btn-success/s", "btn-warning", $html);
+                }
+                else {
+                    $row = fetchAll("SELECT contracts.title, contracts.description, contracts.categories, SUM(tasks.cash) AS cash, SUM(tasks.awareness) AS awareness FROM contracts JOIN tasks ON contracts.contract_id=tasks.contract_id WHERE contracts.contract_id=:contract_id GROUP BY(contracts.contract_id)", array("contract_id" => $contract_id));
+                    if (!$row)
+                        $row = fetchAll("SELECT title, description, categories, 0 AS cash, 0 AS awareness FROM contracts WHERE contracts.contract_id=:contract_id", array("contract_id" => $contract_id));
+
+                    $row = $row[0];
+                    $note = "";
+                    if (in_array($contract_id, $__)) {
+                        $constraint = fetchAll("SELECT * FROM constraints WHERE contract_id=:contract_id", array("contract_id" => $contract_id))[0];
+                        $note .= "<p class=\"smaller border rounded border-danger\" style=\"border-style: dashed !important; border-width: 2px !important; padding: 5px\">Note: To take this contract team needs: ";
+
+                        if (!is_null($constraint["min_cash"]))
+                            $note .= sprintf("<b>&euro; %s</b> ", number_format($constraint["min_cash"]));
+                        if (!is_null($constraint["min_awareness"]))
+                            $note .= sprintf('<b><i class="fas fa-eye"></i> %s</b> ', number_format($constraint["min_awareness"]));
+                        $note .= "</p>";
+                    }
+                    $html = str_replace("</b>", '</b><button class="close" data-dismiss="modal" aria-label="Delete contract" title="Delete contract" data-toggle="tooltip"><span aria-hidden="true">×</span></button>', $template);
+                    $html = format($html, array("title" => $row["title"], "values" => generateValuesHtml($row["cash"], $row["awareness"]), "description" => $row["description"] . $note, "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
+                    $html = preg_replace("/Take contract/s", "Edit contract", $html);
+                    $html = preg_replace("/btn-success/s", "btn-primary", $html);
+                }
+                $html = str_replace("<button", "<input name='edit' value='true' type='hidden'>\n                                                <button", $html);
+                echo $html;
+                $counter += 1;
+                if ($counter % 3 === 0)
+                    echo CLEARFIX_HTML;
+            }
+
+        print <<<END
+                                <script>
+                                    function deleteContract(contract_id) {
+                                        $.post(window.location.href.split('#')[0], {token: document.token, action: "delete", contract_id: contract_id}, function(content) {
+                                            if (content !== "OK")
+                                                alert("Something went wrong ('" + content + "')!");
+                                            else
+                                                reload();
+                                        });
+                                    }
+
+                                    $(document).ready(function() {
+                                        $(".close[aria-label='Delete contract']").click(function() {
+                                            var contract = $(this).closest(".contract");
+                                            var contract_id = $(contract).find("[name=contract_id]").prop("value");
+                                            var title = $(contract).find(".card-header b").text();
+                                            showYesNoWarningBox("Are you sure that you want to delete contract '" + title + "'?", function() {deleteContract(contract_id);});
+                                        });
+                                    });
+                                </script>
+
+END;
+        }
+    }
+?>

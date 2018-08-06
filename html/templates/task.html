@@ -1,0 +1,21 @@
+                                                    <div class="task card mt-3">
+                                                        <div class="card-header">
+                                                            {title}
+                                                            <div class="float-right">
+                                                                {values}
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <p>{description}</p>
+                                                            <form method="post">
+                                                                <input name="token" value="" type="hidden">
+                                                                <input name="task_id" value="{task_id}" type="hidden">
+                                                                <div class="input-group">
+                                                                    <input name="answer" class="form-control" placeholder="Task answer" aria-label="Task answer" aria-describedby="basic-addon2" type="text" autocomplete="off">
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn border submit" type="submit">Submit</button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
