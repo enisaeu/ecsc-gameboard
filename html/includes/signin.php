@@ -42,7 +42,7 @@ END;
             <div class="modal-dialog modal-login">
                 <div class="modal-content">
                     <div class="modal-header">              
-                        <h4 class="modal-title">Please sign in</h4>
+                         <img src="../files/logo.png" class="img-fluid">
                     </div>
                     <div class="modal-body">
                         <form method="post">
