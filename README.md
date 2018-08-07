@@ -2,6 +2,18 @@
 
 [![Platform LAMP](https://img.shields.io/badge/platform-LAMP-orange.svg)](#) [![License](https://img.shields.io/badge/license-EUPL--1.2-red.svg)](https://eupl.eu/) [![Twitter](https://img.shields.io/badge/twitter-@enisa_eu-blue.svg)](https://twitter.com/enisa_eu)
 
+## Description
+
+The complex world we live in requires that the next generation of security professionals are more than just technically capable.  Thousands of business and public agencies are looking for individuals who can accomplish their tasks in time and budget, while keeping in mind the privacy of consumers and the overall wellbeing of our society.
+
+For this reason, the European Cyber Security Challenge (ECSC) is more than just another CTF. It brings a couple of new concepts and ideas that will help identify the next generation of cyber-security professionals in Europe. 
+
+Our goal is to expose the complexity of the real world and the importance of keeping ethics in mind while performing your job. In addition, by bringing *board game* elements into the classic world of CTFs, we target a more dynamic and immersive experience   for participants. 
+
+Have fun!
+
+## Overview
+
 The ECSC2018 gameplay aims to train you on the trade-offs of managing a successful cyber-security company in a competitive environment, while leveraging your technical, time management and tactical skills.
 
 You will be playing the role of incident responders within a national cybersecurity company offering cybersecurity services to individual clients, private companies and public organisations. For each contract successfully completed, you will receive money and reputation. 
