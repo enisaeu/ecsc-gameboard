@@ -42,7 +42,7 @@ END;
             <div class="modal-dialog modal-login">
                 <div class="modal-content">
                     <div class="modal-header">              
-                         <img src="../files/logo.png" class="img-fluid">
+                         <img src="<?php echo joinPaths(PATHDIR, '/resources/logo.png');?>" class="img-fluid">
                     </div>
                     <div class="modal-body">
                         <form method="post">
