@@ -6,7 +6,7 @@
 
 The complex world we live in requires that the next generation of security professionals are more than just technically capable.  Thousands of business and public agencies are looking for individuals who can accomplish their tasks in time and budget, while keeping in mind the privacy of consumers and the overall wellbeing of our society.
 
-For this reason, the European Cyber Security Challenge (ECSC) is more than just another Capture the Flag(CTF) event. It brings a couple of new concepts and ideas that will help identify the next generation of cyber-security professionals in Europe. 
+For this reason, the European Cyber Security Challenge (ECSC) is more than just another Capture the Flag (CTF) event. It brings a couple of new concepts and ideas that will help identify the next generation of cyber-security professionals in Europe. 
 
 Our goal is to expose the complexity of the real world and the importance of keeping ethics in mind while performing your job. In addition, by bringing *board game* elements into the classic world of CTFs, we target a more dynamic and immersive experience   for participants. 
 
