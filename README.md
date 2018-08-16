@@ -48,6 +48,12 @@ Afterwards access the HTTP administrative pages by using default credentials:
 
 `admin`:`changeme!`
 
+## Administration
+
+[Administration pages](https://i.imgur.com/eFoGTo9.png)
+
+TODO
+
 ## Usage
 
 TODO
