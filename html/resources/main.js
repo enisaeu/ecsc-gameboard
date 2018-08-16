@@ -10,13 +10,6 @@ $(document).ready(function() {
     $(document).ajaxError(function(_, jqXHR, _, status) {
         if ((status === "Unauthorized") || (jqXHR.status == 0))  // ... or lost connection
             reload();
-        else if (status === "Bad Request") {
-            var message = "Two browser instances opened for a same session";
-            if (!(message in alerts)) {
-                showMessageBox("Error", message, "danger");
-                alerts[message] = true;
-            }
-        }
         else
             console.error("Something went wrong ('" + jqXHR.status + " " + status + "')");
     });

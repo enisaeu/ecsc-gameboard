@@ -280,8 +280,6 @@ END;
         <!-- END: message box -->
         <script>
 <?php
-$_SESSION["token"] = preg_replace('/[^0-9a-zA-Z]/', '', base64_encode(openssl_random_pseudo_bytes(32)));
-
 $value = "";
 for ($i = 0; $i < strlen($_SESSION["token"]); $i++) {
     if ($value)

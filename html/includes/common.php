@@ -13,6 +13,9 @@
 
     session_start();
 
+    if (!isset($_SESSION["token"]))
+        $_SESSION["token"] = preg_replace('/[^0-9a-zA-Z]/', '', base64_encode(openssl_random_pseudo_bytes(32)));
+
     abstract class NotificationCategories
     {
         const everybody = "light";
