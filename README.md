@@ -40,9 +40,11 @@ The gameplay relies on a couple of very simple concepts, explained below:
 
 ## Installation
 
-On fresh installation of Debian or Ubuntu OS run the following commands:
+On fresh installation of Debian or Ubuntu OS run the following commands (with `sudo` privileges):
 
 `git clone --depth 1 https://github.com/enisaeu/ecsc-gameboard.git /var/www && cd /var/www && ./setup.sh`
+
+Afterwards access the HTTP administrative pages inside browser instance by using default credentials: `admin`:`changeme!`
 
 ## Usage
 
