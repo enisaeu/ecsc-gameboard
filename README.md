@@ -62,7 +62,7 @@ Afterwards access the HTTP administrative pages by using default credentials:
 
 ### Notifications
 
-![Send notification](https://i.imgur.com/WI3O6Ao.png)
+![Send notification](https://i.imgur.com/7c392pO.png)
 
 ## Usage
 
