@@ -419,4 +419,8 @@
     function cleanReflectedValue($value) {
         return htmlspecialchars($value, ENT_QUOTES, "utf-8");
     }
+
+    function breakLongWords($value) {
+        return preg_replace("/[^\s]{80}/", "$0\n", $value);
+    }
 ?>
