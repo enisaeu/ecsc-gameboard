@@ -199,8 +199,8 @@ END;
                                     <tr><td>Cash: </td><td><b>%s</b> &euro; (%s%s)</td></tr>
                                     <tr><td>Awareness: </td><td><b>%s</b> (%s%s)</td></tr>
                                     <tr><td>Last progress: </td><td><b>%s</b></td></tr>
-                                    <tr><td>Active contracts: </td><td><abbr title="%s"><b>%d</b></td></tr>
-                                    <tr><td>Finished contracts: </td><td><abbr title="%s"><b>%d</b></td></tr>
+                                    <tr><td>Active contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
+                                    <tr><td>Finished contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
                                 </table>
                             </div>
                         </div>
@@ -212,8 +212,8 @@ END;
         $medals = array(1 => "first.jpg", 2 => "second.jpg", 3 => "third.jpg");
         $active = getActiveContracts($_SESSION["team_id"]);
         $finished = getFinishedContracts($_SESSION["team_id"]);
-        $active_ = $active ? fetchScalar("SELECT GROUP_CONCAT(title ORDER BY title ASC) FROM contracts WHERE contract_id IN (" . implode(",", $active) . ")") : "";
-        $finished_ = $finished ? fetchScalar("SELECT GROUP_CONCAT(title ORDER BY title ASC) FROM contracts WHERE contract_id IN (" . implode(",", $finished) . ")") : "";
+        $active_ = $active ? fetchScalar("SELECT GROUP_CONCAT(title ORDER BY title ASC) FROM contracts WHERE contract_id IN (" . implode(",", $active) . ")") : "-";
+        $finished_ = $finished ? fetchScalar("SELECT GROUP_CONCAT(title ORDER BY title ASC) FROM contracts WHERE contract_id IN (" . implode(",", $finished) . ")") : "-";
         $last = fetchScalar("SELECT MAX(ts) FROM (SELECT UNIX_TIMESTAMP(ts) AS ts FROM solved WHERE team_id=:team_id UNION ALL SELECT UNIX_TIMESTAMP(ts) AS ts FROM privates WHERE cash IS NOT NULL AND (from_id=:team_id OR to_id=:team_id)) AS result", array("team_id" => $_SESSION["team_id"]));
         echo sprintf($html, number_format($scores["cash"]), ordinal($places["cash"]), $places["cash"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["cash"]]) . '" height="16">' : "", number_format($scores["awareness"]), ordinal($places["awareness"]), $places["awareness"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["awareness"]]) . '" height="16">' : "", $last ? sprintf("<span ts='%d'></span>", $last) : "-", str_replace(",", ", ", $active_), count($active), str_replace(",", ", ", $finished_), count($finished));
     }
