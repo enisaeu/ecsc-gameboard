@@ -50,9 +50,19 @@ Afterwards access the HTTP administrative pages by using default credentials:
 
 ## Administration
 
-[Administration pages](https://i.imgur.com/eFoGTo9.png)
+![Administration pages](https://i.imgur.com/eFoGTo9.png)
 
-TODO
+### Teams
+
+![New team](https://i.imgur.com/16oSjt0.png)
+
+### Contracts
+
+![New contract](https://i.imgur.com/dMjvREy.png)
+
+### Notifications
+
+![Send notification](https://i.imgur.com/WI3O6Ao.png)
 
 ## Usage
 
