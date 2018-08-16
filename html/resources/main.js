@@ -6,6 +6,20 @@ var LAST_UPDATE_SLOW_THRESHOLD = 60000; // after ms of chat inactivity turn on S
 var alerts = {};
 var lastPullUpdate = new Date();
 
+// Reference: https://stackoverflow.com/a/37544400
+if (!String.prototype.endsWith) {
+    String.prototype.endsWith = function(searchString, position) {
+        var subjectString = this.toString();
+        if (typeof position !== 'number' || !isFinite(position)
+            || Math.floor(position) !== position || position > subjectString.length) {
+        position = subjectString.length;
+        }
+        position -= searchString.length;
+        var lastIndex = subjectString.indexOf(searchString, position);
+        return lastIndex !== -1 && lastIndex === position;
+    };
+}
+
 $(document).ready(function() {
     $(document).ajaxError(function(_, jqXHR, _, status) {
         if ((status === "Unauthorized") || (jqXHR.status == 0))  // ... or lost connection
@@ -326,7 +340,9 @@ function deleteNotification(notification_id) {
 }
 
 var shownMessageBox = false;
-function showMessageBox(title, message, style="primary") {
+function showMessageBox(title, message, style) {
+    style = style || "primary";  // Reference: https://stackoverflow.com/a/15178735
+
     $(document).ready(function() {
         var dialog = $("#message-box").clone();
 
@@ -746,7 +762,9 @@ function periodicPullMessages() {
     setTimeout(pull, FAST_PULL_PERIOD);
 }
 
-function pullMessages(initial=false) {
+function pullMessages(initial) {
+    initial = initial || false;  // Reference: https://stackoverflow.com/a/15178735
+
     if (!$("#chat_messages").is("[pull_lock]")) {
         $("#chat_messages").attr("pull_lock", true);
 
