@@ -83,7 +83,7 @@ $(document).ready(function() {
 
             var MAX_TOP_TEAMS = 10;
             var datasets = [];
-            var minTime = Number.MAX_SAFE_INTEGER;
+            var minTime = Number.MAX_SAFE_INTEGER || 9007199254740991;  // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
             var maxTime = 0;
             var maxCash = 0;
 
