@@ -201,8 +201,8 @@
             $success = execute("INSERT INTO privates(from_id, to_id, cash, message) VALUES(:from_id, :to_id, :cash, :message)", array("from_id" => $_SESSION["team_id"], "to_id" => $to_id, "cash" => $cash, "message" => $message));
             if ($success) {
                 if ($cash) {
-                    execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $to_id, "content" => "Team '" . $from_name . "' sent you " . $cash . "&euro;" . ($message ? " with a message '" . $message . "'" : ""), "category" => NotificationCategories::received_private));
-                    execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => "You sent " . $cash . "&euro;" . ($message ? " with a message '" . $message . "'" : "") . " to team '" . $to_name . "'", "category" => NotificationCategories::sent_private));
+                    execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $to_id, "content" => "Team '" . $from_name . "' sent you " . $cash . "€" . ($message ? " with a message '" . $message . "'" : ""), "category" => NotificationCategories::received_private));
+                    execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => "You sent " . $cash . "€" . ($message ? " with a message '" . $message . "'" : "") . " to team '" . $to_name . "'", "category" => NotificationCategories::sent_private));
                 }
                 else {
                     execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $to_id, "content" => "Team '" . $from_name . "' sent you a private message '" . $message . "'", "category" => NotificationCategories::received_private));
