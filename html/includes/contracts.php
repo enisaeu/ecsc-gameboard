@@ -1,14 +1,16 @@
 <?php
     if (!isAdmin()) {
-        $_ = getActiveContracts($_SESSION["team_id"]);
+        $active = getActiveContracts($_SESSION["team_id"]);
+        $finished = getFinishedContracts($_SESSION["team_id"]);
+        $visible = array_merge($active, $finished);
 
-        if (count($_) > 0) {
+        if (count($visible) > 0) {
             echo "                                <div id=\"accordion\">\n";
 
-            foreach ($_ as $contract_id) {
+            foreach ($visible as $contract_id) {
                 $contract = fetchAll("SELECT contracts.title, contracts.description, contracts.categories, SUM(tasks.cash) AS cash, SUM(tasks.awareness) AS awareness FROM contracts JOIN tasks ON contracts.contract_id=tasks.contract_id WHERE contracts.contract_id=:contract_id GROUP BY(contracts.contract_id)", array("contract_id" => $contract_id))[0];
                 $template = file_get_contents("templates/accepted.html");
-                $accepted = format($template, array("title" => $contract["title"], "categories" => generateCategoriesHtml(explode(',', $contract["categories"])), "cash" => number_format($contract["cash"]), "awareness" => number_format($contract["awareness"]), "description" => $contract["description"], "contract_id" => $contract_id));
+                $accepted = format($template, array("title" => $contract["title"] . (in_array($contract_id, $finished) ? ' <i class="far fa-check-circle" title="Finished" data-toggle="tooltip"></i>' : ""), "categories" => generateCategoriesHtml(explode(',', $contract["categories"])), "cash" => number_format($contract["cash"]), "awareness" => number_format($contract["awareness"]), "description" => $contract["description"], "contract_id" => $contract_id));
 
                 $solved = getSolvedTasks($_SESSION["team_id"]);
                 $rows = fetchAll("SELECT * FROM tasks WHERE contract_id=:contract_id ORDER BY task_id ASC", array("contract_id" => $contract_id));

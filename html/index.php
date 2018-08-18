@@ -134,7 +134,7 @@ END;
                                     <a class="nav-link%s" href="%s">Contracts <span class="badge badge-light border counter" id="active_count">%d</span></a>
                                 </li>
 END;
-        echo sprintf($html, (PAGE === "rankings" ? " active" : ""), joinPaths(PATHDIR, '/rankings/'), (PAGE === "jobboard" ? " active" : ""), joinPaths(PATHDIR, '/jobboard/'), count(getAvailableContracts($_SESSION["team_id"])), (PAGE === "contracts" ? " active" : ""), joinPaths(PATHDIR, '/contracts/'), count(getActiveContracts($_SESSION["team_id"])));
+        echo sprintf($html, (PAGE === "rankings" ? " active" : ""), joinPaths(PATHDIR, '/rankings/'), (PAGE === "jobboard" ? " active" : ""), joinPaths(PATHDIR, '/jobboard/'), count(getAvailableContracts($_SESSION["team_id"])), (PAGE === "contracts" ? " active" : ""), joinPaths(PATHDIR, '/contracts/'), count(array_merge(getActiveContracts($_SESSION["team_id"]), getFinishedContracts($_SESSION["team_id"]))));
     }
     else {
         $html = <<<END
