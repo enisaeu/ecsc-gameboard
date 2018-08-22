@@ -22,7 +22,7 @@ if (!String.prototype.endsWith) {
 
 $(document).ready(function() {
     $(document).ajaxError(function(_, jqXHR, _, status) {
-        if ((status === "Unauthorized") || (jqXHR.status == 0))  // ... or lost connection
+        if (status === "Unauthorized")
             reload();
         else
             console.error("Something went wrong ('" + jqXHR.status + " " + status + "')");
