@@ -45,7 +45,7 @@ $(document).ready(function() {
 
     repositionSidebar();
 
-    $(".collapse").each(function() {
+    $(".card").not("#contract_editor").find(".collapse").each(function() {
         if (localStorage.getItem($(this).prop("id")) == "hide") {
             $(this).removeClass("show");
             $(this).closest(".card").find("[data-toggle=collapse]").addClass("collapsed")
