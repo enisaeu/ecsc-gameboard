@@ -277,12 +277,6 @@
                     break;
             }
             $result[$key] = $place;
-
-//             $result[$key] = array_search($current[$key], $all[$key]) + 1;
-//             if ($result[$key] === count($teams))
-//                 $result[$key] = -1;
-//             else if (($result[$key] === 1) && ($current[$key] === 0))
-//                 $result[$key] = null;
         }
 
         return $result;
