@@ -54,15 +54,23 @@ Administration pages (accessible by usage of username `admin`) are consisting of
 
 ### Teams
 
-Inside **Teams** panel, Administrator is able to add, delete and update individual teams. Also, there is an option to send private message(s) to each team individually.
+Inside **Teams** panel, Administrator is able to add, delete and update individual teams by using icons inside the scoreboard's *Actions* column. Also, he is able to send private messages to each team individually.
 
-![New team](https://i.imgur.com/16oSjt0.png)
+![New team](https://i.imgur.com/QJjxfKF.png)
+
+For example, by clicking on a *New team* action, inside the teams scoreboard, the following dialog appears:
+
+![New team details](https://i.imgur.com/16oSjt0.png)
 
 ### Contracts
 
-Inside **Contracts** panel, Administrator is able to add, delete and update individual contracts. Each contract can consist of individual tasks, where each task represents (scored) part of the contract. Correct answering of the task's question proves that the team was able to successfully complete it.
+Inside **Contracts** panel, Administrator is able to add, delete and update individual contracts. Each contract can consist of individual tasks, where each task represents (scored) part of the contract.
 
-![New contract](https://i.imgur.com/dMjvREy.png)
+![New contract](https://i.imgur.com/FXDVsZq.png)
+
+For example, by clicking on a *New contract* button the following dialog appears:
+
+![New contract details](https://i.imgur.com/dMjvREy.png)
 
 ### Notifications
 
