@@ -22,6 +22,8 @@ As in real life, you may sometimes choose to accept a contract from an NGO that 
 
 The team that will win the challenge will be the one with more cash in its wallet. 
 
+![Screenshot](https://i.imgur.com/6jpxLsm.png)
+
 ## Concepts
 
 The gameplay relies on a couple of very simple concepts, explained below:
@@ -33,10 +35,6 @@ The gameplay relies on a couple of very simple concepts, explained below:
 *	**Money transfer**: any team may decide to pay another team for an exchange of services, such as hints, outsourcing, etc.; in order to perform this action you will need to go to **Ranking** and click on the **send cash** icon next to the player you want to pay;
 *	**Notifications**: a collection of important information, such as announcements, confirmation of money transfer, messages received, etc.
 *	**Ranking**: a simple dashboard displaying the current financial status of each of the teams.
-
-## Screenshots
-
-![screenshot](https://i.imgur.com/6jpxLsm.png)
 
 ## Installation
 
@@ -50,17 +48,25 @@ Afterwards access the HTTP administrative pages by using default credentials:
 
 ## Administration
 
+Administration pages (accessible by usage of username `admin`) are consisting of three main panels: **Teams**, **Contracts** and **Notifications**.
+
 ![Administration pages](https://i.imgur.com/eFoGTo9.png)
 
 ### Teams
+
+Inside **Teams** panel, Administrator is able to add, delete and update individual teams. Also, there is an option to send private message(s) to each team individually.
 
 ![New team](https://i.imgur.com/16oSjt0.png)
 
 ### Contracts
 
+Inside **Contracts** panel, Administrator is able to add, delete and update individual contracts. Each contract can consist of individual tasks, where each task represents (scored) part of the contract. Correct answering of the task's question proves that the team was able to successfully complete it.
+
 ![New contract](https://i.imgur.com/dMjvREy.png)
 
 ### Notifications
+
+Inside **Notifications** panel, Administrator can send (mass) notifications to all teams.
 
 ![Send notification](https://i.imgur.com/LxBJOLd.png)
 
