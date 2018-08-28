@@ -76,7 +76,11 @@ For example, by clicking on a *New contract* button the following dialog appears
 
 Inside **Notifications** panel, Administrator can send (mass) notifications to all teams.
 
-![Send notification](https://i.imgur.com/LxBJOLd.png)
+![New notification](https://i.imgur.com/nnzfJta.png)
+
+For example, by clicking on a *New notification* button the following dialog appears:
+
+![New notification details](https://i.imgur.com/LxBJOLd.png)
 
 ## Usage
 
