@@ -25,7 +25,7 @@
             die("OK");
         else {
             header("HTTP/1.1 500 Internal Server Error");
-            die(DEBUG ? cleanReflectedValue($_SESSION["conn_error"]) : null);
+            die(DEBUG ? $_SESSION["conn_error"] : null);
         }
     }
     else if (isAdmin() && ($_POST["action"] === "delete")) {
@@ -46,7 +46,7 @@
             die("OK");
         else {
             header("HTTP/1.1 500 Internal Server Error");
-            die(DEBUG ? cleanReflectedValue($_SESSION["conn_error"]) : null);
+            die(DEBUG ? $_SESSION["conn_error"] : null);
         }
     }
     else if (isAdmin() && ($_POST["action"] === "notification") && isset($_POST["message"])) {
@@ -56,7 +56,7 @@
             die("OK");
         else {
             header("HTTP/1.1 500 Internal Server Error");
-            die(DEBUG ? cleanReflectedValue($_SESSION["conn_error"]) : null);
+            die(DEBUG ? $_SESSION["conn_error"] : null);
         }
     }
     else if ($_POST["action"] === "hide") {
@@ -65,7 +65,7 @@
             die("OK");
         else {
             header("HTTP/1.1 500 Internal Server Error");
-            die(DEBUG ? cleanReflectedValue($_SESSION["conn_error"]) : null);
+            die(DEBUG ? $_SESSION["conn_error"] : null);
         }
     }
     else if ($_POST["action"] === "update") {
@@ -78,7 +78,7 @@
                 die("OK");
             else {
                 header("HTTP/1.1 500 Internal Server Error");
-                die(DEBUG ? cleanReflectedValue($_SESSION["conn_error"]) : null);
+                die(DEBUG ? $_SESSION["conn_error"] : null);
             }
         }
         else if (isset($_POST["contract"])) {
@@ -130,7 +130,7 @@
                 die("OK");
             else {
                 header("HTTP/1.1 500 Internal Server Error");
-                die(DEBUG ? cleanReflectedValue($_SESSION["conn_error"]) : null);
+                die(DEBUG ? $_SESSION["conn_error"] : null);
             }
         }
         else if (isset($_POST["team"])) {
@@ -149,7 +149,7 @@
                 die("OK");
             else {
                 header("HTTP/1.1 500 Internal Server Error");
-                die(DEBUG ? cleanReflectedValue($_SESSION["conn_error"]) : null);
+                die(DEBUG ? $_SESSION["conn_error"] : null);
             }
         }
     }
@@ -186,7 +186,7 @@
             die("OK");
         else {
             header("HTTP/1.1 500 Internal Server Error");
-            die(DEBUG ? cleanReflectedValue($_SESSION["conn_error"]) : null);
+            die(DEBUG ? $_SESSION["conn_error"] : null);
         }
     }
     else if (($_POST["action"] === "private") && (isset($_POST["to"])) && (isset($_POST["message"]) || isset($_POST["cash"]))) {
@@ -217,7 +217,7 @@
             die("OK");
         else {
             header("HTTP/1.1 500 Internal Server Error");
-            die(DEBUG ? cleanReflectedValue($_SESSION["conn_error"]) : null);
+            die(DEBUG ? $_SESSION["conn_error"] : null);
         }
     }
     else if ($_POST["action"] === "pull") {
