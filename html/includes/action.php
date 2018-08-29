@@ -133,14 +133,11 @@
                 die(DEBUG ? $_SESSION["conn_error"] : null);
             }
         }
-        else if (isset($_POST["team"])) {
+        else if (isAdmin() && isset($_POST["team"])) {
             $team = json_decode($_POST["team"], true);
 
             if ($team["team_id"] == -1) {
-                if (isAdmin())
-                    $success = execute("INSERT INTO teams(login_name, full_name, country_code, email, password_hash) VALUES(:login_name, :full_name, :country_code, :email, :password_hash)", array("login_name" => $team["login_name"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT)));
-                else
-                    $success = false;
+                $success = execute("INSERT INTO teams(login_name, full_name, country_code, email, password_hash) VALUES(:login_name, :full_name, :country_code, :email, :password_hash)", array("login_name" => $team["login_name"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT)));
             }
             else {
                 if (isset($team["password"]) && ($team["password"] != ""))
