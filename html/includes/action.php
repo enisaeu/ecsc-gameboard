@@ -81,7 +81,7 @@
                 die(DEBUG ? $_SESSION["conn_error"] : null);
             }
         }
-        else if (isset($_POST["contract"])) {
+        else if (isAdmin() && isset($_POST["contract"])) {
             $contract = json_decode($_POST["contract"], true);
 
             $success = true;
@@ -136,8 +136,12 @@
         else if (isset($_POST["team"])) {
             $team = json_decode($_POST["team"], true);
 
-            if ($team["team_id"] == -1)
-                $success = execute("INSERT INTO teams(login_name, full_name, country_code, email, password_hash) VALUES(:login_name, :full_name, :country_code, :email, :password_hash)", array("login_name" => $team["login_name"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT)));
+            if ($team["team_id"] == -1) {
+                if (isAdmin())
+                    $success = execute("INSERT INTO teams(login_name, full_name, country_code, email, password_hash) VALUES(:login_name, :full_name, :country_code, :email, :password_hash)", array("login_name" => $team["login_name"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT)));
+                else
+                    $success = false;
+            }
             else {
                 if (isset($team["password"]) && ($team["password"] != ""))
                     $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email, password_hash=:password_hash WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT)));
