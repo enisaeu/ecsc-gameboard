@@ -401,6 +401,10 @@
         return false;
     }
 
+    function getSetting($name) {
+        return fetchScalar("SELECT value FROM settings WHERE name=:name", array("name" => $name));
+    }
+
     function deleteContract($contract_id) {
         return execute("DELETE FROM contracts WHERE contract_id=:contract_id", array("contract_id" => $contract_id));
     }

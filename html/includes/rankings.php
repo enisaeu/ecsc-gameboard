@@ -180,4 +180,17 @@ END;
 END;
         echo $script;
     }
+    else {
+        if (getSetting("transfers") === "false") {
+        $script = <<<END
+                                <script>
+                                    $(document).ready(function() {
+                                        $(".fa-money-bill-wave").addClass("fa-disabled");
+                                    });
+                                </script>
+
+END;
+        echo $script;
+        }
+    }
 ?>

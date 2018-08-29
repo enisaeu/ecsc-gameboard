@@ -197,6 +197,14 @@ body::after {
     font-size: 21px;
 }
 
+.fa-disabled {
+  /*color: lightgrey;*/
+  opacity: 0.5;
+  cursor: not-allowed;
+  cursor: default;
+  pointer-events: none;
+}
+
 .trigger-btn {
     display: inline-block;
     margin: 100px auto;
@@ -416,12 +424,12 @@ h1, h4 {
     border: 1px solid rgba(0, 0, 0, .125);
 }
 
-#info_table {
+#info_table, #settings_table {
     border: none;
     width: 100%;
 }
 
-#info_table td:nth-child(2) {
+#info_table td:nth-child(2), #settings_table td:nth-child(2) {
     text-align: right;
     white-space: nowrap;
 }

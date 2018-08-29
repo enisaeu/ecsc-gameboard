@@ -239,6 +239,12 @@ $(document).ready(function() {
         showSendCashBox(login_name, full_name);
     });
 
+    $("#settings_table input[type=checkbox]").click(function() {
+        var name = $(this).prop("id");
+        var value = $(this).is(":checked");
+        pushSetting(name, value);
+    });
+
     $(".actions i").css("cursor", "pointer");
     $(".actions i").click(function() {
         $(this).attr("data-original-title");
@@ -310,32 +316,32 @@ function reload() {
     window.location = window.location.href.split('#')[0];
 }
 
-function hideNotification(notification_id) {
-    $.post(window.location.href.split('#')[0], {token: document.token, action: "hide", notification_id: notification_id}, function(content) {
-        if (content !== "OK") {
-            alert("Something went wrong ('" + content + "')!");
-        }
-        else {
-            var count = $(".notification").length;
-            $("#notification_count").text(count);
+function pushSetting(name, value) {
+    $.post(window.location.href.split('#')[0], {token: document.token, action: "update", setting: name, value: value}).fail(function(jqXHR) {
+        alert("Something went wrong ('" + jqXHR.responseText + "')!");
+    });
+}
 
-            if (count === 0)
-                $("#notification_count").closest("a").addClass("not-active");
-            else
-                $("#notification_count").closest("a").removeClass("not-active");
-        }
+function hideNotification(notification_id) {
+    $.post(window.location.href.split('#')[0], {token: document.token, action: "hide", notification_id: notification_id}, function() {
+        var count = $(".notification").length;
+        $("#notification_count").text(count);
+
+        if (count === 0)
+            $("#notification_count").closest("a").addClass("not-active");
+        else
+            $("#notification_count").closest("a").removeClass("not-active");
+    }).fail(function(jqXHR) {
+        alert("Something went wrong ('" + jqXHR.responseText + "')!");
     });
 }
 
 function deleteNotification(notification_id) {
-    $.post(window.location.href.split('#')[0], {token: document.token, action: "delete", notification_id: notification_id}, function(content) {
-        if (content !== "OK") {
-            alert("Something went wrong ('" + content + "')!");
-        }
-        else {
-            var count = $(".notification").length;
-            $("#notification_count").text(count);
-        }
+    $.post(window.location.href.split('#')[0], {token: document.token, action: "delete", notification_id: notification_id}, function() {
+        var count = $(".notification").length;
+        $("#notification_count").text(count);
+    }).fail(function(jqXHR) {
+        alert("Something went wrong ('" + jqXHR.responseText + "')!");
     });
 }
 
@@ -469,8 +475,8 @@ function showChangePasswordBox(login_name, full_name) {
                     dialog.find("[data-dismiss]").click();
                     showMessageBox("Success", "Password successfully changed", "success");
                 }
-                else
-                    alert("Something went wrong ('" + content + "')!");
+            }).fail(function(jqXHR) {
+                alert("Something went wrong ('" + jqXHR.responseText + "')!");
             });
         }
         else
@@ -560,11 +566,10 @@ function showSendMessageBox(login_name, full_name) {
     dialog.find(".btn-primary").click(function(event) {
         var textarea = $(dialog).find("textarea");
         if (textarea.val())
-            $.post(window.location.href.split('#')[0], {token: document.token, action: "private", to: login_name, message: textarea.val()}, function(content) {
-                if (content === "OK")
-                    dialog.find("[data-dismiss]").click();
-                else
-                    alert("Something went wrong ('" + content + "')!");
+            $.post(window.location.href.split('#')[0], {token: document.token, action: "private", to: login_name, message: textarea.val()}, function() {
+                dialog.find("[data-dismiss]").click();
+            }).fail(function(jqXHR) {
+                alert("Something went wrong ('" + jqXHR.responseText + "')!");
             });
         else
             wrongValueEffect(textarea);
@@ -598,8 +603,8 @@ function showSendCashBox(login_name, full_name) {
             $.post(window.location.href.split('#')[0], {token: document.token, action: "private", to: login_name, message: $(dialog).find("textarea").val(), cash: $(dialog).find("input").val()}, function(content) {
                 if (content === "OK")
                     reload();
-                else
-                    alert("Something went wrong ('" + content + "')!");
+            }).fail(function(jqXHR) {
+                alert("Something went wrong ('" + jqXHR.responseText + "')!");
             });
         else
             wrongValueEffect(input);

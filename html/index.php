@@ -217,6 +217,31 @@ END;
         $last = fetchScalar("SELECT MAX(ts) FROM (SELECT UNIX_TIMESTAMP(ts) AS ts FROM solved WHERE team_id=:team_id UNION ALL SELECT UNIX_TIMESTAMP(ts) AS ts FROM privates WHERE cash IS NOT NULL AND (from_id=:team_id OR to_id=:team_id)) AS result", array("team_id" => $_SESSION["team_id"]));
         echo sprintf($html, number_format($scores["cash"]), ordinal($places["cash"]), $places["cash"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["cash"]]) . '" height="16">' : "", number_format($scores["awareness"]), ordinal($places["awareness"]), $places["awareness"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["awareness"]]) . '" height="16">' : "", $last ? sprintf("<span ts='%d'></span>", $last) : "-", str_replace(",", ", ", $active_), count($active), str_replace(",", ", ", $finished_), count($finished));
     }
+    else {
+        $html = <<<END
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <i class="fas fa-cogs" data-toggle="tooltip" title="Platform settings"></i> <span class="badge badge-light" style="float:right; line-height: 1.5; color: gray">(settings)</span>
+                            </div>
+                            <div class="card-body" style="font-size: 12px">
+                                <table id="settings_table">%s
+                                </table>
+                            </div>
+                        </div>
+
+
+END;
+        $settings = array(
+            "transfers" => "Cash transfers",
+        );
+
+        $_ = "";
+        foreach ($settings as $name => $description) {
+            $_ .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', $description, $name, fetchScalar("SELECT value FROM settings WHERE name=:name", array("name" => $name)) !== "false" ? " checked" : "");
+        }
+
+        echo sprintf($html, $_);
+    }
 ?>
                         <div class="card mt-3">
                             <div class="card-header">

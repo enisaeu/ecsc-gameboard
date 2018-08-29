@@ -81,6 +81,16 @@
                 die(DEBUG ? $_SESSION["conn_error"] : null);
             }
         }
+        else if (isAdmin() && isset($_POST["setting"])) {
+            $success = execute("INSERT INTO settings(name, value) VALUES(:name, :value) ON DUPLICATE KEY UPDATE value=:value", array("name" => $_POST["setting"], "value" => $_POST["value"]));
+
+            if ($success)
+                die("OK");
+            else {
+                header("HTTP/1.1 500 Internal Server Error");
+                die(DEBUG ? $_SESSION["conn_error"] : null);
+            }
+        }
         else if (isAdmin() && isset($_POST["contract"])) {
             $contract = json_decode($_POST["contract"], true);
 
@@ -196,7 +206,9 @@
         $to_id = fetchScalar("SELECT team_id FROM teams WHERE login_name=:login_name", array("login_name" => $_POST["to"]));
         $max = getScores($_SESSION["team_id"])["cash"];
 
-        if (!is_null($to_id) && ($_SESSION["team_id"] !== $to_id) && !(!is_null($cash) && ($cash > $max)) && !((is_null($cash) || $cash === 0) && (is_null($message) || $message === ""))) {
+        if ((!is_null($cash)) && (getSetting("transfers") === "false"))
+            $success = false;
+        else if (!is_null($to_id) && ($_SESSION["team_id"] !== $to_id) && !(!is_null($cash) && ($cash > $max)) && !((is_null($cash) || $cash === 0) && (is_null($message) || $message === ""))) {
             $from_name = fetchScalar("SELECT full_name FROM teams WHERE team_id=:team_id", array("team_id" => $_SESSION["team_id"]));
             $to_name = fetchScalar("SELECT full_name FROM teams WHERE team_id=:team_id", array("team_id" => $to_id));
             $success = execute("INSERT INTO privates(from_id, to_id, cash, message) VALUES(:from_id, :to_id, :cash, :message)", array("from_id" => $_SESSION["team_id"], "to_id" => $to_id, "cash" => $cash, "message" => $message));
