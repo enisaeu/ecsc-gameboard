@@ -81,7 +81,3 @@ Inside **Notifications** panel, Administrator can send (mass) notifications to a
 For example, by clicking on a *New notification* button the following dialog appears:
 
 ![New notification details](https://i.imgur.com/LxBJOLd.png)
-
-## Usage
-
-TODO
