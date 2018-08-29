@@ -1,4 +1,4 @@
-var COUNTRIES = { AF: "Afghanistan", AX: "Aland Islands", AL: "Albania", DZ: "Algeria", AS: "American Samoa", AD: "Andorra", AO: "Angola", AI: "Anguilla", AG: "Antigua and Barbuda", AR: "Argentina", AM: "Armenia", AW: "Aruba", AU: "Australia", AT: "Austria", AZ: "Azerbaijan", BS: "Bahamas", BH: "Bahrain", BD: "Bangladesh", BB: "Barbados", BY: "Belarus", BE: "Belgium", BZ: "Belize", BJ: "Benin", BM: "Bermuda", BT: "Bhutan", BO: "Bolivia", BQ: "Bonaire", BA: "Bosnia and Herzegovina", BW: "Botswana", BR: "Brazil", BN: "Brunei Darussalam", BG: "Bulgaria", BF: "Burkina Faso", BI: "Burundi", CV: "Cabo Verde", KH: "Cambodia", CM: "Cameroon", CA: "Canada", KY: "Cayman Islands", CF: "Central African Republic", TD: "Chad", CL: "Chile", CN: "China", CX: "Christmas Island", CC: "Cocos (Keeling) Islands", CO: "Colombia", KM: "Comoros", CK: "Cook Islands", CR: "Costa Rica", HR: "Croatia", CU: "Cuba", CW: "Curaçao", CY: "Cyprus", CZ: "Czech Republic", CI: "Cote d'Ivoire", CD: "Congo", DK: "Denmark", DJ: "Djibouti", DM: "Dominica", DO: "Dominican Republic", EC: "Ecuador", EG: "Egypt", SV: "El Salvador", GQ: "Equatorial Guinea", ER: "Eritrea", EE: "Estonia", ET: "Ethiopia", FK: "Falkland Islands", FO: "Faroe Islands", FM: "Micronesia", FJ: "Fiji", FI: "Finland", MK: "FYR Macedonia", FR: "France", GF: "French Guiana", PF: "French Polynesia", GA: "Gabon", GM: "Gambia", GE: "Georgia", DE: "Germany", GH: "Ghana", GI: "Gibraltar", GR: "Greece", GL: "Greenland", GD: "Grenada", GP: "Guadeloupe", GU: "Guam", GT: "Guatemala", GG: "Guernsey", GN: "Guinea", GW: "Guinea-Bissau", GY: "Guyana", HT: "Haiti", VA: "Holy See", HN: "Honduras", HK: "Hong Kong", HU: "Hungary", IS: "Iceland", IN: "India", ID: "Indonesia", IR: "Iran", IQ: "Iraq", IE: "Ireland", IM: "Isle of Man", IL: "Israel", IT: "Italy", JM: "Jamaica", JP: "Japan", JE: "Jersey", JO: "Jordan", KZ: "Kazakhstan", KE: "Kenya", KI: "Kiribati", KW: "Kuwait", KG: "Kyrgyzstan", LA: "Laos", LV: "Latvia", LB: "Lebanon", LS: "Lesotho", LR: "Liberia", LY: "Libya", LI: "Liechtenstein", LT: "Lithuania", LU: "Luxembourg", MO: "Macau", MG: "Madagascar", MW: "Malawi", MY: "Malaysia", MV: "Maldives", ML: "Mali", MT: "Malta", MH: "Marshall Islands", MQ: "Martinique", MR: "Mauritania", MU: "Mauritius", YT: "Mayotte", MX: "Mexico", MD: "Moldova", MC: "Monaco", MN: "Mongolia", ME: "Montenegro", MS: "Montserrat", MA: "Morocco", MZ: "Mozambique", MM: "Myanmar", NA: "Namibia", NR: "Nauru", NP: "Nepal", NL: "Netherlands", NC: "New Caledonia", NZ: "New Zealand", NI: "Nicaragua", NE: "Niger", NG: "Nigeria", NU: "Niue", NF: "Norfolk Island", KP: "North Korea", MP: "Northern Mariana Islands", NO: "Norway", OM: "Oman", PK: "Pakistan", PW: "Palau", PA: "Panama", PG: "Papua New Guinea", PY: "Paraguay", PE: "Peru", PH: "Philippines", PN: "Pitcairn", PL: "Poland", PT: "Portugal", PR: "Puerto Rico", QA: "Qatar", CG: "Republic of the Congo", RO: "Romania", RU: "Russia", RW: "Rwanda", RE: "Réunion", BL: "Saint Barthélemy", SH: "Saint Helena", KN: "Saint Kitts and Nevis", LC: "Saint Lucia", MF: "Saint Martin", WS: "Samoa", SM: "San Marino", ST: "Sao Tome and Principe", SA: "Saudi Arabia", SN: "Senegal", RS: "Serbia", SC: "Seychelles", SL: "Sierra Leone", SG: "Singapore", SX: "Sint Maarten", SK: "Slovakia", SI: "Slovenia", SB: "Solomon Islands", SO: "Somalia", ZA: "South Africa", KR: "South Korea", SS: "South Sudan", ES: "Spain", LK: "Sri Lanka", PS: "State of Palestine", SD: "Sudan", SR: "Suriname", SJ: "Svalbard and Jan Mayen", SZ: "Swaziland", SE: "Sweden", CH: "Switzerland", SY: "Syrian Arab Republic", TW: "Taiwan", TJ: "Tajikistan", TZ: "Tanzania", TH: "Thailand", TL: "Timor-Leste", TG: "Togo", TK: "Tokelau", TO: "Tonga", TT: "Trinidad and Tobago", TN: "Tunisia", TR: "Turkey", TM: "Turkmenistan", TC: "Turks and Caicos Islands", TV: "Tuvalu", UG: "Uganda", UA: "Ukraine", AE: "United Arab Emirates", GB: "United Kingdom", US: "United States of America", UY: "Uruguay", UZ: "Uzbekistan", VU: "Vanuatu", VE: "Venezuela", VN: "Vietnam", VG: "Virgin Islands (British)", VI: "Virgin Islands (U.S.)", WF: "Wallis and Futuna", EH: "Western Sahara", YE: "Yemen", ZM: "Zambia", ZW: "Zimbabwe" }
+var COUNTRIES = { AF: "Afghanistan", AX: "Aland Islands", AL: "Albania", DZ: "Algeria", AS: "American Samoa", AD: "Andorra", AO: "Angola", AI: "Anguilla", AG: "Antigua and Barbuda", AR: "Argentina", AM: "Armenia", AW: "Aruba", AU: "Australia", AT: "Austria", AZ: "Azerbaijan", BS: "Bahamas", BH: "Bahrain", BD: "Bangladesh", BB: "Barbados", BY: "Belarus", BE: "Belgium", BZ: "Belize", BJ: "Benin", BM: "Bermuda", BT: "Bhutan", BO: "Bolivia", BQ: "Bonaire", BA: "Bosnia and Herzegovina", BW: "Botswana", BR: "Brazil", BN: "Brunei Darussalam", BG: "Bulgaria", BF: "Burkina Faso", BI: "Burundi", CV: "Cabo Verde", KH: "Cambodia", CM: "Cameroon", CA: "Canada", KY: "Cayman Islands", CF: "Central African Republic", TD: "Chad", CL: "Chile", CN: "China", CX: "Christmas Island", CC: "Cocos (Keeling) Islands", CO: "Colombia", KM: "Comoros", CK: "Cook Islands", CR: "Costa Rica", HR: "Croatia", CU: "Cuba", CW: "Curaçao", CY: "Cyprus", CZ: "Czech Republic", CI: "Cote d'Ivoire", CD: "Congo", DK: "Denmark", DJ: "Djibouti", DM: "Dominica", DO: "Dominican Republic", EC: "Ecuador", EG: "Egypt", SV: "El Salvador", GQ: "Equatorial Guinea", ER: "Eritrea", EE: "Estonia", ET: "Ethiopia", FK: "Falkland Islands", FO: "Faroe Islands", FM: "Micronesia", FJ: "Fiji", FI: "Finland", MK: "FYR Macedonia", FR: "France", GF: "French Guiana", PF: "French Polynesia", GA: "Gabon", GM: "Gambia", GE: "Georgia", DE: "Germany", GH: "Ghana", GI: "Gibraltar", GR: "Greece", GL: "Greenland", GD: "Grenada", GP: "Guadeloupe", GU: "Guam", GT: "Guatemala", GG: "Guernsey", GN: "Guinea", GW: "Guinea-Bissau", GY: "Guyana", HT: "Haiti", VA: "Holy See", HN: "Honduras", HK: "Hong Kong", HU: "Hungary", IS: "Iceland", IN: "India", ID: "Indonesia", IR: "Iran", IQ: "Iraq", IE: "Ireland", IM: "Isle of Man", IL: "Israel", IT: "Italy", JM: "Jamaica", JP: "Japan", JE: "Jersey", JO: "Jordan", KZ: "Kazakhstan", KE: "Kenya", KI: "Kiribati", KW: "Kuwait", KG: "Kyrgyzstan", LA: "Laos", LV: "Latvia", LB: "Lebanon", LS: "Lesotho", LR: "Liberia", LY: "Libya", LI: "Liechtenstein", LT: "Lithuania", LU: "Luxembourg", MO: "Macau", MG: "Madagascar", MW: "Malawi", MY: "Malaysia", MV: "Maldives", ML: "Mali", MT: "Malta", MH: "Marshall Islands", MQ: "Martinique", MR: "Mauritania", MU: "Mauritius", YT: "Mayotte", MX: "Mexico", MD: "Moldova", MC: "Monaco", MN: "Mongolia", ME: "Montenegro", MS: "Montserrat", MA: "Morocco", MZ: "Mozambique", MM: "Myanmar", NA: "Namibia", NR: "Nauru", NP: "Nepal", NL: "Netherlands", NC: "New Caledonia", NZ: "New Zealand", NI: "Nicaragua", NE: "Niger", NG: "Nigeria", NU: "Niue", NF: "Norfolk Island", KP: "North Korea", MP: "Northern Mariana Islands", NO: "Norway", OM: "Oman", PK: "Pakistan", PW: "Palau", PA: "Panama", PG: "Papua New Guinea", PY: "Paraguay", PE: "Peru", PH: "Philippines", PN: "Pitcairn", PL: "Poland", PT: "Portugal", PR: "Puerto Rico", QA: "Qatar", CG: "Republic of the Congo", RO: "Romania", RU: "Russia", RW: "Rwanda", RE: "Réunion", BL: "Saint Barthélemy", SH: "Saint Helena", KN: "Saint Kitts and Nevis", LC: "Saint Lucia", MF: "Saint Martin", WS: "Samoa", SM: "San Marino", ST: "Sao Tome and Principe", SA: "Saudi Arabia", SN: "Senegal", RS: "Serbia", SC: "Seychelles", SL: "Sierra Leone", SG: "Singapore", SX: "Sint Maarten", SK: "Slovakia", SI: "Slovenia", SB: "Solomon Islands", SO: "Somalia", ZA: "South Africa", KR: "South Korea", SS: "South Sudan", ES: "Spain", LK: "Sri Lanka", PS: "State of Palestine", SD: "Sudan", SR: "Suriname", SJ: "Svalbard and Jan Mayen", SZ: "Swaziland", SE: "Sweden", CH: "Switzerland", SY: "Syrian Arab Republic", TW: "Taiwan", TJ: "Tajikistan", TZ: "Tanzania", TH: "Thailand", TL: "Timor-Leste", TG: "Togo", TK: "Tokelau", TO: "Tonga", TT: "Trinidad and Tobago", TN: "Tunisia", TR: "Turkey", TM: "Turkmenistan", TC: "Turks and Caicos Islands", TV: "Tuvalu", UG: "Uganda", UA: "Ukraine", AE: "United Arab Emirates", GB: "United Kingdom", US: "United States of America", UY: "Uruguay", UZ: "Uzbekistan", VU: "Vanuatu", VE: "Venezuela", VN: "Vietnam", VG: "Virgin Islands (British)", VI: "Virgin Islands (U.S.)", WF: "Wallis and Futuna", EH: "Western Sahara", YE: "Yemen", ZM: "Zambia", ZW: "Zimbabwe" };
 var FAST_PULL_PERIOD = 2000;
 var SLOW_PULL_PERIOD = 5000;
 var LAST_UPDATE_SLOW_THRESHOLD = 60000; // after ms of chat inactivity turn on SLOW_PULL_PERIOD
@@ -10,8 +10,7 @@ var lastPullUpdate = new Date();
 if (!String.prototype.endsWith) {
     String.prototype.endsWith = function(searchString, position) {
         var subjectString = this.toString();
-        if (typeof position !== 'number' || !isFinite(position)
-            || Math.floor(position) !== position || position > subjectString.length) {
+        if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length) {
         position = subjectString.length;
         }
         position -= searchString.length;
@@ -21,7 +20,7 @@ if (!String.prototype.endsWith) {
 }
 
 $(document).ready(function() {
-    $(document).ajaxError(function(_, jqXHR, _, status) {
+    $(document).ajaxError(function(event, jqXHR, options, status) {
         if (status === "Unauthorized")
             reload();
         else
@@ -48,7 +47,7 @@ $(document).ready(function() {
     $(".card").not("#contract_editor").find(".collapse").each(function() {
         if (localStorage.getItem($(this).prop("id")) == "hide") {
             $(this).removeClass("show");
-            $(this).closest(".card").find("[data-toggle=collapse]").addClass("collapsed")
+            $(this).closest(".card").find("[data-toggle=collapse]").addClass("collapsed");
         }
     });
 
@@ -107,7 +106,7 @@ $(document).ready(function() {
                     markerSize: 8,
 //                     yValueFormatString: "#,###,#k",
                     dataPoints: dataPoints
-                }
+                };
                 datasets.push(dataset);
 
                 if (datasets.length >= MAX_TOP_TEAMS)
@@ -138,7 +137,7 @@ $(document).ready(function() {
                 timeFormat = "DD-MMM HH:mm";
 
             if (maxTime - minTime < 3600)
-                timeFormat += ":ss"
+                timeFormat += ":ss";
 
             var chart = new CanvasJS.Chart("line_momentum", {
                 title: {
@@ -193,9 +192,9 @@ $(document).ready(function() {
             });
             chart.render();
 
-            $(".canvasjs-chart-credit").css("display", "none")
+            $(".canvasjs-chart-credit").css("display", "none");
 
-            function toogleDataSeries(e){
+            function toogleDataSeries(e) {
                 if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
                     e.dataSeries.visible = false;
                 } else {
@@ -453,7 +452,7 @@ function showChangePasswordBox(login_name, full_name) {
         }
         else
             dialog.find("[type=password]").addClass("is-invalid");
-    }
+    };
 
     dialog.find("input").keypress(function(e) {
         if(e.which == 13) {
@@ -466,7 +465,6 @@ function showChangePasswordBox(login_name, full_name) {
     dialog.find(".btn-primary").off("click");
     dialog.find(".btn-primary").click(function(event) {
         var password = dialog.find("[name=password]").val();
-        var reenter = dialog.find("[name=password2]").val();
         var invalid = dialog.find(".is-invalid").first();
 
         if (invalid.length == 0) {
@@ -620,7 +618,7 @@ function wrongValueEffect(element) {
 
 String.prototype.hashCode = function() {
     return murmurhash3_32_gc(this, 13);
-}
+};
 
 function pad(n, width, z) {
     z = z || '0';
@@ -733,7 +731,7 @@ function murmurhash3_32_gc(key, seed) {
         });
 
        return detectedFont;
-    }
+    };
 })(jQuery);
 
 function pushMessage() {
@@ -763,7 +761,7 @@ function periodicPullMessages() {
     var pull = function() {
         pullMessages();
         setTimeout(pull, ((new Date() - lastPullUpdate < LAST_UPDATE_SLOW_THRESHOLD) || ($(document.activeElement).prop("id") == "chat_message")) ? FAST_PULL_PERIOD : SLOW_PULL_PERIOD);
-    }
+    };
     setTimeout(pull, FAST_PULL_PERIOD);
 }
 
@@ -862,7 +860,7 @@ function validator() {
         $(this)[0].setCustomValidity("");
         $(this).removeClass("is-invalid");
     }
-};
+}
 
 function countriesDropdown(container) {
     var out = "<option value=''></option>";
