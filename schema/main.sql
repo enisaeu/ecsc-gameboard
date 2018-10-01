@@ -44,6 +44,7 @@ CREATE TABLE contracts (
     title VARCHAR(1024) NOT NULL,
     description TEXT NOT NULL,
     categories VARCHAR(1024) NOT NULL,
+    hidden BOOLEAN NOT NULL DEFAULT FALSE,
     ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

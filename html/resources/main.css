@@ -478,6 +478,11 @@ html {
     border-color: white !important;
 }
 
+.highlight-hidden {
+    outline: 2px dashed rgba(0,0,0,.125) !important;
+    border-color: white !important;
+}
+
 .card .close {
     padding-bottom: 10px;
 }

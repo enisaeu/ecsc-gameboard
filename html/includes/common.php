@@ -193,7 +193,7 @@
         $_ = getFinishedContracts($team_id);
         $__ = getActiveContracts($team_id);
         $___ = getConstraintedContracts($team_id);
-        $____ = fetchAll("SELECT contract_id FROM contracts", null, PDO::FETCH_COLUMN);
+        $____ = fetchAll("SELECT contract_id FROM contracts WHERE hidden=FALSE", null, PDO::FETCH_COLUMN);
         return array_diff($____, $___, $__, $_);
     }
 

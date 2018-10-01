@@ -98,11 +98,11 @@
             $conn->beginTransaction();
 
             if ($contract["contract_id"] != -1) {
-                $success &= execute("UPDATE contracts SET title=:title, description=:description, categories=:categories WHERE contract_id=:contract_id", array("title" => $contract["title"], "description" => $contract["description"], "categories" => $contract["categories"], "contract_id" => $contract["contract_id"]));
+                $success &= execute("UPDATE contracts SET title=:title, description=:description, categories=:categories, hidden=:hidden WHERE contract_id=:contract_id", array("title" => $contract["title"], "description" => $contract["description"], "categories" => $contract["categories"], "hidden" => intval($contract["hidden"]), "contract_id" => $contract["contract_id"]));
                 $contract_id = $contract["contract_id"];
             }
             else {
-                $success &= execute("INSERT INTO contracts(title, description, categories) VALUES (:title, :description, :categories)", array("title" => $contract["title"], "description" => $contract["description"], "categories" => $contract["categories"]));
+                $success &= execute("INSERT INTO contracts(title, description, categories, hidden) VALUES (:title, :description, :categories, :hidden)", array("title" => $contract["title"], "description" => $contract["description"], "categories" => $contract["categories"], "hidden" => intval($contract["hidden"])));
                 $contract_id = fetchScalar("SELECT MAX(contract_id) FROM contracts WHERE title=:title", array("title" => $contract["title"]));
             }
 

@@ -2,7 +2,8 @@
     if (!isAdmin()) {
         $active = getActiveContracts($_SESSION["team_id"]);
         $finished = getFinishedContracts($_SESSION["team_id"]);
-        $visible = array_merge($active, $finished);
+        $hidden = fetchAll("SELECT contract_id FROM contracts WHERE hidden=TRUE");
+        $visible = array_diff(array_merge($active, $finished), $hidden);
 
         if (count($visible) > 0) {
             echo "                                <div id=\"accordion\">\n";
@@ -41,7 +42,7 @@
             if ($_POST["contract_id"] != -1)
                 $contract = fetchAll("SELECT * FROM contracts WHERE contracts.contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]))[0];
             else
-                $contract = array("title" => "", "description" => "", "categories" => "");
+                $contract = array("title" => "", "description" => "", "categories" => "", "hidden" => false);
 
             $result = fetchAll("SELECT min_cash, min_awareness FROM constraints WHERE contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]));
 
@@ -51,7 +52,7 @@
                 $constraints = array("min_cash" => "", "min_awareness" => "");
 
             $title = "<input name='contract_id' value='" . cleanReflectedValue($_POST["contract_id"]) . "' type='hidden'><input name='title' value='" . cleanReflectedValue($contract["title"]) . "' class='form-control' style='display: block'><label class='info-label'>Contract title</label>";
-            $categories = "<input name='categories' value='" . cleanReflectedValue($contract["categories"]) . "' class='form-control'><label class='info-label'>Contract categories (Note: comma-splitted)</label><div class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' id='constraint'><label class='custom-control-label' for='constraint'>Constraints</label></div>";
+            $categories = "<input name='categories' value='" . cleanReflectedValue($contract["categories"]) . "' class='form-control'><label class='info-label'>Contract categories (Note: comma-splitted)</label><div class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' id='hidden'><label class='custom-control-label' for='hidden'>Hidden</label></div><div class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' id='constraint'><label class='custom-control-label' for='constraint'>Constraints</label></div>";
             $description = "<textarea name='description' class='form-control' style='display: block'>" . cleanReflectedValue($contract["description"]) . "</textarea><label class='info-label'>Contract description</label>";
 
             $template = file_get_contents("templates/accepted.html");
@@ -138,6 +139,10 @@
                                                 $("#constraint").trigger("click");
                                             }
 
+                                            if (%s) {
+                                                $("#hidden").trigger("click");
+                                            }
+
                                             setupValidation($("#contract_editor"));
 
                                             $("#contract_editor .btn-primary").click(function() {
@@ -161,6 +166,7 @@
                                                     contract["title"] = $("label:contains('Contract title')").prev().val();
                                                     contract["categories"] = $("label:contains('Contract categories')").prev().val();
                                                     contract["description"] = $("label:contains('Contract description')").prev().val();
+                                                    contract["hidden"] = $("#hidden").prop("checked");
                                                     contract["tasks"] = [];
 
                                                     if ($("#constraints").length > 0)
@@ -194,7 +200,7 @@
                                     </script>
 
 END;
-            echo sprintf($script, $_POST["contract_id"] != -1 ? "Edit" : "New", $constraints["min_cash"], $constraints["min_awareness"], (($constraints["min_cash"] == $constraints["min_awareness"]) && ($constraints["min_awareness"] == "")) ? "false" : "true");
+            echo sprintf($script, $_POST["contract_id"] != -1 ? "Edit" : "New", $constraints["min_cash"], $constraints["min_awareness"], (($constraints["min_cash"] == $constraints["min_awareness"]) && ($constraints["min_awareness"] == "")) ? "false" : "true", $contract["hidden"] ? "true" : "false");
         }
         else {
             $template = file_get_contents("templates/contract.html");
@@ -213,9 +219,9 @@ END;
                     $html = preg_replace("/btn-success/s", "btn-warning", $html);
                 }
                 else {
-                    $row = fetchAll("SELECT contracts.title, contracts.description, contracts.categories, SUM(tasks.cash) AS cash, SUM(tasks.awareness) AS awareness FROM contracts JOIN tasks ON contracts.contract_id=tasks.contract_id WHERE contracts.contract_id=:contract_id GROUP BY(contracts.contract_id)", array("contract_id" => $contract_id));
+                    $row = fetchAll("SELECT contracts.title, contracts.description, contracts.categories, contracts.hidden, SUM(tasks.cash) AS cash, SUM(tasks.awareness) AS awareness FROM contracts JOIN tasks ON contracts.contract_id=tasks.contract_id WHERE contracts.contract_id=:contract_id GROUP BY(contracts.contract_id)", array("contract_id" => $contract_id));
                     if (!$row)
-                        $row = fetchAll("SELECT title, description, categories, 0 AS cash, 0 AS awareness FROM contracts WHERE contracts.contract_id=:contract_id", array("contract_id" => $contract_id));
+                        $row = fetchAll("SELECT title, description, categories, hidden, 0 AS cash, 0 AS awareness FROM contracts WHERE contracts.contract_id=:contract_id", array("contract_id" => $contract_id));
 
                     $row = $row[0];
                     $note = "";
@@ -230,9 +236,12 @@ END;
                         $note .= "</p>";
                     }
                     $html = str_replace("</b>", '</b><button class="close" data-dismiss="modal" aria-label="Delete contract" title="Delete contract" data-toggle="tooltip"><span aria-hidden="true">×</span></button>', $template);
-                    $html = format($html, array("title" => $row["title"], "values" => generateValuesHtml($row["cash"], $row["awareness"]), "description" => $row["description"] . $note, "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
+                    $html = format($html, array("title" => $row["title"]. ($row["hidden"] ? '<i class="far fa-eye-slash ml-2" title="Hidden" data-toggle="tooltip"></i>' : ""), "values" => generateValuesHtml($row["cash"], $row["awareness"]), "description" => $row["description"] . $note, "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
                     $html = preg_replace("/Take contract/s", "Edit contract", $html);
                     $html = preg_replace("/btn-success/s", "btn-primary", $html);
+                    if ($row["hidden"]) {
+                        $html = str_replace('card mb-3">', 'card mb-3 highlight-hidden">', $html);
+                    }
                 }
                 $html = str_replace("<button", "<input name='edit' value='true' type='hidden'>\n                                                <button", $html);
                 echo $html;
@@ -259,6 +268,11 @@ END;
                                             var title = $(contract).find(".card-header b").text();
                                             showYesNoWarningBox("Are you sure that you want to delete contract '" + title + "'?", function() {deleteContract(contract_id);});
                                         });
+
+                                        $(".close").prop("title", "Delete contract").hover(
+                                            function() { $(this).closest(".card").addClass("highlight") },
+                                            function() { $(this).closest(".card").removeClass("highlight") }
+                                        );
                                     });
                                 </script>
 
