@@ -2,7 +2,7 @@
     if (!isAdmin()) {
         $active = getActiveContracts($_SESSION["team_id"]);
         $finished = getFinishedContracts($_SESSION["team_id"]);
-        $hidden = fetchAll("SELECT contract_id FROM contracts WHERE hidden=TRUE");
+        $hidden = getHiddenContracts();
         $visible = array_diff(array_merge($active, $finished), $hidden);
 
         if (count($visible) > 0) {

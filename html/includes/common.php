@@ -189,6 +189,10 @@
         return fetchAll("SELECT contract_id FROM contracts", null, PDO::FETCH_COLUMN);
     }
 
+    function getHiddenContracts() {
+        return fetchAll("SELECT contract_id FROM contracts WHERE hidden=TRUE", null, PDO::FETCH_COLUMN);
+    }
+
     function getAvailableContracts($team_id) {
         $_ = getFinishedContracts($team_id);
         $__ = getActiveContracts($team_id);
