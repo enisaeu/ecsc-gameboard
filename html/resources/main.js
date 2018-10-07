@@ -238,6 +238,13 @@ $(document).ready(function() {
         showSendCashBox(login_name, full_name);
     });
 
+    $(".fa-hand-holding-usd").click(function(event) {
+        var row = $(event.target).closest("tr");
+        var login_name = row.find("sup").text().substr(1).slice(0, -1);
+        var full_name = row.find("td:nth-child(2)").html().replace(/ <sup>.+/, "").replace(/<span.+<\/span>/, "");
+        showAwardCashBox(login_name, full_name);
+    });
+
     $("#settings_table input[type=checkbox]").click(function() {
         var name = $(this).prop("id");
         var value = $(this).is(":checked");
@@ -576,6 +583,42 @@ function showSendMessageBox(login_name, full_name) {
     dialog.modal();
 }
 
+function showAwardCashBox(login_name, full_name) {
+    var dialog = $("#prompt-box").clone();
+    var max = parseInt(($(".current").find("td:nth-child(4)").text().replace(',', '')) || 0);
+
+    if (dialog.length === 0)
+        return;
+
+    dialog.removeAttr("id");
+    dialog.find(".modal-title").text("Award cash");
+    dialog.find(".modal-body").html("");
+    dialog.find(".modal-body").append($("<label>Amount:</label><input type='number' name='quantity' class='form-control ml-2' style='width: initial; display: inline-block' min='0' value='0' style='width: 6em'><hr>"));
+    dialog.find(".modal-body").append($("<textarea class='form-control' rows=4 placeholder='Note (mandatory)' style='width: 100%'></textarea>"));
+
+    // Reference: https://stackoverflow.com/a/31909778
+    dialog.on('shown.bs.modal', function () {
+        $(this).find('input').focus();
+    });
+
+    dialog.find(".btn-primary").off("click");
+    dialog.find(".btn-primary").click(function(event) {
+        var input = $(dialog).find("input");
+        var message = $(dialog).find("textarea").val();
+        if ((parseInt(input.val()) > 0) && (message.length > 0))
+            $.post(window.location.href.split('#')[0], {token: document.token, action: "private", to: login_name, message: message, cash: $(dialog).find("input").val()}, function(content) {
+                if (content === "OK")
+                    reload();
+            }).fail(function(jqXHR) {
+                alert("Something went wrong ('" + jqXHR.responseText + "')!");
+            });
+        else
+            wrongValueEffect(input);
+    });
+
+    dialog.modal();
+}
+
 function showSendCashBox(login_name, full_name) {
     var dialog = $("#prompt-box").clone();
     var max = parseInt(($(".current").find("td:nth-child(4)").text().replace(',', '')) || 0);
@@ -586,7 +629,7 @@ function showSendCashBox(login_name, full_name) {
     dialog.removeAttr("id");
     dialog.find(".modal-title").text("Send cash");
     dialog.find(".modal-body").html("");
-    dialog.find(".modal-body").append($("<label>Amount:</label><input type='number' name='quantity' class='form-control ml-2' style='width: initial; display: inline-block' min='0' max='" + max + "' step='5' value='0' style='width: 6em'><hr>"));
+    dialog.find(".modal-body").append($("<label>Amount:</label><input type='number' name='quantity' class='form-control ml-2' style='width: initial; display: inline-block' min='0' max='" + max + "' value='0' style='width: 6em'><hr>"));
     dialog.find(".modal-body").append($("<textarea class='form-control' rows=4 placeholder='Message to \"" + full_name + "\" (optional)' style='width: 100%'></textarea>"));
 
     // Reference: https://stackoverflow.com/a/31909778
