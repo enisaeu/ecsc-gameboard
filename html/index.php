@@ -16,7 +16,7 @@
         $scores = array();
         foreach ($teams as $team_id) {
             $row = fetchAll("SELECT * FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
-            $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => COUNTRIES[$row["country_code"]], "score" => getScores($team_id)["cash"]);
+            $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => getScores($team_id)["cash"]);
             array_push($scores, $_);
         }
 
