@@ -2,28 +2,35 @@
     require_once("includes/common.php");
 
     if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/scores.json")) {
-        $callback = null;
-        if (startsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY), "callback="))
-            $callback = explode('=', parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY))[1];
-
-        if (is_null($callback))
+        if (file_exists("scores.json")) {
             header("Content-Type: application/json");
-        else
-            header("Content-Type: application/javascript");
-
-        $teams = getTeams();
-
-        $scores = array();
-        foreach ($teams as $team_id) {
-            $row = fetchAll("SELECT * FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
-            $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => getScores($team_id)["cash"]);
-            array_push($scores, $_);
+            readfile("scores.json");
+            die();
         }
+        else {
+            $callback = null;
+            if (startsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY), "callback="))
+                $callback = explode('=', parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY))[1];
 
-        if (is_null($callback))
-            die(json_encode($scores, JSON_PRETTY_PRINT));
-        else
-            die($callback . '(' . json_encode($scores) . ');');
+            if (is_null($callback))
+                header("Content-Type: application/json");
+            else
+                header("Content-Type: application/javascript");
+
+            $teams = getTeams();
+
+            $scores = array();
+            foreach ($teams as $team_id) {
+                $row = fetchAll("SELECT * FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
+                $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => getScores($team_id)["cash"]);
+                array_push($scores, $_);
+            }
+
+            if (is_null($callback))
+                die(json_encode($scores, JSON_PRETTY_PRINT));
+            else
+                die($callback . '(' . json_encode($scores) . ');');
+        }
     }
 
     if (!isset($_SESSION["team_id"])) {
