@@ -24,6 +24,10 @@
             }
         }
 
+        $scores = array_filter($scores, function($value) {
+            return !(($value["score"] === 0) && is_null($value["country"]));
+        });
+
         if (is_null($callback))
             die(json_encode($scores, JSON_PRETTY_PRINT));
         else
