@@ -593,7 +593,7 @@ function showAwardCashBox(login_name, full_name) {
     dialog.removeAttr("id");
     dialog.find(".modal-title").text("Award cash");
     dialog.find(".modal-body").html("");
-    dialog.find(".modal-body").append($("<label>Amount:</label><input type='number' name='quantity' class='form-control ml-2' style='width: initial; display: inline-block' min='0' value='0' style='width: 6em'><hr>"));
+    dialog.find(".modal-body").append($("<label>Amount:</label><input type='number' name='quantity' class='form-control ml-2' style='width: initial; display: inline-block' value='0' style='width: 6em'><hr>"));
     dialog.find(".modal-body").append($("<textarea class='form-control' rows=4 placeholder='Note (mandatory)' style='width: 100%'></textarea>"));
 
     // Reference: https://stackoverflow.com/a/31909778
@@ -605,7 +605,7 @@ function showAwardCashBox(login_name, full_name) {
     dialog.find(".btn-primary").click(function(event) {
         var input = $(dialog).find("input");
         var message = $(dialog).find("textarea").val();
-        if ((parseInt(input.val()) > 0) && (message.length > 0))
+        if ((parseInt(input.val()) != 0) && (message.length > 0))
             $.post(window.location.href.split('#')[0], {token: document.token, action: "private", to: login_name, message: message, cash: $(dialog).find("input").val()}, function(content) {
                 if (content === "OK")
                     reload();
