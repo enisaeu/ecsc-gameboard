@@ -2,9 +2,7 @@
     require_once("includes/common.php");
 
     if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/scores.json")) {
-        $callback = null;
-        if (startsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY), "callback="))
-            $callback = explode('=', parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY))[1];
+        $callback = isset($_GET["callback"]) ? $_GET["callback"] : null;
 
         if (is_null($callback))
             header("Content-Type: application/json");
