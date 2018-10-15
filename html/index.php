@@ -2,21 +2,20 @@
     require_once("includes/common.php");
 
     if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/scores.json")) {
-        if (file_exists("scores.json")) {
+        $callback = null;
+        if (startsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY), "callback="))
+            $callback = explode('=', parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY))[1];
+
+        if (is_null($callback))
             header("Content-Type: application/json");
-            readfile("scores.json");
-            die();
+        else
+            header("Content-Type: application/javascript");
+
+        if (file_exists("scores.json")) {
+            $_ = file_get_contents("scores.json");
+            $scores = json_decode($_, true);
         }
         else {
-            $callback = null;
-            if (startsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY), "callback="))
-                $callback = explode('=', parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY))[1];
-
-            if (is_null($callback))
-                header("Content-Type: application/json");
-            else
-                header("Content-Type: application/javascript");
-
             $teams = getTeams();
 
             $scores = array();
@@ -25,12 +24,12 @@
                 $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => getScores($team_id)["cash"]);
                 array_push($scores, $_);
             }
-
-            if (is_null($callback))
-                die(json_encode($scores, JSON_PRETTY_PRINT));
-            else
-                die($callback . '(' . json_encode($scores) . ');');
         }
+
+        if (is_null($callback))
+            die(json_encode($scores, JSON_PRETTY_PRINT));
+        else
+            die($callback . '(' . json_encode($scores) . ');');
     }
 
     if (!isset($_SESSION["team_id"])) {
