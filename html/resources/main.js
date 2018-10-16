@@ -85,6 +85,12 @@ $(document).ready(function() {
             var minTime = Number.MAX_SAFE_INTEGER || 9007199254740991;  // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
             var maxTime = 0;
             var maxCash = 0;
+            var totalPoints = 0;
+
+            for (var team_name in result)
+                totalPoints += result[team_name]["cash"].length;
+
+            var lineThickness = Math.max(1, 3 - Math.floor(totalPoints / 1000));
 
             for (var team_name in result) {
                 dataPoints = [];
@@ -98,12 +104,12 @@ $(document).ready(function() {
 
                 dataset = { 
                     type: "line",
-                    lineThickness: 3,
+                    lineThickness: lineThickness,
                     color: getHashColor(team_name),
                     axisYType: "secondary",
                     name: team_name,
                     showInLegend: true,
-                    markerSize: 8,
+                    markerSize: 2 * lineThickness,
 //                     yValueFormatString: "#,###,#k",
                     dataPoints: dataPoints
                 };
