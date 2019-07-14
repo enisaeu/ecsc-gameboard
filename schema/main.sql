@@ -67,6 +67,15 @@ CREATE TABLE tasks (
     FOREIGN KEY (contract_id) REFERENCES contracts(contract_id) ON DELETE CASCADE
 );
 
+CREATE TABLE options (
+    task_id INT UNSIGNED NOT NULL UNIQUE,
+    note VARCHAR(1024) DEFAULT NULL,
+    is_regex BOOLEAN NOT NULL DEFAULT FALSE,
+    ignore_case BOOLEAN NOT NULL DEFAULT FALSE,
+    ignore_order BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (task_id) REFERENCES tasks(task_id) ON DELETE CASCADE
+);
+
 CREATE TABLE notifications (
     notification_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     team_id INT UNSIGNED DEFAULT NULL,

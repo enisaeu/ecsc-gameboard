@@ -116,10 +116,17 @@
                 $success &= deleteTask($task_id);
 
             foreach ($contract["tasks"] as $task) {
-                if ($task["task_id"] != -1)
+                if ($task["task_id"] != -1) {
                     $success &= execute("UPDATE tasks SET title=:title, description=:description, answer=:answer, cash=:cash, awareness=:awareness WHERE task_id=:task_id", array("title" => $task["title"], "description" => $task["description"], "answer" => $task["answer"], "cash" => $task["cash"], "awareness" => $task["awareness"], "task_id" => $task["task_id"]));
-                else
+                    $task_id = $task["task_id"];
+                }
+                else {
                     $success &= execute("INSERT INTO tasks(contract_id, title, description, answer, cash, awareness) VALUES(:contract_id, :title, :description, :answer, :cash, :awareness)", array("contract_id" => $contract_id, "title" => $task["title"], "description" => $task["description"], "answer" => $task["answer"], "cash" => $task["cash"], "awareness" => $task["awareness"]));
+                    $task_id = fetchScalar("SELECT MAX(task_id) FROM tasks WHERE title=:title", array("title" => $task["title"]));
+                }
+
+                execute("DELETE FROM options WHERE task_id=:task_id", array("task_id" => $task_id));
+                $success &= execute("INSERT INTO options(task_id, note, is_regex, ignore_case, ignore_order) VALUES(:task_id, :note, :is_regex, :ignore_case, :ignore_order)", array("task_id" => $task_id, "note" => $task["note"], "is_regex" => intval($task["is_regex"]), "ignore_case" => intval($task["ignore_case"]), "ignore_order" => intval($task["ignore_order"])));
             }
 
             execute("DELETE FROM constraints WHERE contract_id=:contract_id", array("contract_id" => $contract["contract_id"]));

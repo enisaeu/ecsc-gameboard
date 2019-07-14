@@ -111,8 +111,26 @@ END;
                     if ($delay > 0)
                         sleep($delay);
                 }
+
+                $result = fetchAll("SELECT * FROM options WHERE task_id=:task_id", array("task_id" => $_POST["task_id"]));
+
+                if ($result)
+                    $options = $result[0];
+                else
+                    $options = array("note" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
+
+                $answer = $_POST["answer"];
                 $correct = fetchScalar("SELECT answer FROM tasks WHERE task_id=:task_id", array("task_id" => $_POST["task_id"]));
-                if ($correct === $_POST["answer"]) {
+
+                if ($options["ignore_case"]) {
+                    $answer = strtoupper($answer);
+                    $correct = strtoupper($correct);
+                }
+                $success = $correct === $answer;
+                $success |= $options["is_regex"] && preg_match("/" . $correct . "/", $answer);
+                $success |= $options["ignore_order"] && wordMatch($correct, $answer);
+
+                if ($success) {
                     $previous = getFinishedContracts($_SESSION["team_id"]);
                     $success = execute("INSERT INTO solved(task_id, team_id) VALUES(:task_id, :team_id)", array("task_id" => $_POST["task_id"], "team_id" => $_SESSION["team_id"]));
                     if ($success) {

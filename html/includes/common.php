@@ -439,6 +439,16 @@
         return (substr($haystack, 0, $length) === $needle);
     }
 
+    function wordMatch($a, $b) {
+        $wordsA = array();
+        $wordsB = array();
+
+        preg_match_all('/\w+/', $a, $matchesA);
+        preg_match_all('/\w+/', $b, $matchesB);
+
+        return (count($matchesA[0]) === count($matchesB[0])) && (count(array_intersect($matchesA[0], $matchesB[0])) === count($matchesA[0]));
+    }
+
     function endsWith($haystack, $needle)
     {
         $length = strlen($needle);

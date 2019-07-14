@@ -454,7 +454,7 @@ input:after {
     display: block;
 }
 
-#contract_editor .form-control {
+#contract_editor .form-control, #contract_editor .custom-control, #contract_editor .info-label {
     width: 100%;
 }
 

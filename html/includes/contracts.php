@@ -52,7 +52,7 @@
                 $constraints = array("min_cash" => "", "min_awareness" => "");
 
             $title = "<input name='contract_id' value='" . cleanReflectedValue($_POST["contract_id"]) . "' type='hidden'><input name='title' value='" . cleanReflectedValue($contract["title"]) . "' class='form-control' style='display: block'><label class='info-label'>Contract title</label>";
-            $categories = "<input name='categories' value='" . cleanReflectedValue($contract["categories"]) . "' class='form-control'><label class='info-label'>Contract categories (Note: comma-splitted)</label><div class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' id='hidden'><label class='custom-control-label' for='hidden'>Hidden</label></div><div class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' id='constraint'><label class='custom-control-label' for='constraint'>Constraints</label></div>";
+            $categories = "<input name='categories' value='" . cleanReflectedValue($contract["categories"]) . "' class='form-control'><label class='info-label'>Contract categories (Note: comma-splitted)</label><div class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' id='hidden'><label class='custom-control-label' for='hidden'>Hidden</label></div><div class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' id='constraints_checkbox'><label class='custom-control-label' for='constraints_checkbox'>Constraints</label></div>";
             $description = "<textarea name='description' class='form-control' style='display: block'>" . cleanReflectedValue($contract["description"]) . "</textarea><label class='info-label'>Contract description</label>";
 
             $template = file_get_contents("templates/accepted.html");
@@ -71,6 +71,13 @@
             array_push($rows, array("title" => "", "description" => "", "cash" => 0, "awareness" => 0, "answer" => "", "task_id" => -1));
 //             array_push($rows, array("task_id" => -1, "title" => "", "description" => "", "cash" => 0, "awareness" => 0, "answer" => ""));
             foreach ($rows as $row) {
+                $result = fetchAll("SELECT * FROM options WHERE task_id=:task_id", array("task_id" => $row["task_id"]));
+
+                if ($result)
+                    $options = $result[0];
+                else
+                    $options = array("note" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
+
                 $template = file_get_contents("templates/task.html");
                 $title = "<input name='title' value='" . cleanReflectedValue($row["title"]) . "' class='form-control' style='display: block'><label class='info-label'>Task title</label>";
                 $description = "<textarea name='description' class='form-control' style='display: block'>" . cleanReflectedValue($row["description"]) . "</textarea><label class='info-label'>Task description</label>";
@@ -79,6 +86,29 @@
                 $task = preg_replace("/.*<input name=\"token.+/", "", $task);
                 $task = preg_replace("/\s*<button.+<\/button>\s*/", "", $task);
                 $task = preg_replace('/<input name="answer".+/', "<input name='answer' value='" . cleanReflectedValue($row["answer"]) . "' class='form-control' style='display: block'><label class='info-label'>Task answer</label>", $task);
+
+                $additional = <<<END
+                                                                    <input name='note' value='{note}' placeholder='e.g. ECSC{<md5sum flag.txt>}' class='form-control' style='display: block'>
+                                                                    <label class='info-label'>Task note</label>
+                                                                    <div style='margin-top: 5px; border: 1px solid rgba(0,0,0,.125); width: 100%; padding: 5px'>
+                                                                        <div class='custom-control custom-checkbox'>
+                                                                            <input type='checkbox' class='custom-control-input options-checkbox checkbox-success' id='regex{task_id}_checkbox'{regex_checked}><label class='custom-control-label' for='regex{task_id}_checkbox'>Regular expression</label>
+                                                                        </div>
+                                                                        <div class='custom-control custom-checkbox'>
+                                                                            <input type='checkbox' class='custom-control-input options-checkbox' id='ignorecase{task_id}_checkbox'{ignorecase_checked}><label class='custom-control-label' for='ignorecase{task_id}_checkbox'>Ignore character case</label>
+                                                                        </div>
+                                                                        <div class='custom-control custom-checkbox'>
+                                                                            <input type='checkbox' class='custom-control-input options-checkbox' id='ignoreorder{task_id}_checkbox'{ignoreorder_checked}><label class='custom-control-label' for='ignoreorder{task_id}_checkbox'>Ignore word order</label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <label class="info-label">Task options</label>
+
+END;
+
+                $additional = format($additional, array("task_id" => $row["task_id"], "note" => cleanReflectedValue($options["note"]), "regex_checked" => ($options["is_regex"] ? " checked": ""), "ignorecase_checked" => ($options["ignore_case"] ? " checked": ""), "ignoreorder_checked" => ($options["ignore_order"] ? " checked": "")));
+                $task = preg_replace("/Task answer<\/label>/", "\\0" . $additional, $task);
+                $task = str_replace("input-group", "", $task);
+
                 $task = preg_replace("/\s*<\/?form.*>\s*/", "", $task);
                 if ($row["task_id"] == -1)
                     $task = str_replace('<div class="task ', '<div class="task new-task ', $task);
@@ -125,18 +155,22 @@
                                                 );
                                             });
 
-                                            $("#constraint").change(function() {
+                                            var options = JSON.parse('%s');
+
+                                            // HERE
+
+                                            $("#constraints_checkbox").change(function() {
                                                 if ($(this).prop("checked")) {
-                                                    var constraints = $("<div id='constraints'><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum cash</label><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum awareness</label></div>");
-                                                    $(this).closest(".custom-control").before(constraints);
-                            //                         setupValidation($("#constraints"));  // disabled because constraints can be unset individually
+                                                    var constraints_inputs = $("<div id='constraints_inputs'><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum cash</label><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum awareness</label></div>");
+                                                    $(this).closest(".custom-control").before(constraints_inputs);
+                            //                         setupValidation($("#constraints_inputs"));  // disabled because constraints can be unset individually
                                                 }
                                                 else
-                                                    $("#constraints").remove();
+                                                    $("#constraints_inputs").remove();
                                             });
 
                                             if (%s) {
-                                                $("#constraint").trigger("click");
+                                                $("#constraints_checkbox").trigger("click");
                                             }
 
                                             if (%s) {
@@ -169,8 +203,8 @@
                                                     contract["hidden"] = $("#hidden").prop("checked");
                                                     contract["tasks"] = [];
 
-                                                    if ($("#constraints").length > 0)
-                                                        contract["constraints"] = {"min_cash": $("#constraints").find("label:contains('Minimum cash')").prev().val(), "min_awareness": $("#constraints").find("label:contains('Minimum awareness')").prev().val()};
+                                                    if ($("#constraints_inputs").length > 0)
+                                                        contract["constraints"] = {"min_cash": $("#constraints_inputs").find("label:contains('Minimum cash')").prev().val(), "min_awareness": $("#constraints_inputs").find("label:contains('Minimum awareness')").prev().val()};
 
                                                     $(".task").not(".new-task").not(".closed").each(function() {
                                                         var task = {};
@@ -180,6 +214,10 @@
                                                         task["awareness"] = $(this).find("label:contains('Task awareness')").prev().val();
                                                         task["description"] = $(this).find("label:contains('Task description')").prev().val();
                                                         task["answer"] = $(this).find("label:contains('Task answer')").prev().val();
+                                                        task["note"] = $(this).find("label:contains('Task note')").prev().val();
+                                                        task["is_regex"] = $(this).find("label:contains('Regular expression')").prev().prop("checked");
+                                                        task["ignore_case"] = $(this).find("label:contains('Ignore character case')").prev().prop("checked");
+                                                        task["ignore_order"] = $(this).find("label:contains('Ignore word order')").prev().prop("checked");
                                                         contract["tasks"].push(task);
                                                     });
 
@@ -200,7 +238,7 @@
                                     </script>
 
 END;
-            echo sprintf($script, $_POST["contract_id"] != -1 ? "Edit" : "New", $constraints["min_cash"], $constraints["min_awareness"], (($constraints["min_cash"] == $constraints["min_awareness"]) && ($constraints["min_awareness"] == "")) ? "false" : "true", $contract["hidden"] ? "true" : "false");
+            echo sprintf($script, $_POST["contract_id"] != -1 ? "Edit" : "New", json_encode($options), $constraints["min_cash"], $constraints["min_awareness"], (($constraints["min_cash"] == $constraints["min_awareness"]) && ($constraints["min_awareness"] == "")) ? "false" : "true", $contract["hidden"] ? "true" : "false");
         }
         else {
             $template = file_get_contents("templates/contract.html");
