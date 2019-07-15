@@ -97,7 +97,7 @@
             $success = true;
             $conn->beginTransaction();
 
-            if ($contract["contract_id"] != -1) {
+            if ($contract["contract_id"] >= 0) {
                 $success &= execute("UPDATE contracts SET title=:title, description=:description, categories=:categories, hidden=:hidden WHERE contract_id=:contract_id", array("title" => $contract["title"], "description" => $contract["description"], "categories" => $contract["categories"], "hidden" => intval($contract["hidden"]), "contract_id" => $contract["contract_id"]));
                 $contract_id = $contract["contract_id"];
             }
@@ -116,7 +116,7 @@
                 $success &= deleteTask($task_id);
 
             foreach ($contract["tasks"] as $task) {
-                if ($task["task_id"] != -1) {
+                if ($task["task_id"] >= 0) {
                     $success &= execute("UPDATE tasks SET title=:title, description=:description, answer=:answer, cash=:cash, awareness=:awareness WHERE task_id=:task_id", array("title" => $task["title"], "description" => $task["description"], "answer" => $task["answer"], "cash" => $task["cash"], "awareness" => $task["awareness"], "task_id" => $task["task_id"]));
                     $task_id = $task["task_id"];
                 }

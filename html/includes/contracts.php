@@ -145,6 +145,8 @@ END;
                                             $(".btn-info:contains('New task')").click(function() {
                                                 var task = $(".new-task").clone();
                                                 $(task).removeClass("new-task");
+                                                $(task).addClass("created-task");
+                                                $(task).html($(task).html().replace(/\-1/g, "-" + ($(".created-task").length + 2)));
                                                 $(".new-task").parent().append(task);
                                                 setupValidation(task);
                                                 $(task).find(".close").prop("title", "Delete task").click(function() {
