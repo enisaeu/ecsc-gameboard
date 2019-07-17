@@ -67,6 +67,25 @@ $(document).ready(function() {
     if (pathdir.endsWith('/'))
         pathdir = pathdir.substring(0, pathdir.length-1);
 
+//     Reference: https://xdsoft.net/jqplugins/datetimepicker/
+    var dateTimePickerLogic = function(currentDateTime) {
+        if ((currentDateTime !== null) && (currentDateTime.getDay() == 6)) {
+            this.setOptions({
+                minTime: "11:00"
+            });
+        } else
+            this.setOptions({
+                minTime: "8:00"
+            });
+    };
+
+    $("#datetime_start, #datetime_end").datetimepicker({
+        mask: true,
+        onChangeDateTime: dateTimePickerLogic,
+        onShow: dateTimePickerLogic,
+//         format: 'd-m H:i'
+    });
+
     if ($("#line_momentum").length)
         $.post(window.location.href.split('#')[0], {token: document.token, action: "momentum"}, function(content) {
             if (!content)
@@ -254,6 +273,12 @@ $(document).ready(function() {
     $("#settings_table input[type=checkbox]").click(function() {
         var name = $(this).prop("id");
         var value = $(this).is(":checked");
+        pushSetting(name, value);
+    });
+
+    $("#settings_table input[type=text]").change(function() {
+        var name = $(this).prop("id");
+        var value = $(this).val();
         pushSetting(name, value);
     });
 

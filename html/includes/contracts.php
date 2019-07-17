@@ -88,8 +88,8 @@
                 $task = preg_replace('/<input name="answer".+/', "<input name='answer' value='" . cleanReflectedValue($row["answer"]) . "' class='form-control' style='display: block'><label class='info-label'>Task answer</label>", $task);
 
                 $additional = <<<END
-                                                                    <input name='note' value='{note}' placeholder='e.g. ECSC{<md5sum flag.txt>}' class='form-control' style='display: block'>
-                                                                    <label class='info-label'>Task note</label>
+                                                                    <input name='note' value='{note}' class='form-control' style='display: block'>
+                                                                    <label class='info-label'>Task note (optional)</label>
                                                                     <div style='margin-top: 5px; border: 1px solid rgba(0,0,0,.125); width: 100%; padding: 5px'>
                                                                         <div class='custom-control custom-checkbox'>
                                                                             <input type='checkbox' class='custom-control-input options-checkbox checkbox-success' id='regex{task_id}_checkbox'{regex_checked}><label class='custom-control-label' for='regex{task_id}_checkbox'>Regular expression</label>

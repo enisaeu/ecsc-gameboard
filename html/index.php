@@ -282,16 +282,12 @@ END;
 
 
 END;
-        $settings = array(
-            "transfers" => "Cash transfers",
-        );
+        $settings = "";
+        $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Cash transfers", "transfers", getSetting("transfers") !== "false" ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr><td>Start time (optional): </td><td><input id="datetime_start" type="text" value="%s" size="18"></td></tr>', getSetting("datetime_start"));
+        $settings .= "\n" . sprintf('                                    <tr><td>End time (optional): </td><td><input id="datetime_end" type="text" value="%s" size="18"></td></tr>', getSetting("datetime_end"));
 
-        $_ = "";
-        foreach ($settings as $name => $description) {
-            $_ .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', $description, $name, fetchScalar("SELECT value FROM settings WHERE name=:name", array("name" => $name)) !== "false" ? " checked" : "");
-        }
-
-        echo sprintf($html, $_);
+        echo sprintf($html, $settings);
     }
 ?>
                         <div class="card mt-3">
