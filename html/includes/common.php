@@ -439,6 +439,25 @@
         return (substr($haystack, 0, $length) === $needle);
     }
 
+    function checkStartEndTime() {
+        $valid = true;
+
+        if (strtotime(getSetting("datetime_start")) !== false) {
+            if (strtotime(getSetting("datetime_start")) > time()) {
+                $valid = false;
+            }
+        }
+
+        if (strtotime(getSetting("datetime_end")) !== false) {
+            if (strtotime(getSetting("datetime_end")) <= time()) {
+                $valid = false;
+            }
+        }
+
+        return $valid;
+
+    }
+
     function wordMatch($a, $b) {
         $wordsA = array();
         $wordsB = array();

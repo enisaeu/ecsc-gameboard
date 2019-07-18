@@ -5,15 +5,7 @@
             $error = false;
 
             if ($_POST["login"] !== ADMIN_LOGIN_NAME) {
-                if (strtotime(getSetting("datetime_start")) !== false) {
-                    if (strtotime(getSetting("datetime_start")) > time())
-                        $error = true;
-                }
-
-                if (strtotime(getSetting("datetime_end")) !== false) {
-                    if (strtotime(getSetting("datetime_end")) <= time())
-                        $error = true;
-                }
+                $error = !checkStartEndTime();
             }
 
             if (!$error) {

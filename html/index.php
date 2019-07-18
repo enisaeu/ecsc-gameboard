@@ -130,6 +130,8 @@ END;
                 $success |= $options["is_regex"] && preg_match("/" . $correct . "/", $answer);
                 $success |= $options["ignore_order"] && wordMatch($correct, $answer);
 
+                $success &= checkStartEndTime();
+
                 if ($success) {
                     $previous = getFinishedContracts($_SESSION["team_id"]);
                     $success = execute("INSERT INTO solved(task_id, team_id) VALUES(:task_id, :team_id)", array("task_id" => $_POST["task_id"], "team_id" => $_SESSION["team_id"]));
