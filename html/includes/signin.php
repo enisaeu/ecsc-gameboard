@@ -2,15 +2,32 @@
     $error = false;
     if (isset($_POST["token"]) && isset($_SESSION["token"]) && ($_POST["token"] === $_SESSION["token"])) {
         if (isset($_POST["login"]) && isset($_POST["password"])) {
-            $rows = fetchAll("SELECT team_id, full_name, password_hash FROM teams WHERE login_name=:login", array("login" => $_POST["login"]));
-            if (count($rows) === 1)
-                if (password_verify($_POST["password"], $rows[0]["password_hash"])) {
-                    $_SESSION["login_name"] = $_POST["login"];
-                    $_SESSION["full_name"] = $rows[0]["full_name"];
-                    $_SESSION["team_id"] = $rows[0]["team_id"];
-                    header("Location: " . PATHDIR);
-                    die();
+            $error = false;
+
+            if ($_POST["login"] !== ADMIN_LOGIN_NAME) {
+                if (strtotime(getSetting("datetime_start")) !== false) {
+                    if (strtotime(getSetting("datetime_start")) > time())
+                        $error = true;
                 }
+
+                if (strtotime(getSetting("datetime_end")) !== false) {
+                    if (strtotime(getSetting("datetime_end")) <= time())
+                        $error = true;
+                }
+            }
+
+            if (!$error) {
+                $rows = fetchAll("SELECT team_id, full_name, password_hash FROM teams WHERE login_name=:login", array("login" => $_POST["login"]));
+                if (count($rows) === 1)
+                    if (password_verify($_POST["password"], $rows[0]["password_hash"])) {
+                        $_SESSION["login_name"] = $_POST["login"];
+                        $_SESSION["full_name"] = $rows[0]["full_name"];
+                        $_SESSION["team_id"] = $rows[0]["team_id"];
+                        header("Location: " . PATHDIR);
+                        die();
+                    }
+            }
+
             $error = true;
         }
     }
