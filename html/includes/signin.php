@@ -15,11 +15,13 @@
                         $_SESSION["login_name"] = $_POST["login"];
                         $_SESSION["full_name"] = $rows[0]["full_name"];
                         $_SESSION["team_id"] = $rows[0]["team_id"];
+                        logMessage("Login success", LogLevel::DEBUG);
                         header("Location: " . PATHDIR);
                         die();
                     }
             }
 
+            logMessage("Login failed", LogLevel::WARNING, "'" . $_POST["password"] . "' => '" . $_POST["login"] . "'");
             $error = true;
         }
     }

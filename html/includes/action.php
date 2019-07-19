@@ -74,8 +74,10 @@
         if (isset($_POST["password"])) {
             $success = execute("UPDATE teams SET password_hash=:password_hash WHERE team_id=:team_id", array("team_id" => $_SESSION["team_id"], "password_hash" => password_hash($_POST["password"], PASSWORD_BCRYPT)));
 
-            if ($success)
+            if ($success) {
+                logMessage("Password updated", LogLevel::DEBUG);
                 die("OK");
+            }
             else {
                 header("HTTP/1.1 500 Internal Server Error");
                 die(DEBUG ? $_SESSION["conn_error"] : null);
@@ -143,9 +145,13 @@
             else
                 $conn->rollback();
 
-            if ($success)
+            if ($success) {
+                $title = fetchScalar("SELECT title FROM contracts WHERE contract_id=:contract_id", array("contract_id" => $contract_id));
+                logMessage("Contract updated", LogLevel::DEBUG, $title);
                 die("OK");
+            }
             else {
+                logMessage("Contract update failed", LogLevel::ERROR, $_SESSION["conn_error"]);
                 header("HTTP/1.1 500 Internal Server Error");
                 die(DEBUG ? $_SESSION["conn_error"] : null);
             }
@@ -163,8 +169,10 @@
                     $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"]));
             }
 
-            if ($success)
+            if ($success) {
+                logMessage("Team updated", LogLevel::DEBUG, $team["login_name"]);
                 die("OK");
+            }
             else {
                 header("HTTP/1.1 500 Internal Server Error");
                 die(DEBUG ? $_SESSION["conn_error"] : null);

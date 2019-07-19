@@ -45,6 +45,11 @@
         $result = fetchAll("SELECT * FROM teams WHERE team_id=:team_id", array("team_id" => $_SESSION["team_id"]));
 
     if (isset($_GET["signout"]) || (count($result) === 0)) {
+        if (isset($_GET["signout"])) {
+            $login_name = fetchScalar("SELECT login_name FROM teams WHERE team_id=:team_id", array("team_id" => $_SESSION["team_id"]));
+            logMessage("Sign out", LogLevel::DEBUG);
+        }
+
         session_unset();
         session_destroy();
         session_write_close();
@@ -86,6 +91,7 @@ END;
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (isset($_POST["token"])) {
             if ($_POST["token"] !== $_SESSION["token"]) {
+                logMessage("Wrong token", LogLevel::DEBUG);
                 header("Location: " . cleanReflectedValue($_SERVER["REQUEST_URI"]));
                 die();
             }
@@ -101,6 +107,7 @@ END;
                     if ($success) {
                         $title = fetchScalar("SELECT title FROM contracts WHERE contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]));
                         print sprintf('<script>showMessageBox("Information", "You just accepted the contract \'%s\'");</script>', $title);
+                        logMessage("Contract accepted", LogLevel::INFO, $title);
                     }
                 }
             }
@@ -121,6 +128,7 @@ END;
 
                 $answer = $_POST["answer"];
                 $correct = fetchScalar("SELECT answer FROM tasks WHERE task_id=:task_id", array("task_id" => $_POST["task_id"]));
+                $task_title = fetchScalar("SELECT title FROM tasks WHERE task_id=:task_id", array("task_id" => $_POST["task_id"]));
 
                 if ($options["ignore_case"]) {
                     $answer = strtoupper($answer);
@@ -130,7 +138,14 @@ END;
                 $success |= $options["is_regex"] && preg_match("/" . $correct . "/", $answer);
                 $success |= $options["ignore_order"] && wordMatch($correct, $answer);
 
-                $success &= checkStartEndTime();
+                if (!$success) {
+                    logMessage("Wrong answer", LogLevel::WARNING, "'" . $answer . "' => '" . $task_title . "'");
+                }
+
+                if (!checkStartEndTime()) {
+                    logMessage("Correct answer, but out of time", LogLevel::DEBUG, "'" . $answer . "' => '" . $task_title . "'");
+                    $success = false;
+                }
 
                 if ($success) {
                     $previous = getFinishedContracts($_SESSION["team_id"]);
@@ -138,6 +153,7 @@ END;
                     if ($success) {
                         $result = fetchAll("SELECT contracts.title AS contract_title, tasks.title AS task_title FROM contracts, tasks WHERE tasks.task_id=:task_id AND contracts.contract_id=tasks.contract_id", array("task_id" => $_POST["task_id"]));
                         print sprintf('<script>showMessageBox("Success", "Congratulations! You have completed the task \'%s\'", "success");</script>', $result[0]["task_title"]);
+                        logMessage("Task completed", LogLevel::INFO, $result[0]["task_title"]);
                         if (count(getFinishedContracts($_SESSION["team_id"])) > count($previous)) {
                             execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => "You successfully finished contract '" . $result[0]["contract_title"] . "'", "category" => NotificationCategories::finished_contract));
                         }

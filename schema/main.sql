@@ -117,6 +117,16 @@ CREATE TABLE settings (
     ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE logs (
+    level ENUM('debug', 'info', 'warning', 'error', 'critical'),
+    message VARCHAR(1024) NOT NULL,
+    details TEXT DEFAULT NULL,
+    team_id INT UNSIGNED DEFAULT NULL,
+    remote_ip VARCHAR(45),
+    ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (team_id) REFERENCES teams(team_id) ON DELETE CASCADE
+);
+
 CREATE FUNCTION last_update()
     RETURNS INT
     RETURN (SELECT UNIX_TIMESTAMP(MAX(UPDATE_TIME)) as last_update FROM information_schema.tables WHERE TABLE_SCHEMA=DATABASE() GROUP BY TABLE_SCHEMA);

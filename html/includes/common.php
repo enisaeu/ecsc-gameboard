@@ -24,6 +24,14 @@
         const received_private = "primary";
     }
 
+    abstract class LogLevel {
+        const DEBUG = "debug";
+        const INFO = "info";
+        const WARNING = "warning";
+        const ERROR = "error";
+        const CRITICAL = "critical";
+    }
+
     // PHP5 compatibility (can't use arrays in defines)
     const PREDEFINED_COLORS = array("Offensive" => "0078c4", "Web" => "41c4dc", "Crypto" => "8fc33f", "Reverse-engineering" => "fedd00", "Forensics" => "f8972a", "Networking" => "e3124f", "Multiple options" => "b01c91");
 
@@ -437,6 +445,12 @@
     {
         $length = strlen($needle);
         return (substr($haystack, 0, $length) === $needle);
+    }
+
+    function logMessage($message, $level=LogLevel::INFO, $details=null) {
+        $team_id = isset($_SESSION["team_id"]) ? $_SESSION["team_id"] : null;
+        $remote_ip = $_SERVER["REMOTE_ADDR"];
+        return execute("INSERT INTO logs(level, team_id, remote_ip, message, details) VALUES(:level, :team_id, :remote_ip, :message, :details)", array("level" => $level, "team_id" => $team_id, "remote_ip" => $remote_ip, "message" => $message, "details" => $details));
     }
 
     function checkStartEndTime() {
