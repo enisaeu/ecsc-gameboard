@@ -27,7 +27,7 @@ fi
 
 result=`apt-cache search --names-only '^php5$'`
 if [ -z "$result" ] ; then
-    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive mysql-server mysql-client php-mysql unattended-upgrades
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive default-mysql-server default-mysql-client php-mysql unattended-upgrades
 else
     DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive mysql-server mysql-client php5-mysql unattended-upgrades
 fi
