@@ -27,9 +27,9 @@ fi
 
 result=`apt-cache search --names-only '^php5$'`
 if [ -z "$result" ] ; then
-    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive default-mysql-server default-mysql-client php-mysql unattended-upgrades
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive default-mysql-server default-mysql-client php-mysql openssh-server unattended-upgrades
 else
-    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive mysql-server mysql-client php5-mysql unattended-upgrades
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive mysql-server mysql-client php5-mysql openssh-server unattended-upgrades
 fi
 
 sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
@@ -88,6 +88,7 @@ Header unset ETag
 FileETag None
 EOF
 
+service mysql restart
 mysql < $DEPLOYMENT_SCHEMA
 
 chown -R www-data:www-data /var/www
