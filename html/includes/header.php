@@ -9,6 +9,7 @@
         <meta name="keywords" content="CTF,Capture the Flag,Challenges,Competition,Puzzles,Security,Cybersecurity,ENISA,EU">
         <link rel="shortcut icon" href="<?php echo joinPaths(PATHDIR, '/favicon.ico');?>">
         <link rel="preload" href="<?php echo joinPaths(PATHDIR, '/resources/agency-fb.woff');?>" as="font" crossorigin="anonymous"/>
+        <link rel="preload" href="<?php echo joinPaths(PATHDIR, '/resources/logo.jpg');?>" as="image" crossorigin="anonymous"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha256-YLGeXaapI0/5IgZopewRJcFXomhRMlYYjugPLSyNjTY=" crossorigin="anonymous"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" integrity="sha256-UzFD2WYH2U1dQpKDjjZK72VtPeWP50NoJjd26rnAdUI=" crossorigin="anonymous"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.3.0/css/flag-icon.min.css" integrity="sha256-NkXMfPcpoih3/xWDcrJcAX78pHpfwxkhNj0bAf8AMTs=" crossorigin="anonymous"/>
