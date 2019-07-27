@@ -53,7 +53,7 @@
         return (isset($_SESSION["login_name"]) && ($_SESSION["login_name"] === ADMIN_LOGIN_NAME));
     }
 
-    $VALID_PAGES = isAdmin() ? array("teams", "contracts", "notifications") : array("rankings", "jobboard", "contracts", "notifications");
+    $VALID_PAGES = isAdmin() ? array("teams", "contracts", "notifications", "logs") : array("rankings", "jobboard", "contracts", "notifications");
 
     function getLastUpdateTimestamp() {
         return fetchScalar("SELECT last_update()");

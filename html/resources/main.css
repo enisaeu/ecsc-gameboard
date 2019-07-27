@@ -224,15 +224,16 @@ body::after {
     font-size: 90%;
 }
 
-#scoreboard {
+#scoreboard, #logs {
     background: white;
+    border-collapse: collapse;
 }
 
 #scoreboard th:nth-child(1), #scoreboard td:nth-child(1), #scoreboard th:nth-child(4), #scoreboard td:nth-child(4), #scoreboard th:nth-child(5), #scoreboard td:nth-child(5) {
     text-align: right;
 }
 
-#scoreboard th:nth-child(3), #scoreboard td:nth-child(3), th:nth-child(6), #scoreboard td:nth-child(6) {
+#scoreboard th:nth-child(3), #scoreboard td:nth-child(3), #scoreboard th:nth-child(6), #scoreboard td:nth-child(6) {
     text-align: center;
     width: 20px;
 }
@@ -245,6 +246,13 @@ body::after {
 #scoreboard th {
     color: white;
     background-color: #0074e8;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #333;
+}
+
+#logs th {
+    color: white;
+    background-color: #e84455;
     font-weight: bold;
     text-shadow: 1px 1px 1px #333;
 }
@@ -354,10 +362,6 @@ h1, h4 {
 .scroll-box {
     overflow-y: auto;
     height: 200px;
-}
-
-#scoreboard {
-    border-collapse: collapse;
 }
 
 /*.current td:nth-child(1) span {

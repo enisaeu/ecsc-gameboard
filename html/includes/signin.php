@@ -3,9 +3,10 @@
     if (isset($_POST["token"]) && isset($_SESSION["token"]) && ($_POST["token"] === $_SESSION["token"])) {
         if (isset($_POST["login"]) && isset($_POST["password"])) {
             $error = false;
+            $timedout = false;
 
             if ($_POST["login"] !== ADMIN_LOGIN_NAME) {
-                $error = !checkStartEndTime();
+                $timedout = $error = !checkStartEndTime();
             }
 
             if (!$error) {
@@ -21,7 +22,12 @@
                     }
             }
 
-            logMessage("Login failed", LogLevel::WARNING, "'" . $_POST["password"] . "' => '" . $_POST["login"] . "'");
+            if (strlen($_POST["password"]) > 2)
+                $masked = substr($_POST["password"], 0, 1) . str_repeat('*', strlen($_POST["password"]) - 2) . substr($_POST["password"], -1);
+            else
+                $masked = str_repeat('*', strlen($_POST["password"]));
+
+            logMessage("Login failed", LogLevel::WARNING, $timedout ? "Out of time boundaries" : $_POST["login"] . ":" . $masked);
             $error = true;
         }
     }
