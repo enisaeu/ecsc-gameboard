@@ -148,8 +148,14 @@ END;
                 }
 
                 if ($success) {
+                    if (getSetting("dynamic_scoring") == "true") {
+                        $penalty = 0;  // TODO: calculate
+                    }
+                    else {
+                        $penalty = 0;
+                    }
                     $previous = getFinishedContracts($_SESSION["team_id"]);
-                    $success = execute("INSERT INTO solved(task_id, team_id) VALUES(:task_id, :team_id)", array("task_id" => $_POST["task_id"], "team_id" => $_SESSION["team_id"]));
+                    $success = execute("INSERT INTO solved(task_id, team_id, penalty) VALUES(:task_id, :team_id, :penalty)", array("task_id" => $_POST["task_id"], "team_id" => $_SESSION["team_id"], "penalty" => $penalty));
                     if ($success) {
                         $result = fetchAll("SELECT contracts.title AS contract_title, tasks.title AS task_title FROM contracts, tasks WHERE tasks.task_id=:task_id AND contracts.contract_id=tasks.contract_id", array("task_id" => $_POST["task_id"]));
                         print sprintf('<script>showMessageBox("Success", "Congratulations! You have completed the task \'%s\'", "success");</script>', $result[0]["task_title"]);
@@ -305,6 +311,7 @@ END;
 END;
         $settings = "";
         $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Cash transfers", "transfers", getSetting("transfers") !== "false" ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Dynamic scoring", "dynamic_scoring", getSetting("dynamic_scoring") == "true" ? " checked" : "");
         $settings .= "\n" . sprintf('                                    <tr><td>Start time (optional): </td><td><input id="datetime_start" type="text" value="%s" size="18"></td></tr>', getSetting("datetime_start"));
         $settings .= "\n" . sprintf('                                    <tr><td>End time (optional): </td><td><input id="datetime_end" type="text" value="%s" size="18"></td></tr>', getSetting("datetime_end"));
 

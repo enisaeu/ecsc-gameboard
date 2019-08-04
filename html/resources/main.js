@@ -71,18 +71,18 @@ $(document).ready(function() {
     var dateTimePickerLogic = function(currentDateTime) {
         if ((currentDateTime !== null) && (currentDateTime.getDay() == 6)) {
             this.setOptions({
-                minTime: "11:00"
+                minTime: "8:00"
             });
         } else
             this.setOptions({
-                minTime: "8:00"
+                minTime: "6:00"
             });
     };
 
     $("#datetime_start, #datetime_end").datetimepicker({
         mask: true,
         onChangeDateTime: dateTimePickerLogic,
-        onShow: dateTimePickerLogic,
+        minDate: 0,
 //         format: 'd-m H:i'
     });
 

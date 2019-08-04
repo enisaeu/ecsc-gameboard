@@ -229,6 +229,9 @@
         $_ = fetchScalar("SELECT SUM(cash) FROM privates WHERE to_id=:team_id", array("team_id" => $team_id));
         $result["cash"] += is_null($_) ? 0 : $_;
 
+        $_ = fetchScalar("SELECT SUM(penalty) FROM solved WHERE team_id=:team_id", array("team_id" => $team_id));
+        $result["cash"] -= is_null($_) ? 0 : $_;
+
         return $result;
     }
 

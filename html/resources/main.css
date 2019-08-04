@@ -449,6 +449,10 @@ h1, h4 {
     white-space: nowrap;
 }
 
+#settings_table input[type='checkbox'] {
+    margin: 4px;
+}
+
 .border-red {
     border: 1px solid red !important;
 }
