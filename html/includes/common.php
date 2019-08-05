@@ -10,6 +10,8 @@
     define("ADMIN_LOGIN_NAME", "admin");
     define("TITLE", "ECSC " . date("Y"));
     define("CHAT_FILEPATH", "/var/run/shm/chat.htm");
+    define("DYNAMIC_DECAY_PER_HOUR", 0);        // 0 <= _ <= 1
+    define("DYNAMIC_DECAY_PER_SOLVE", 0.30);    // 0 <= _ <= 1
 
     session_start();
 
@@ -233,6 +235,40 @@
         $result["cash"] -= is_null($_) ? 0 : $_;
 
         return $result;
+    }
+
+    function getDynamicScore($task_id=null, $contract_id=null, $as_penalty=false) {
+        $penalty = 0;
+
+        if (is_null($contract_id)) {
+            $original = fetchScalar("SELECT cash FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id));
+            $task_ids = array($task_id);
+        }
+        else {
+            $original = fetchScalar("SELECT SUM(cash) FROM tasks WHERE contract_id=:contract_id", array("contract_id" => $contract_id));
+            $task_ids = fetchAll("SELECT task_id FROM tasks WHERE contract_id=:contract_id", array("contract_id" => $contract_id), PDO::FETCH_COLUMN);
+        }
+
+        if (getSetting("dynamic_scoring") == "true") {
+            foreach ($task_ids as $task_id) {
+                $_ = fetchScalar("SELECT cash FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id));
+
+                if (DYNAMIC_DECAY_PER_SOLVE > 0) {
+                    $solves = fetchScalar("SELECT COUNT(*) FROM solved WHERE task_id=:task_id", array("task_id" => $task_id));
+                    $penalty += intval($_ * (DYNAMIC_DECAY_PER_SOLVE * $solves));
+                }
+
+                if (DYNAMIC_DECAY_PER_HOUR > 0) {
+                    $oldest = fetchScalar("SELECT MIN(ts) FROM solved WHERE task_id=:task_id", array("task_id" => $task_id));
+                    $penalty += is_null($oldest) ? 0 : intval($_ * (DYNAMIC_DECAY_PER_HOUR * (time() - $oldest) / 3600));
+                }
+            }
+        }
+
+        if ($as_penalty)
+            return min($original, $penalty);
+        else
+            return max(0, $original - $penalty);
     }
 
     function getRankedTeams() {

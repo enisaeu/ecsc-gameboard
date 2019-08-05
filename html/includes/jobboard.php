@@ -12,7 +12,7 @@
             continue;   // contracts without tasks should not be displayed to the user
         else
             $row = $row[0];
-        echo format($template, array("title" => $row["title"], "values" => generateValuesHtml($row["cash"], $row["awareness"]), "description" => $row["description"], "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
+        echo format($template, array("title" => $row["title"], "values" => generateValuesHtml(getDynamicScore(null, $contract_id), $row["awareness"]), "description" => $row["description"], "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
         $success = true;
         $counter += 1;
         if ($counter % 3 === 0)
@@ -34,7 +34,7 @@
 
         $description .= "</p>";
 
-        $html = format($template, array("title" => $contract["title"], "values" => generateValuesHtml($contract["cash"], $contract["awareness"]), "description" => $description, "categories" => generateCategoriesHtml(explode(',', $contract["categories"])), "contract_id" => $contract_id));
+        $html = format($template, array("title" => $contract["title"], "values" => generateValuesHtml(getDynamicScore(null, $contract_id), $contract["awareness"]), "description" => $description, "categories" => generateCategoriesHtml(explode(',', $contract["categories"])), "contract_id" => $contract_id));
         $html = str_replace('class="card ', 'class="card text-white bg-secondary ', $html);
         $html = preg_replace("/<form.+form>\n?/s", "", $html);
         echo $html;
