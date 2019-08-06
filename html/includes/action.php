@@ -84,7 +84,10 @@
             }
         }
         else if (isAdmin() && isset($_POST["setting"])) {
-            $success = execute("INSERT INTO settings(name, value) VALUES(:name, :value) ON DUPLICATE KEY UPDATE value=:value", array("name" => $_POST["setting"], "value" => $_POST["value"]));
+            if ((strpos($_POST["setting"], "datetime_") === 0) && !preg_match("/[0-9]/", $_POST["value"]))
+                $success = execute("DELETE FROM settings WHERE name=:name", array("name" => $_POST["setting"]));
+            else
+                $success = execute("INSERT INTO settings(name, value) VALUES(:name, :value) ON DUPLICATE KEY UPDATE value=:value", array("name" => $_POST["setting"], "value" => $_POST["value"]));
 
             if ($success)
                 die("OK");
