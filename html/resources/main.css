@@ -224,7 +224,7 @@ body::after {
     font-size: 90%;
 }
 
-#scoreboard, #logs {
+#scoreboard, #logs_table {
     background: white;
     border-collapse: collapse;
 }
@@ -233,7 +233,7 @@ body::after {
     text-align: right;
 }
 
-#scoreboard th:nth-child(3), #scoreboard td:nth-child(3), #scoreboard th:nth-child(6), #scoreboard td:nth-child(6) {
+#scoreboard th:nth-child(3), #scoreboard td:nth-child(3), #scoreboard th:nth-child(6), #scoreboard td:nth-child(6), #logs_table td:nth-child(6) {
     text-align: center;
     width: 20px;
 }
@@ -250,7 +250,7 @@ body::after {
     text-shadow: 1px 1px 1px #333;
 }
 
-#logs th {
+#logs_table th {
     color: white;
     background-color: #e84455;
     font-weight: bold;
@@ -528,4 +528,20 @@ html {
     -webkit-appearance: none;
     -moz-appearance: none;
     background: url(selectbox_arrow.png) right center no-repeat;
+}
+
+.log-level {
+    float: center;
+    padding: 1px 2px;
+    text-align: center;
+    width: 50px;
+    box-sizing: border-box;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+    font-size: 80%;
+    font-weight: bold;
+    box-sizing: border-box;
+    text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.25), -1px 1px 0 rgba(0, 0, 0, 0.25), 1px 1px 0 rgba(0, 0, 0, 0.25), 1px -1px 0 rgba(0, 0, 0, 0.25);
+    border: 1px solid #000000;
 }
