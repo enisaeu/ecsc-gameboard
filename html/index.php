@@ -34,6 +34,34 @@
             die($callback . '(' . json_encode($scores) . ');');
     }
 
+    if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/scores.xml")) {
+        header("Content-Type: application/xml");
+
+        $teams = getTeams();
+
+        $scores = array();
+        foreach ($teams as $team_id) {
+            $row = fetchAll("SELECT * FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
+            $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => getScores($team_id)["cash"]);
+            array_push($scores, $_);
+        }
+
+        $scores = array_filter($scores, function($value) {
+            return !(($value["score"] === 0) && is_null($value["country"]));
+        });
+
+        $xml = new SimpleXMLElement("<scores/>");
+        foreach($scores as $score) {
+            $entry = $xml->addChild("entry");
+            $entry->addAttribute("name", $score["name"]);
+            $entry->addAttribute("code", $score["code"]);
+            $entry->addAttribute("country", $score["country"]);
+            $entry->addAttribute("score", $score["score"]);
+        }
+
+        die($xml->asXML());
+    }
+
     if (!isset($_SESSION["team_id"])) {
         if (empty($_SERVER["HTTP_X_REQUESTED_WITH"]))
             include_once("includes/signin.php");
