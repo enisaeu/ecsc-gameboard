@@ -2,6 +2,8 @@
     if (isAdmin() && ($_POST["action"] === "reset")) {
         $success = true;
 
+        logMessage("Reset action initiated", LogLevel::DEBUG);
+
         if ($_POST["teams"] == "true")
             $success &= execute("DELETE FROM teams WHERE login_name!=:login_name", array("login_name" => ADMIN_LOGIN_NAME));
 
@@ -31,16 +33,26 @@
     else if (isAdmin() && ($_POST["action"] === "delete")) {
         $success = false;
 
-        if (isset($_POST["task_id"]))
+        if (isset($_POST["task_id"])) {
+            logMessage("Delete task initiated", LogLevel::DEBUG, "'task_id' => " . $_POST["task_id"]);
             $success = deleteTask($_POST["task_id"]);
-        else if (isset($_POST["contract_id"]))
+        }
+        else if (isset($_POST["contract_id"])) {
+            logMessage("Delete contract initiated", LogLevel::DEBUG, "'contract_id' => " . $_POST["contract_id"]);
             $success = deleteContract($_POST["contract_id"]);
-        else if (isset($_POST["team_id"]))
+        }
+        else if (isset($_POST["team_id"])) {
+            logMessage("Delete team initiated", LogLevel::DEBUG, "'team_id' => " . $_POST["team_id"]);
             $success = deleteTeam($_POST["team_id"]);
-        else if (isset($_POST["login_name"]))
+        }
+        else if (isset($_POST["login_name"])) {
+            logMessage("Delete team initiated", LogLevel::DEBUG, "'login_name' => '" . $_POST["login_name"] . "'");
             $success = execute("DELETE FROM teams WHERE login_name=:login_name", array("login_name" => $_POST["login_name"]));
-        else if (isset($_POST["notification_id"]))
+        }
+        else if (isset($_POST["notification_id"])) {
+            logMessage("Delete notification initiated", LogLevel::DEBUG, "'notification_id' => " . $_POST["notification_id"]);
             $success = execute("DELETE FROM notifications WHERE notification_id=:notification_id", array("notification_id" => $_POST["notification_id"]));
+        }
 
         if ($success)
             die("OK");
@@ -98,6 +110,8 @@
         }
         else if (isAdmin() && isset($_POST["contract"])) {
             $contract = json_decode($_POST["contract"], true);
+
+            logMessage("Update contract initiated", LogLevel::DEBUG);
 
             $success = true;
             $conn->beginTransaction();
