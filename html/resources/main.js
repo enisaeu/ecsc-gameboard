@@ -483,8 +483,15 @@ function showDatabaseBox(login_name, full_name) {
     dialog.find(".btn-info").off("click");
     dialog.find(".btn-info").click(function() {
         $.post(window.location.href.split('#')[0], {token: document.token, action: "export"}, function(content) {
-            if (content.indexOf("INSERT INTO") > -1)
-                alert(content);
+            if (content.indexOf("INSERT INTO") > -1) {
+                var blob = new Blob([content], { type: "application/octet-stream" });
+                var a = document.createElement("a");
+                a.href = window.URL.createObjectURL(blob);
+                a.download = "ecsc.sql";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
             else
                 alert("Something went wrong ('" + content + "')!");
         });
