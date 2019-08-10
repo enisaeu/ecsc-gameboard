@@ -261,6 +261,9 @@ END;
                                 <li class="nav-item small">
                                     <a class="nav-link btn-danger ml-1" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="showResetBox()">Reset</a>
                                 </li>
+                                <li class="nav-item small">
+                                    <a class="nav-link btn-success ml-1" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="showDatabaseBox()">Database</a>
+                                </li>
 
 END;
         echo sprintf($html, cleanReflectedValue($_SERVER["REQUEST_URI"]));

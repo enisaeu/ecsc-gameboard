@@ -61,6 +61,23 @@
             die(DEBUG ? $_SESSION["conn_error"] : null);
         }
     }
+    else if (isAdmin() && ($_POST["action"] === "export")) {
+        $output = shell_exec("mysqldump --user=" . MYSQL_USERNAME . " --password='" . MYSQL_PASSWORD . "' --host=" . MYSQL_SERVER . " " . MYSQL_DATABASE);
+
+        header("Content-Type: application/octet-stream");
+        header("Content-Disposition: attachment; filename=\"" . MYSQL_DATABASE . ".sql\"");
+        header("Content-Length: " . strlen($output));
+        header("Connection: close");
+        echo $output;
+        die();
+
+        if ($success)
+            die("OK");
+        else {
+            header("HTTP/1.1 500 Internal Server Error");
+            die(DEBUG ? $_SESSION["conn_error"] : null);
+        }
+    }
     else if (isAdmin() && ($_POST["action"] === "notification") && isset($_POST["message"])) {
         $success = execute("INSERT INTO notifications(content, category) VALUES(:message, :category)", array("message" => $_POST["message"], "category" => NotificationCategories::everybody));
 

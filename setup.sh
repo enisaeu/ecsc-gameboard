@@ -61,7 +61,7 @@ sed -i 's/^expose_php.*/expose_php = Off/g' $PHP_INI
 sed -i 's/^html_errors.*/html_errors = Off/g' $PHP_INI
 sed -i 's/^allow_url_fopen.*/allow_url_fopen = Off/g' $PHP_INI
 sed -i 's/^allow_url_include.*/allow_url_include = Off/g' $PHP_INI
-sed -i 's/^disable_functions.*/disable_functions = exec,passthru,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,show_source,shell_exec/g' $PHP_INI
+sed -i 's/^disable_functions.*/disable_functions = exec,passthru,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,show_source/g' $PHP_INI
 
 if [ ! -d "/var/log/mod_evasive" ]; then
     mkdir /var/log/mod_evasive

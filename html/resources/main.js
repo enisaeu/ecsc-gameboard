@@ -458,6 +458,41 @@ function showResetBox(login_name, full_name) {
     dialog.modal();
 }
 
+function showDatabaseBox(login_name, full_name) {
+    var dialog = $("#prompt-box").clone();
+
+    if (dialog.length === 0)
+        return;
+
+    dialog.removeAttr("id");
+    dialog.find(".modal-title").text("Database");
+    dialog.find(".modal-body").html("");
+
+    dialog.find(".modal-body").append($('<button type="button" class="btn btn-info">Export</button>'));
+    dialog.find(".modal-body").append($('<button type="button" class="btn btn-warning ml-2">Import</button>'));
+
+    // Reference: https://stackoverflow.com/a/31909778
+    dialog.on('shown.bs.modal', function () {
+        $(this).find('.btn-secondary').focus();
+    });
+
+    dialog.find(".btn-primary").hide();
+
+//     dialog.dialog("option", "width", 460);
+
+    dialog.find(".btn-info").off("click");
+    dialog.find(".btn-info").click(function() {
+        $.post(window.location.href.split('#')[0], {token: document.token, action: "export"}, function(content) {
+            if (content.indexOf("INSERT INTO") > -1)
+                alert(content);
+            else
+                alert("Something went wrong ('" + content + "')!");
+        });
+    });
+
+    dialog.modal();
+}
+
 function showChangePasswordBox(login_name, full_name) {
     var dialog = $("#prompt-box").clone();
 
