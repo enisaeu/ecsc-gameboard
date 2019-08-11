@@ -62,20 +62,25 @@
         }
     }
     else if (isAdmin() && ($_POST["action"] === "export")) {
-        $output = shell_exec("mysqldump --user=" . MYSQL_USERNAME . " --password='" . MYSQL_PASSWORD . "' --host=" . MYSQL_SERVER . " " . MYSQL_DATABASE);
+        $output = shell_exec("mysqldump --user='" . MYSQL_USERNAME . "' --password='" . MYSQL_PASSWORD . "' --host='" . MYSQL_SERVER . "' '" . MYSQL_DATABASE . "' 2>&1 | grep -v 'Using a password on the command line interface can be insecure'");
 
         header("Content-Type: application/octet-stream");
         header("Content-Disposition: attachment; filename=\"" . MYSQL_DATABASE . ".sql\"");
         header("Content-Length: " . strlen($output));
         header("Connection: close");
-        echo $output;
-        die();
+
+        die($output);
+    }
+    else if (isAdmin() && ($_POST["action"] === "import")) {
+        $output = shell_exec("mysql --user='" . MYSQL_USERNAME . "' --password='" . MYSQL_PASSWORD . "' --host='" . MYSQL_SERVER . "' '" . MYSQL_DATABASE . "' 2>&1 < " . $_FILES["import_file"]["tmp_name"] . " | grep -v 'Using a password on the command line interface can be insecure'");
+
+        $success = strlen($output) === 0;
 
         if ($success)
             die("OK");
         else {
             header("HTTP/1.1 500 Internal Server Error");
-            die(DEBUG ? $_SESSION["conn_error"] : null);
+            die($output);
         }
     }
     else if (isAdmin() && ($_POST["action"] === "notification") && isset($_POST["message"])) {

@@ -95,7 +95,7 @@
     else
         define("PAGE", $matches[1]);
 
-    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && isset($_POST["action"]) && isset($_SESSION["token"]) && isset($_POST["token"])) {
+    if ((!empty($_SERVER['HTTP_X_REQUESTED_WITH']) || !empty($_FILES)) && isset($_POST["action"]) && isset($_SESSION["token"]) && isset($_POST["token"])) {
         if ($_POST["token"] === $_SESSION["token"])
             require_once("includes/action.php");
         else

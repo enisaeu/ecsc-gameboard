@@ -470,6 +470,7 @@ function showDatabaseBox(login_name, full_name) {
 
     dialog.find(".modal-body").append($('<button type="button" class="btn btn-info">Export</button>'));
     dialog.find(".modal-body").append($('<button type="button" class="btn btn-warning ml-2">Import</button>'));
+    dialog.find(".modal-body").append($('<form method="post" enctype="multipart/form-data" class="hidden"><input type="file" name="import_file" id="import_file"><input type="hidden" name="action" value="import"><input type="hidden" name="token" value="' + document.token + '"><input type="submit" name="submit"></form>'));
 
     // Reference: https://stackoverflow.com/a/31909778
     dialog.on('shown.bs.modal', function () {
@@ -480,8 +481,8 @@ function showDatabaseBox(login_name, full_name) {
 
 //     dialog.dialog("option", "width", 460);
 
-    dialog.find(".btn-info").off("click");
-    dialog.find(".btn-info").click(function() {
+    dialog.find("button:contains('Export')").off("click");
+    dialog.find("button:contains('Export')").click(function() {
         $.post(window.location.href.split('#')[0], {token: document.token, action: "export"}, function(content) {
             if (content.indexOf("INSERT INTO") > -1) {
                 var blob = new Blob([content], { type: "application/octet-stream" });
@@ -494,6 +495,13 @@ function showDatabaseBox(login_name, full_name) {
             }
             else
                 alert("Something went wrong ('" + content + "')!");
+        });
+    });
+
+    dialog.find("button:contains('Import')").click(function() {
+        dialog.find("#import_file").trigger("click");
+        dialog.find("input[type=file]").change(function() {
+            dialog.find("input[type=submit]").trigger("click");
         });
     });
 
