@@ -11,52 +11,71 @@
 
         if (file_exists("scores.json")) {
             $_ = file_get_contents("scores.json");
-            $scores = json_decode($_, true);
+            $result = json_decode($_, true);
         }
         else {
-            $teams = getTeams();
+            $teams = getRankedTeams();
+            $previous = -1;
+            $place = 0;
 
-            $scores = array();
+            $result = array();
             foreach ($teams as $team_id) {
                 $row = fetchAll("SELECT * FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
-                $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => getScores($team_id)["cash"]);
-                array_push($scores, $_);
+                $scores = getScores($team_id);
+
+                if ($scores["cash"] !== $previous) {
+                    $place += 1;
+                    $previous = $scores["cash"];
+                }
+
+                $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $place);
+                array_push($result, $_);
             }
         }
 
-        $scores = array_filter($scores, function($value) {
+        $result = array_filter($result, function($value) {
             return !(($value["score"] === 0) && is_null($value["country"]));
         });
 
         if (is_null($callback))
-            die(json_encode($scores, JSON_PRETTY_PRINT));
+            die(json_encode($result, JSON_PRETTY_PRINT));
         else
-            die($callback . '(' . json_encode($scores) . ');');
+            die($callback . '(' . json_encode($result) . ');');
     }
 
     if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/scores.xml")) {
-        header("Content-Type: application/xml");
+        header("Content-Type: application/xml; charset=utf-8");
 
-        $teams = getTeams();
+        $teams = getRankedTeams();
+        $previous = -1;
+        $place = 0;
 
-        $scores = array();
+        $result = array();
         foreach ($teams as $team_id) {
             $row = fetchAll("SELECT * FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
-            $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => getScores($team_id)["cash"]);
-            array_push($scores, $_);
+            $scores = getScores($team_id);
+
+            if ($scores["cash"] !== $previous) {
+                $place += 1;
+                $previous = $scores["cash"];
+            }
+
+            $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $place);
+            array_push($result, $_);
         }
 
-        $scores = array_filter($scores, function($value) {
+        $result = array_filter($result, function($value) {
             return !(($value["score"] === 0) && is_null($value["country"]));
         });
 
-        $xml = new SimpleXMLElement("<scores/>");
-        foreach($scores as $score) {
+        $xml = new SimpleXMLElement("<?xml version=\"1.0\" encoding=\"UTF-8\"?><scoreboard/>");
+        foreach($result as $_) {
             $entry = $xml->addChild("entry");
-            $entry->addAttribute("name", $score["name"]);
-            $entry->addAttribute("code", $score["code"]);
-            $entry->addAttribute("country", $score["country"]);
-            $entry->addAttribute("score", $score["score"]);
+            $entry->addAttribute("name", $_["name"]);
+            $entry->addAttribute("code", $_["code"]);
+            $entry->addAttribute("country", $_["country"]);
+            $entry->addAttribute("score", $_["score"]);
+            $entry->addAttribute("place", $_["place"]);
         }
 
         die($xml->asXML());
