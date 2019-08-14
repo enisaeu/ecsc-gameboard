@@ -77,7 +77,7 @@
         $success = strlen($output) === 0;
 
         if ($success)
-            die("OK");
+            die("<html><head><meta http-equiv='refresh' content='1;url='" . PATHDIR . " /></head>OK</html>");
         else {
             header("HTTP/1.1 500 Internal Server Error");
             die($output);
