@@ -160,8 +160,8 @@ END;
             }
 
             else if (isset($_POST["answer"]) && isset($_POST["task_id"])) {
-                if (isset($_SESSION["last_error"])) {
-                    $delay = (is_numeric(getSetting("guess_delay")) ? intval(getSetting("guess_delay")) : 0) - (time() - $_SESSION["last_error"]);
+                if (isset($_SESSION["last_wrong_time"])) {
+                    $delay = (is_numeric(getSetting("guess_delay")) ? intval(getSetting("guess_delay")) : 0) - (time() - $_SESSION["last_wrong_time"]);
                     if ($delay > 0)
                         sleep($delay);
                 }
@@ -186,7 +186,25 @@ END;
                 $success |= $options["ignore_order"] && wordMatch($correct, $answer);
 
                 if (!$success) {
-                    logMessage("Wrong answer", LogLevel::WARNING, "'" . $answer . "' => '" . $task_title . "'");
+                    logMessage("Wrong answer", LogLevel::DEBUG, "'" . $answer . "' => '" . $task_title . "'");
+
+                    if (isset($_SESSION["last_wrong_taskid"]) && ($_SESSION["last_wrong_taskid"] == $_POST["task_id"])) {
+                        $_SESSION["last_wrong_counter"] = (isset($_SESSION["last_wrong_counter"]) ? $_SESSION["last_wrong_counter"] : 0) + 1;
+                    }
+                    else
+                        $_SESSION["last_wrong_counter"] = 0;
+
+                    $_SESSION["last_wrong_taskid"] = $_POST["task_id"];
+                }
+
+                if (isset($_SESSION["last_wrong_counter"]) && is_numeric(getSetting("guess_lockout"))) {
+                    if ($_SESSION["last_wrong_counter"] >= intval(getSetting("guess_lockout"))) {
+                        logMessage("Guess lockout", LogLevel::WARNING, "Potential brute-force detected");
+
+                        while (true) {
+                            sleep(10);
+                        }
+                    }
                 }
 
                 if (!checkStartEndTime()) {
@@ -208,7 +226,7 @@ END;
                     }
                 }
                 else {
-                    $_SESSION["last_error"] = time();
+                    $_SESSION["last_wrong_time"] = time();
                     $html = <<<END
         <script>
             $(document).ready(function() {
@@ -358,6 +376,7 @@ END;
         $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Cash transfers", "transfers", getSetting("transfers") !== "false" ? " checked" : "");
         $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Dynamic scoring", "dynamic_scoring", getSetting("dynamic_scoring") == "true" ? " checked" : "");
         $settings .= "\n" . sprintf('                                    <tr><td>Guess answer penalty (secs): </td><td><input id="guess_delay" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting("guess_delay")) ? getSetting("guess_delay") : "0");
+        $settings .= "\n" . sprintf('                                    <tr><td>Max. attempts (optional): </td><td><input id="guess_lockout" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting("guess_lockout")) ? getSetting("guess_lockout") : "");
         $settings .= "\n" . sprintf('                                    <tr><td>Start time (optional): </td><td><input id="datetime_start" type="text" value="%s" size="18"></td></tr>', getSetting("datetime_start"));
         $settings .= "\n" . sprintf('                                    <tr><td>End time (optional): </td><td><input id="datetime_end" type="text" value="%s" size="18"></td></tr>', getSetting("datetime_end"));
 

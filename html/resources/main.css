@@ -431,7 +431,7 @@ h1, h4 {
     vertical-align: middle;
 }
 
-#guess_delay {
+#guess_delay, #guess_lockout {
     border: 1px solid rgba(0, 0, 0, 0.125);
     border-radius: .25rem;
     height: 30px;
@@ -459,6 +459,10 @@ h1, h4 {
 
 #settings_table input[type='checkbox'] {
     margin: 4px 0px 4px 4px;
+}
+
+#settings_table td:nth-child(1) {
+    width: 49%;
 }
 
 .border-red {
