@@ -161,7 +161,7 @@ END;
 
             else if (isset($_POST["answer"]) && isset($_POST["task_id"])) {
                 if (isset($_SESSION["last_error"])) {
-                    $delay = ANSWER_TIME_LIMIT - (time() - $_SESSION["last_error"]);
+                    $delay = (is_numeric(getSetting("guess_delay")) ? intval(getSetting("guess_delay")) : 0) - (time() - $_SESSION["last_error"]);
                     if ($delay > 0)
                         sleep($delay);
                 }
@@ -357,6 +357,7 @@ END;
         $settings = "";
         $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Cash transfers", "transfers", getSetting("transfers") !== "false" ? " checked" : "");
         $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Dynamic scoring", "dynamic_scoring", getSetting("dynamic_scoring") == "true" ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr><td>Guess answer penalty (secs): </td><td><input id="guess_delay" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting("guess_delay")) ? getSetting("guess_delay") : "0");
         $settings .= "\n" . sprintf('                                    <tr><td>Start time (optional): </td><td><input id="datetime_start" type="text" value="%s" size="18"></td></tr>', getSetting("datetime_start"));
         $settings .= "\n" . sprintf('                                    <tr><td>End time (optional): </td><td><input id="datetime_end" type="text" value="%s" size="18"></td></tr>', getSetting("datetime_end"));
 

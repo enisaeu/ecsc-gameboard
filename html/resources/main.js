@@ -283,6 +283,12 @@ $(document).ready(function() {
         pushSetting(name, value);
     });
 
+    $("#settings_table input[type=number]").change(function() {
+        var name = $(this).prop("id");
+        var value = $(this).val();
+        pushSetting(name, value);
+    });
+
     $(".actions i").css("cursor", "pointer");
     $(".actions i").click(function() {
         $(this).attr("data-original-title");

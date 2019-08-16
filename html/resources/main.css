@@ -425,9 +425,17 @@ h1, h4 {
     border-bottom: 1px solid rgba(0,0,0,.125);
     width: 100%;
     font-size: 12px;
-    border: none;
+    border: 1px solid rgba(0, 0, 0, 0.125);
     border-radius: .25rem;
     height: 24px;
+    vertical-align: middle;
+}
+
+#guess_delay {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: .25rem;
+    height: 30px;
+    width: 100%;
     vertical-align: middle;
 }
 
@@ -450,7 +458,7 @@ h1, h4 {
 }
 
 #settings_table input[type='checkbox'] {
-    margin: 4px;
+    margin: 4px 0px 4px 4px;
 }
 
 .border-red {
