@@ -420,7 +420,7 @@ h1, h4 {
     vertical-align: middle;
 }
 
-#datetime_start, #datetime_end {
+#datetime_start, #datetime_end, #chat_room {
     font-size: 12px;
     border-bottom: 1px solid rgba(0,0,0,.125);
     width: 100%;
@@ -429,6 +429,21 @@ h1, h4 {
     border-radius: .25rem;
     height: 24px;
     vertical-align: middle;
+}
+
+#chat_room {
+    width: inherit;
+    text-align: left;
+
+    -webkit-appearance: none;
+    -moz-appearance: window;
+    padding: 2px 20px 2px 2px;
+/*     border: none; */
+    margin-right: 20px;
+    background-image: url(down_left.png);
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 12px;
 }
 
 #guess_delay, #guess_lockout {

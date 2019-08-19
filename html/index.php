@@ -391,7 +391,7 @@ END;
 ?>
                         <div class="card mt-3">
                             <div class="card-header">
-                                <i class="fas fa-comments" data-toggle="tooltip" title="Public chat"></i> <span class="badge badge-light" style="float:right; line-height: 1.5; color: gray">(chat)</span>
+                                <i class="fas fa-comments" data-toggle="tooltip" title="Public chat"></i> <select id="chat_room" class="badge"><option value="volvo">#general</option><option value="saab">#random</option><option value="opel">#team</option></select> <span class="badge badge-light" style="float:right; line-height: 1.5; color: gray">(chat)</span>
                             </div>
                             <div id="chat_messages" class="scroll-box">
                             </div>
