@@ -213,6 +213,7 @@ END;
                 }
 
                 if ($success) {
+                    $leader = getRankedTeams()[0];
                     $penalty = getDynamicScore($_POST["task_id"], $as_penalty=true);
                     $previous = getFinishedContracts($_SESSION["team_id"]);
                     $success = execute("INSERT INTO solved(task_id, team_id, penalty) VALUES(:task_id, :team_id, :penalty)", array("task_id" => $_POST["task_id"], "team_id" => $_SESSION["team_id"], "penalty" => $penalty));
@@ -222,6 +223,11 @@ END;
                         logMessage("Task completed", LogLevel::INFO, $result[0]["task_title"]);
                         if (count(getFinishedContracts($_SESSION["team_id"])) > count($previous)) {
                             execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => "You successfully finished contract '" . $result[0]["contract_title"] . "'", "category" => NotificationCategories::finished_contract));
+                        }
+                        $_ = getRankedTeams()[0];
+                        if ($_ != $leader) {
+                            $team_name = fetchScalar("SELECT full_name FROM teams WHERE team_id=:team_id", array("team_id" => $_));
+                            logMessage("Leader changed", LogLevel::INFO, $team_name);
                         }
                     }
                 }
