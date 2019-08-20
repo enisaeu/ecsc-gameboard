@@ -289,6 +289,11 @@ $(document).ready(function() {
         pushSetting(name, value);
     });
 
+    $("#chat_room").change(function() {
+        $("#chat_messages").find("div").remove();
+            pullMessages();
+    });
+
     $(".actions i").css("cursor", "pointer");
     $(".actions i").click(function() {
         $(this).attr("data-original-title");
@@ -876,7 +881,7 @@ function pushMessage() {
         if (!$("#chat_messages").is("[push_lock]")) {
             $("#chat_messages").attr("push_lock", true);
 
-            $.post(window.location.href.split('#')[0], {token: document.token, action: "push", message: message}, function(content) {
+            $.post(window.location.href.split('#')[0], {token: document.token, action: "push", message: message, room: $("#chat_room").val().replace('#', '')}, function(content) {
                 if (!content)
                     return;
                 else if (content === "OK") {
@@ -906,7 +911,7 @@ function pullMessages(initial) {
     if (!$("#chat_messages").is("[pull_lock]")) {
         $("#chat_messages").attr("pull_lock", true);
 
-        $.post(window.location.href.split('#')[0], {token: document.token, action: "pull", chat_id: $("#chat_messages div[chat_id]").last().attr("chat_id") || 0}, function(content) {
+        $.post(window.location.href.split('#')[0], {token: document.token, action: "pull", chat_id: $("#chat_messages div[chat_id]").last().attr("chat_id") || 0, room : $("#chat_room").val().replace('#', '')}, function(content) {
             try {
                 result = JSON.parse(content);
             }

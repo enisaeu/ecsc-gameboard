@@ -23,6 +23,7 @@ CREATE TABLE chat (
     message_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     team_id INT UNSIGNED DEFAULT NULL,
     content TEXT NOT NULL,
+    room ENUM('general', 'random', 'team') DEFAULT 'general',
     ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (team_id) REFERENCES teams(team_id) ON DELETE CASCADE
 );

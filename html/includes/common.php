@@ -11,6 +11,8 @@
     define("CHAT_FILEPATH", "/var/run/shm/chat.htm");
     define("DYNAMIC_DECAY_PER_HOUR", 0);        // 0 <= _ <= 1
     define("DYNAMIC_DECAY_PER_SOLVE", 0.30);    // 0 <= _ <= 1
+    define("DEFAULT_ROOM", "general");
+    define("PRIVATE_ROOM", "team");
 
     session_start();
 

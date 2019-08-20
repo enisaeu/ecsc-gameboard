@@ -245,7 +245,8 @@
         echo json_encode(getMomentum_new());
     }
     else if (($_POST["action"] === "push") && (isset($_POST["message"]))) {
-        $success = execute("INSERT INTO chat(team_id, content) VALUES(:team_id, :content)", array("team_id" => $_SESSION["team_id"], "content" => $_POST["message"]));
+        $room = isset($_POST["room"]) ? $_POST["room"] : DEFAULT_ROOM;
+        $success = execute("INSERT INTO chat(team_id, content, room) VALUES(:team_id, :content, :room)", array("team_id" => $_SESSION["team_id"], "content" => $_POST["message"], "room" => $room));
         if ($success)
             die("OK");
         else {
@@ -299,12 +300,14 @@
     }
     else if ($_POST["action"] === "pull") {
         $result = array("chat" => array(), "notifications" => 0);
+        $room = isset($_POST["room"]) ? $_POST["room"] : DEFAULT_ROOM;
 
         $chat_id = isset($_POST["chat_id"]) ? intval($_POST["chat_id"]) : 0;
-        $private_id = isset($_POST["private_id"]) ? intval($_POST["private_id"]) : 0;
-        $chat = fetchAll("SELECT message_id, login_name, country_code, content, UNIX_TIMESTAMP(chat.ts) AS ts FROM chat JOIN teams ON chat.team_id=teams.team_id WHERE message_id>:message_id ORDER BY ts ASC", array("message_id" => $chat_id));
+        $chat = fetchAll("SELECT message_id, chat.team_id AS team_id, login_name, country_code, content, UNIX_TIMESTAMP(chat.ts) AS ts FROM chat JOIN teams ON chat.team_id=teams.team_id WHERE message_id>:message_id AND room=:room ORDER BY ts ASC", array("message_id" => $chat_id, "room" => $room));
 
         foreach ($chat as $row) {
+            if (($room == PRIVATE_ROOM) && ($_SESSION["team_id"] != $row["team_id"]))
+                continue;
             $_ = array("id" => $row["message_id"], "team" => $row["login_name"], "country" => $row["country_code"], "content" => $row["content"], "ts" => $row["ts"]);
             array_push($result["chat"], $_);
         }
