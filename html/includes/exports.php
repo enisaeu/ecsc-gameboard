@@ -101,10 +101,6 @@
             array_push($result, $_);
         }
 
-//         $result = array_filter($result, function($value) {
-//             return !(($value["score"] === 0) && is_null($value["country"]));
-//         });
-
         if (is_null($callback))
             die(json_encode($result, JSON_PRETTY_PRINT));
         else
