@@ -1,9 +1,9 @@
 <?php
     $error = false;
+    $timedout = false;
+
     if (isset($_POST["token"]) && isset($_SESSION["token"]) && ($_POST["token"] === $_SESSION["token"])) {
         if (isset($_POST["login"]) && isset($_POST["password"])) {
-            $error = false;
-            $timedout = false;
 
             if ($_POST["login"] !== ADMIN_LOGIN_NAME) {
                 $timedout = $error = !checkStartEndTime();
@@ -34,7 +34,14 @@
 
     require_once("header.php");
 
-    if ($error)
+    if ($timedout) {
+        echo <<<END
+        <script>
+            alert("Out-of-time");
+        </script>
+END;
+    }
+    else if ($error) {
         echo <<<END
         <script>
             $(document).ready(function() {
@@ -42,6 +49,7 @@
             });
         </script>
 END;
+    }
 ?>
         <script>
             $(document).ready(function() {
