@@ -9,8 +9,9 @@
     define("ADMIN_LOGIN_NAME", "admin");
     define("TITLE", "ECSC " . date("Y"));
     define("CHAT_FILEPATH", "/var/run/shm/chat.htm");
-    define("DYNAMIC_DECAY_PER_HOUR", 0);        // 0 <= _ <= 1
-    define("DYNAMIC_DECAY_PER_SOLVE", 0.30);    // 0 <= _ <= 1
+    define("DYNAMIC_DECAY_PER_HOUR", 0);            // Decaying per-hour ratio (0 <= _ <= 1) used for calculating penalty from initial (task) score (e.g. if initial score 100, after 2 hours with decay ratio 0.02 penalty will become 4 -> effective score 96)
+    define("DYNAMIC_DECAY_PER_SOLVE", 0.05);        // Decaying per-solve ratio (0 <= _ <= 1) used for calculating penalty from initial (task) score (e.g. if initial score 100, after 4 solves with decay ratio 0.1 penalty will become 40 -> effective score 60)
+    define("DYNAMIC_DECAY_MAX_PENALTY", 1.0);       // Decaying max-penalty ratio (0 <= _ <= 1) used for calculating maximum penalty from initial (task) score (e.g. if initial score 100, with max-penalty ratio 0.20 maximum penalty will become 20 -> effective score 80)
     define("DEFAULT_ROOM", "general");
     define("PRIVATE_ROOM", "team");
 
@@ -241,7 +242,7 @@
     }
 
     function getDynamicScore($task_id=null, $contract_id=null, $as_penalty=false) {
-        $penalty = 0;
+        $total_penalty = 0;
 
         if (is_null($contract_id)) {
             $original = fetchScalar("SELECT cash FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id));
@@ -254,24 +255,29 @@
 
         if (getSetting("dynamic_scoring") == "true") {
             foreach ($task_ids as $task_id) {
-                $_ = fetchScalar("SELECT cash FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id));
+                $task_cash = fetchScalar("SELECT cash FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id));
+                $task_penalty = 0;
 
                 if (DYNAMIC_DECAY_PER_SOLVE > 0) {
                     $solves = fetchScalar("SELECT COUNT(*) FROM solved WHERE task_id=:task_id", array("task_id" => $task_id));
-                    $penalty += intval($_ * (DYNAMIC_DECAY_PER_SOLVE * $solves));
+                    $task_penalty += intval($task_cash * (DYNAMIC_DECAY_PER_SOLVE * $solves));
                 }
 
                 if (DYNAMIC_DECAY_PER_HOUR > 0) {
                     $oldest = fetchScalar("SELECT MIN(ts) FROM solved WHERE task_id=:task_id", array("task_id" => $task_id));
-                    $penalty += is_null($oldest) ? 0 : intval($_ * (DYNAMIC_DECAY_PER_HOUR * (time() - $oldest) / 3600));
+                    $task_penalty += is_null($oldest) ? 0 : intval($task_cash * (DYNAMIC_DECAY_PER_HOUR * (time() - $oldest) / 3600));
                 }
+
+                $task_penalty = min($task_penalty, DYNAMIC_DECAY_MAX_PENALTY * $task_cash);
+
+                $total_penalty += $task_penalty;
             }
         }
 
         if ($as_penalty)
-            return min($original, $penalty);
+            return min($original, $total_penalty);
         else
-            return max(0, $original - $penalty);
+            return max(0, $original - $total_penalty);
     }
 
     function getRankedTeams() {
