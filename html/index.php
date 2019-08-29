@@ -213,12 +213,21 @@ END;
                                 <li class="nav-item small">
                                     <a class="nav-link<?php echo (PAGE === "notifications" ? " active" : "") ?>" href="<?php echo joinPaths(PATHDIR, '/notifications/');?>">Notifications <span class="badge badge-light border counter" id="notification_count"><?php echo count(getVisibleNotifications($_SESSION["team_id"]));?></span></a>
                                 </li>
+
+
+<?php
+    if (isAdmin()) {
+        $html = <<<END
                                 <li class="nav-item small">
-                                    <a class="nav-link<?php echo (PAGE === "logs" ? " active" : "") ?>" href="<?php echo joinPaths(PATHDIR, '/logs/');?>">Logs <span class="badge badge-light border counter" id="log_count"><?php echo fetchScalar("SELECT COUNT(*) FROM logs");?></span></a>
+                                    <a class="nav-link%s" href="%s">Logs <span class="badge badge-light border counter" id="log_count">%d</span></a>
                                 </li>
                                 <li class="nav-item small">
-                                    <a class="nav-link<?php echo (PAGE === "stats" ? " active" : "") ?>" href="<?php echo joinPaths(PATHDIR, '/stats/');?>">Stats</a>
+                                    <a class="nav-link%s" href="%s">Stats</a>
                                 </li>
+END;
+        echo sprintf($html, (PAGE === "logs" ? " active" : ""), joinPaths(PATHDIR, '/logs/'), fetchScalar("SELECT COUNT(*) FROM logs"), (PAGE === "stats" ? " active" : ""), joinPaths(PATHDIR, '/stats/'));
+    }
+?>
                                 <li class="nav-item small ml-3">
                                     <a class="nav-link btn-info" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="signOut()">Sign out</a>
                                 </li>
