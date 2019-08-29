@@ -5,7 +5,7 @@
     if (isAdmin()) {
         $template = str_replace("Hide", "Delete", $template);
         $template = str_replace("hide", "delete", $template);
-        $template = str_replace("×", "<i class='far fa-trash-alt ml-1 mb-1' style='font-size: 13px; line-height: 24px; vertical-align: middle; height: 100%' title='Delete'></i>", $template);
+        $template = str_replace("fa-eye-slash", "fa-trash-alt", $template);
     }
 
     if (count($visible) > 0)
