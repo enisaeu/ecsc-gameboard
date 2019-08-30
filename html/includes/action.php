@@ -308,7 +308,12 @@
         foreach ($chat as $row) {
             if (($room == PRIVATE_ROOM) && ($_SESSION["team_id"] != $row["team_id"]))
                 continue;
-            $_ = array("id" => $row["message_id"], "team" => $row["login_name"], "country" => $row["country_code"], "content" => $row["content"], "ts" => $row["ts"]);
+
+            $content = $row["content"];
+            if (($room !== PRIVATE_ROOM) && (!isAdmin()))
+                $content = preg_replace(FLAG_REGEX, FLAG_REDACTED, $content);
+
+            $_ = array("id" => $row["message_id"], "team" => $row["login_name"], "country" => $row["country_code"], "content" => $content, "ts" => $row["ts"]);
             array_push($result["chat"], $_);
         }
 

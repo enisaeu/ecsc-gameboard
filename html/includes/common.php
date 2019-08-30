@@ -14,6 +14,8 @@
     define("DYNAMIC_DECAY_MAX_PENALTY", 1.0);       // Decaying max-penalty ratio (0 <= _ <= 1) used for calculating maximum penalty from initial (task) score (e.g. if initial score 100, with max-penalty ratio 0.20 maximum penalty will become 20 -> effective score 80)
     define("DEFAULT_ROOM", "general");
     define("PRIVATE_ROOM", "team");
+    define("FLAG_REGEX", "/ECSC\{.+\}/");
+    define("FLAG_REDACTED", "ECSC{...}");
 
     session_start();
 
