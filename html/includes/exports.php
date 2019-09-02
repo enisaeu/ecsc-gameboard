@@ -76,7 +76,14 @@
             $entry->addAttribute("place", $_["place"]);
         }
 
-        die($xml->asXML());
+//         die($xml->asXML());
+
+        # Reference: https://stackoverflow.com/a/17948879
+        $domxml = new DOMDocument("1.0");
+        $domxml->preserveWhiteSpace = false;
+        $domxml->formatOutput = true;
+        $domxml->loadXML($xml->asXML());
+        die($domxml->saveXML());
     }
 
     else if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/stats.json")) {
@@ -107,4 +114,40 @@
             die($callback . '(' . json_encode($result) . ');');
     }
 
+    else if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/stats.xml")) {
+        header("Content-Type: application/xml; charset=utf-8");
+
+        $result = array();
+
+        $average = array();
+        $rows = fetchAll("SELECT solved.task_id,tasks.contract_id,AVG(TIMESTAMPDIFF(SECOND,accepted.ts,solved.ts)) AS average_time FROM solved JOIN tasks ON solved.task_id=tasks.task_id JOIN accepted ON tasks.contract_id=accepted.contract_id AND accepted.team_id=solved.team_id GROUP BY task_id");
+        foreach ($rows as $row) {
+            $average[$row["task_id"]] = $row["average_time"];
+        }
+
+        $rows = fetchAll("SELECT tasks.task_id,GROUP_CONCAT(teams.login_name) AS solved_by,COUNT(teams.login_name) AS solved_count,tasks.title AS task_title,cash AS task_cash,tasks.contract_id,contracts.title AS contract_title FROM tasks LEFT JOIN solved ON tasks.task_id=solved.task_id LEFT JOIN teams ON solved.team_id=teams.team_id LEFT JOIN contracts ON tasks.contract_id=contracts.contract_id GROUP BY tasks.task_id ORDER BY solved_count DESC, task_cash ASC");
+        foreach ($rows as $row) {
+            $_ = array("task" => $row["task_title"], "contract" => $row["contract_title"], "cash" => intval($row["task_cash"]), "solved_by" => ($row["solved_count"] > 0 ? explode(',', $row["solved_by"]) : []), "average_time" => isset($average[$row["task_id"]]) ? secondsToTime($average[$row["task_id"]]) : null);
+            array_push($result, $_);
+        }
+
+        $xml = new SimpleXMLElement("<?xml version=\"1.0\" encoding=\"UTF-8\"?><scoreboard/>");
+        foreach($result as $_) {
+            $entry = $xml->addChild("entry");
+            $entry->addAttribute("task", $_["task"]);
+            $entry->addAttribute("contract", $_["contract"]);
+            $entry->addAttribute("cash", $_["cash"]);
+            $entry->addAttribute("solved_by", implode(',',$_["solved_by"]));
+            $entry->addAttribute("average_time", $_["average_time"]);
+        }
+
+//         die($xml->asXML());
+
+        # Reference: https://stackoverflow.com/a/17948879
+        $domxml = new DOMDocument("1.0");
+        $domxml->preserveWhiteSpace = false;
+        $domxml->formatOutput = true;
+        $domxml->loadXML($xml->asXML());
+        die($domxml->saveXML());
+    }
 ?>
