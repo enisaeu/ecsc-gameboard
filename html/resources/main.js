@@ -951,9 +951,13 @@ function pullMessages(initial) {
 
 // Note: dirty patch for a side-bar alignment
 function repositionSidebar() {
-    var delta = ($("#navigation_bar").outerHeight() + $("#navigation_bar").offset().top) - $("#side_bar .card").first().offset().top;
-    if (delta < 100)
-        $("#side_bar").offset({top: $("#side_bar").offset().top + delta});
+    try {
+        var delta = ($("#navigation_bar").outerHeight() + $("#navigation_bar").offset().top) - $("#side_bar .card").first().offset().top;
+        if (delta < 100)
+            $("#side_bar").offset({top: $("#side_bar").offset().top + delta});
+    }
+    catch(e) {
+    }
 }
 
 // Reference: https://stackoverflow.com/a/6234804
