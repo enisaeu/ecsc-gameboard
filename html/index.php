@@ -301,7 +301,7 @@ END;
         $html = <<<END
                         <div class="card mt-3">
                             <div class="card-header">
-                                <i class="fas fa-cogs" data-toggle="tooltip" title="Platform settings"></i> <span class="badge badge-light" style="float:right; line-height: 1.5; color: gray">(settings)</span>
+                                <i class="fas fa-cogs"></i> <span class="badge badge-light" style="float:right; line-height: 1.5; color: gray">(settings)</span>
                             </div>
                             <div class="card-body" style="font-size: 12px">
                                 <table id="settings_table">%s
@@ -324,7 +324,7 @@ END;
 ?>
                         <div class="card mt-3">
                             <div class="card-header">
-                                <i class="fas fa-comments" data-toggle="tooltip" title="Public chat"></i> <select id="chat_room" class="badge"><option value="general">#general</option><option value="news">#news</option><option value="random">#random</option><option value="team">#team</option></select> <span class="badge badge-light" style="float:right; line-height: 1.5; color: gray">(chat)</span>
+                                <i class="fas fa-comments" data-toggle="tooltip" title="Open in new tab" style="cursor:pointer" onclick="openInNewTab('./chat')"></i> <select id="chat_room" class="badge"><option value="general">#general</option><option value="news">#news</option><option value="random">#random</option><option value="team">#team</option></select> <span class="badge badge-light" style="float:right; line-height: 1.5; color: gray">(chat)</span>
                             </div>
                             <div id="chat_messages" class="scroll-box">
                             </div>

@@ -1014,3 +1014,9 @@ function countriesDropdown(container) {
 
     $(container).html(out);
 }
+
+// Reference: https://stackoverflow.com/a/11384018
+function openInNewTab(url) {
+  var win = window.open(url, '_blank');
+  win.focus();
+}
