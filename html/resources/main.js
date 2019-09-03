@@ -3,9 +3,11 @@ var LOG_LEVELS = { debug: 0, info: 1, warning: 2, error: 3, critical: 4 }
 var FAST_PULL_PERIOD = 2000;
 var SLOW_PULL_PERIOD = 5000;
 var LAST_UPDATE_SLOW_THRESHOLD = 60000; // after ms of chat inactivity turn on SLOW_PULL_PERIOD
+var SCOREBOARD_PAGE_RELOAD = 30000;
 
 var alerts = {};
 var lastPullUpdate = new Date();
+var chart = null;
 
 // Reference: https://stackoverflow.com/a/37544400
 if (!String.prototype.endsWith) {
@@ -165,7 +167,7 @@ $(document).ready(function() {
             if (maxTime - minTime < 3600)
                 timeFormat += ":ss";
 
-            var chart = new CanvasJS.Chart("line_momentum", {
+            chart = new CanvasJS.Chart("line_momentum", {
                 title: {
                     text: "Top 10 Teams",
                     fontSize: 14,
@@ -908,6 +910,9 @@ function periodicPullMessages() {
 function pullMessages(initial) {
     initial = initial || false;  // Reference: https://stackoverflow.com/a/15178735
 
+    if ($('#chat_messages').length === 0)
+        return;
+
     if (!$("#chat_messages").is("[pull_lock]")) {
         $("#chat_messages").attr("pull_lock", true);
 
@@ -931,8 +936,15 @@ function pullMessages(initial) {
                 counter += 1;
             }
 
-            if (result["chat"].length)
-                $('#chat_messages').animate({scrollTop: $('#chat_messages')[0].scrollHeight}, initial ? 0 : "fast");
+            if (result["chat"].length) {
+                try {
+                    $('#chat_messages').animate({scrollTop: $('#chat_messages')[0].scrollHeight}, initial ? 0 : "fast");
+                }
+                catch(e) {
+                    console.error(e);
+                    return;
+                }
+            }
 
             if ($("#notification_count").text() != result["notifications"]) {
                 $("#notification_count").text(result["notifications"]);
