@@ -169,7 +169,7 @@ $(document).ready(function() {
 
             chart = new CanvasJS.Chart("line_momentum", {
                 title: {
-                    text: "Top 10 Teams",
+                    text: "Top " + MAX_TOP_TEAMS + " Teams",
                     fontSize: 14,
                     fontFamily: "Arial"
                 },
