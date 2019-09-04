@@ -531,8 +531,10 @@ function showChangePasswordBox(login_name, full_name) {
     dialog.removeAttr("id");
     dialog.find(".modal-title").text("Change password");
     dialog.find(".modal-body").html("");
+    if (isAdmin())
+        dialog.find(".modal-body").append($("<input name='password_old' type='password' value='' placeholder='(old password)' autocomplete='new-password' class='form-control mb-2' style='width: 100%' required>"));
     dialog.find(".modal-body").append($("<input name='password' type='password' value='' placeholder='(change here)' autocomplete='new-password' class='form-control mb-2' style='width: 100%' required>"));
-    dialog.find(".modal-body").append($("<input name='password2' type='password' value='' placeholder='(re-enter here)' autocomplete='new-password' class='form-control' style='width: 100%' required>"));
+    dialog.find(".modal-body").append($("<input name='password_repeat' type='password' value='' placeholder='(re-enter here)' autocomplete='new-password' class='form-control' style='width: 100%' required>"));
 
     // Reference: https://stackoverflow.com/a/31909778
     dialog.on('shown.bs.modal', function () {
@@ -548,14 +550,20 @@ function showChangePasswordBox(login_name, full_name) {
     });
 
     var _ = function() {
+        var password_old = dialog.find("[name=password_old]").val();
         var password = dialog.find("[name=password]").val();
-        var reenter = dialog.find("[name=password2]").val();
+        var reenter = dialog.find("[name=password_repeat]").val();
 
         if (password) {
             if (reenter != password)
-                dialog.find("[name=password2]").addClass("is-invalid");
+                dialog.find("[name=password_repeat]").addClass("is-invalid");
             else
                 dialog.find("[type=password]").removeClass("is-invalid");
+
+            if (isAdmin() && password_old)
+                dialog.find("[name=password_old]").removeClass("is-invalid");
+            else
+                dialog.find("[name=password_old]").addClass("is-invalid");
         }
         else
             dialog.find("[type=password]").addClass("is-invalid");
@@ -572,13 +580,17 @@ function showChangePasswordBox(login_name, full_name) {
     dialog.find(".btn-primary").off("click");
     dialog.find(".btn-primary").click(function(event) {
         var password = dialog.find("[name=password]").val();
+        var password_old = dialog.find("[name=password_old]").val();
         var invalid = dialog.find(".is-invalid").first();
 
         if (invalid.length == 0) {
-            $.post(window.location.href.split('#')[0], {token: document.token, action: "update", password: password}, function(content) {
+            $.post(window.location.href.split('#')[0], {token: document.token, action: "update", password: password, password_old: password_old}, function(content) {
                 if (content === "OK") {
                     dialog.find("[data-dismiss]").click();
                     showMessageBox("Success", "Password successfully changed", "success");
+                }
+                else {
+                    showMessageBox("Failure", "Something went wrong", "danger");
                 }
             }).fail(function(jqXHR) {
                 alert("Something went wrong ('" + jqXHR.responseText + "')!");

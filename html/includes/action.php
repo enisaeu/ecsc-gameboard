@@ -105,6 +105,21 @@
         global $conn;
 
         if (isset($_POST["password"])) {
+
+            if (isAdmin()) {
+                $rows = fetchAll("SELECT password_hash FROM teams WHERE team_id=:team_id", array("team_id" => $_SESSION["team_id"]));
+
+                if (!(isset($_POST["password_old"]) && (password_verify($_POST["password_old"], $rows[0]["password_hash"])))) {
+                    if (strlen($_POST["password_old"]) > 2)
+                        $masked = substr($_POST["password_old"], 0, 1) . str_repeat('*', strlen($_POST["password_old"]) - 2) . substr($_POST["password_old"], -1);
+                    else
+                        $masked = str_repeat('*', strlen($_POST["password_old"]));
+
+                    logMessage("Wrong old password", LogLevel::WARNING, $_SESSION["login_name"] . ":" . $masked);
+                    die();
+                }
+            }
+
             $success = execute("UPDATE teams SET password_hash=:password_hash WHERE team_id=:team_id", array("team_id" => $_SESSION["team_id"], "password_hash" => password_hash($_POST["password"], PASSWORD_BCRYPT)));
 
             if ($success) {
