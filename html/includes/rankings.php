@@ -22,7 +22,7 @@
                     var existing = %s;
                     $(".active").text(existing ? "Edit team" : "New team");
 
-                    $("#team_editor label:contains('Login name'),label:contains('Full name')").prev().change(validator).keyup(validator).focusout(validator).each(validator);
+                    $("#team_editor label:contains('Login name'),label:contains('Full name'),label:contains('Email')").prev().change(validator).keyup(validator).focusout(validator).each(validator);
 
                     if (existing)
                         $("#team_editor label:contains('Login name')").prev().prop("disabled", true);

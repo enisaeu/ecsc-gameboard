@@ -1018,6 +1018,10 @@ function validator() {
             }
         }
     }
+    else if ($(this).attr("name") == "email") {
+        if ($(this).val().length > 0)
+            invalid = !validateEmail($(this).val());
+    }
     else if ($(this).val().length === 0) {
         $(this)[0].setCustomValidity("Please fill out this field");
         invalid = true;
@@ -1044,4 +1048,10 @@ function countriesDropdown(container) {
 function openInNewTab(url) {
   var win = window.open(url, '_blank');
   win.focus();
+}
+
+// Reference: https://stackoverflow.com/a/46181
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
 }
