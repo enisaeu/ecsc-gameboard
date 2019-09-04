@@ -135,7 +135,7 @@ END;
 
                 if ($success) {
                     $leader = getRankedTeams()[0];
-                    $penalty = getDynamicScore($_POST["task_id"], $as_penalty=true);
+                    $penalty = getDynamicScore($_POST["task_id"], null, true);
                     $previous = getFinishedContracts($_SESSION["team_id"]);
                     $success = execute("INSERT INTO solved(task_id, team_id, penalty) VALUES(:task_id, :team_id, :penalty)", array("task_id" => $_POST["task_id"], "team_id" => $_SESSION["team_id"], "penalty" => $penalty));
                     if ($success) {
