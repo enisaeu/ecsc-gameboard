@@ -103,6 +103,7 @@ $(document).ready(function() {
             }
 
             var MAX_TOP_TEAMS = 10;
+            var DEFAULT_FONT_SIZE = 12;
             var datasets = [];
             var minTime = Number.MAX_SAFE_INTEGER || 9007199254740991;  // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
             var maxTime = 0;
@@ -170,29 +171,29 @@ $(document).ready(function() {
             chart = new CanvasJS.Chart("line_momentum", {
                 title: {
                     text: "Top " + MAX_TOP_TEAMS + " Teams",
-                    fontSize: 14,
+                    fontSize: Math.floor(1.20 * DEFAULT_FONT_SIZE),
                     fontFamily: "Arial"
                 },
                 axisX: {
                     title: "Time",
                     titleFontFamily: fontFamily,
-                    titleFontSize: 12,
+                    titleFontSize: DEFAULT_FONT_SIZE,
                     titleFontStyle: "bold",
                     valueFormatString: timeFormat,
                     labelFontFamily: fontFamily,
-                    labelFontSize: 12,
+                    labelFontSize: DEFAULT_FONT_SIZE,
                     minimum: minTime * 1000 - timePadding,
                     maximum: maxTime * 1000 + timePadding,
                 },
                 axisY2: {
                     title: "Cash (€)",
                     titleFontFamily: fontFamily,
-                    titleFontSize: 12,
+                    titleFontSize: DEFAULT_FONT_SIZE,
                     titleFontStyle: "bold",
 //                     prefix: "€",
                     suffix: "",
                     labelFontFamily: fontFamily,
-                    labelFontSize: 12,
+                    labelFontSize: DEFAULT_FONT_SIZE,
                     gridThickness: 1,
                     maximum: Math.max(maxCash < 500 ? 500 : 1000, maxCash) * 1.15,
                     labelFormatter: function ( e ) {
@@ -214,7 +215,7 @@ $(document).ready(function() {
                     dockInsidePlotArea: true,
                     itemclick: toogleDataSeries,
                     fontFamily: fontFamily,
-//                     fontSize: 12,
+                    fontSize: DEFAULT_FONT_SIZE,
                 },
                 data: datasets
             });
