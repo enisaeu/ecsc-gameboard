@@ -522,7 +522,7 @@ html {
     overflow-y:scroll;
 }
 
-/* Note: dirty patch to make upper thing working without any problems with the modal dialogs (e.g. send private message) */
+/* Note: dirty patch to make upper thing working without any problems with the modal dialogs */
 .modal-open {
     padding-right: 0px !important;
 }

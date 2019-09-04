@@ -15,6 +15,7 @@
     define("PRIVATE_ROOM", "team");
     define("FLAG_REGEX", "/ECSC\{.+\}/");
     define("FLAG_REDACTED", "ECSC{...}");
+    define("ENABLE_PRIVATE_MESSAGES", true);
 
     session_start();
 
