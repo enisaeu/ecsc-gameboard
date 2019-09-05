@@ -1,4 +1,6 @@
 <?php
+    require_once("common.php");
+
     if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/scores.json")) {
         $callback = isset($_GET["callback"]) ? $_GET["callback"] : null;
 
@@ -102,7 +104,11 @@
             $average[$row["task_id"]] = $row["average_time"];
         }
 
-        $rows = fetchAll("SELECT tasks.task_id,GROUP_CONCAT(teams.login_name) AS solved_by,COUNT(teams.login_name) AS solved_count,tasks.title AS task_title,cash AS task_cash,tasks.contract_id,contracts.title AS contract_title FROM tasks LEFT JOIN solved ON tasks.task_id=solved.task_id LEFT JOIN teams ON solved.team_id=teams.team_id LEFT JOIN contracts ON tasks.contract_id=contracts.contract_id GROUP BY tasks.task_id ORDER BY solved_count DESC, task_cash ASC");
+        if (isAdmin())
+            $rows = fetchAll("SELECT tasks.task_id,GROUP_CONCAT(teams.login_name) AS solved_by,COUNT(teams.login_name) AS solved_count,tasks.title AS task_title,cash AS task_cash,tasks.contract_id,contracts.title AS contract_title FROM tasks LEFT JOIN solved ON tasks.task_id=solved.task_id LEFT JOIN teams ON solved.team_id=teams.team_id LEFT JOIN contracts ON tasks.contract_id=contracts.contract_id GROUP BY tasks.task_id ORDER BY solved_count DESC, task_cash ASC");
+        else
+            $rows = fetchAll("SELECT tasks.task_id,GROUP_CONCAT(teams.login_name) AS solved_by,COUNT(teams.login_name) AS solved_count,tasks.title AS task_title,cash AS task_cash,tasks.contract_id,contracts.title AS contract_title FROM tasks LEFT JOIN solved ON tasks.task_id=solved.task_id LEFT JOIN teams ON solved.team_id=teams.team_id LEFT JOIN contracts ON tasks.contract_id=contracts.contract_id WHERE contracts.hidden IS NOT TRUE GROUP BY tasks.task_id ORDER BY solved_count DESC, task_cash ASC");
+
         foreach ($rows as $row) {
             $_ = array("task" => $row["task_title"], "contract" => $row["contract_title"], "cash" => intval($row["task_cash"]), "solved_by" => ($row["solved_count"] > 0 ? explode(',', $row["solved_by"]) : []), "average_time" => isset($average[$row["task_id"]]) ? secondsToTime($average[$row["task_id"]]) : null);
             array_push($result, $_);
@@ -125,7 +131,11 @@
             $average[$row["task_id"]] = $row["average_time"];
         }
 
-        $rows = fetchAll("SELECT tasks.task_id,GROUP_CONCAT(teams.login_name) AS solved_by,COUNT(teams.login_name) AS solved_count,tasks.title AS task_title,cash AS task_cash,tasks.contract_id,contracts.title AS contract_title FROM tasks LEFT JOIN solved ON tasks.task_id=solved.task_id LEFT JOIN teams ON solved.team_id=teams.team_id LEFT JOIN contracts ON tasks.contract_id=contracts.contract_id GROUP BY tasks.task_id ORDER BY solved_count DESC, task_cash ASC");
+        if (isAdmin())
+            $rows = fetchAll("SELECT tasks.task_id,GROUP_CONCAT(teams.login_name) AS solved_by,COUNT(teams.login_name) AS solved_count,tasks.title AS task_title,cash AS task_cash,tasks.contract_id,contracts.title AS contract_title FROM tasks LEFT JOIN solved ON tasks.task_id=solved.task_id LEFT JOIN teams ON solved.team_id=teams.team_id LEFT JOIN contracts ON tasks.contract_id=contracts.contract_id GROUP BY tasks.task_id ORDER BY solved_count DESC, task_cash ASC");
+        else
+            $rows = fetchAll("SELECT tasks.task_id,GROUP_CONCAT(teams.login_name) AS solved_by,COUNT(teams.login_name) AS solved_count,tasks.title AS task_title,cash AS task_cash,tasks.contract_id,contracts.title AS contract_title FROM tasks LEFT JOIN solved ON tasks.task_id=solved.task_id LEFT JOIN teams ON solved.team_id=teams.team_id LEFT JOIN contracts ON tasks.contract_id=contracts.contract_id WHERE contracts.hidden IS NOT TRUE GROUP BY tasks.task_id ORDER BY solved_count DESC, task_cash ASC");
+
         foreach ($rows as $row) {
             $_ = array("task" => $row["task_title"], "contract" => $row["contract_title"], "cash" => intval($row["task_cash"]), "solved_by" => ($row["solved_count"] > 0 ? explode(',', $row["solved_by"]) : []), "average_time" => isset($average[$row["task_id"]]) ? secondsToTime($average[$row["task_id"]]) : null);
             array_push($result, $_);
