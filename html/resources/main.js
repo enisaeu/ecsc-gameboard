@@ -359,6 +359,9 @@ $(document).ready(function() {
             });
     });
 
+    $('#logs_table').DataTable({"order": [[ 0, "desc" ]]});
+    $('#stats_table').DataTable({"order": [[ 3, "desc" ]]});
+
     periodicPullMessages();
 
     $('[data-toggle="tooltip"]').tooltip();
@@ -697,7 +700,7 @@ function showSendMessageBox(login_name, full_name) {
 
 function showAwardCashBox(login_name, full_name) {
     var dialog = $("#prompt-box").clone();
-    var max = parseInt(($(".current").find("td:nth-child(4)").text().replace(',', '')) || 0);
+    var max = parseInt(($(".current-team").find("td:nth-child(4)").text().replace(',', '')) || 0);
 
     if (dialog.length === 0)
         return;
@@ -733,7 +736,7 @@ function showAwardCashBox(login_name, full_name) {
 
 function showSendCashBox(login_name, full_name) {
     var dialog = $("#prompt-box").clone();
-    var max = parseInt(($(".current").find("td:nth-child(4)").text().replace(',', '')) || 0);
+    var max = parseInt(($(".current-team").find("td:nth-child(4)").text().replace(',', '')) || 0);
 
     if (dialog.length === 0)
         return;

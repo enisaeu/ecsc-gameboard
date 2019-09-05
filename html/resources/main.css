@@ -376,25 +376,25 @@ h1, h4 {
     height: 200px;
 }
 
-/*.current td:nth-child(1) span {
+/*.current-team td:nth-child(1) span {
     background-color: red;
     color: white;
     font-weight: bold;
     border: 2px dotted white;
     padding: 2px;
 }*/
-/*.current td:nth-child(1) span {
+/*.current-team td:nth-child(1) span {
     font-weight: bold;
     padding: 1px;
     border: 2px dashed red;
 }*/
 
-.current {
+.current-team {
     border-left: 5px double red !important;
     border-right: 5px double red !important;
 }
 
-.current sup {
+.current-team sup {
     font-weight: bold;
 }
 
@@ -464,6 +464,12 @@ h1, h4 {
     height: 30px;
     width: 100%;
     vertical-align: middle;
+}
+
+.dataTables_wrapper input {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: .25rem;
+    height: 30px;
 }
 
 .edit-input {
@@ -583,4 +589,23 @@ html {
     box-sizing: border-box;
     text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.25), -1px 1px 0 rgba(0, 0, 0, 0.25), 1px 1px 0 rgba(0, 0, 0, 0.25), 1px -1px 0 rgba(0, 0, 0, 0.25);
     border: 1px solid #000000;
+}
+
+/*.pagination > li > a, .pagination > li > span {
+    line-height: 1.1em;
+}*/
+
+/*.paginate_button {
+    background-color: #777;
+    border-color: #a8a8a8;
+    color: #fff;
+    cursor: default;
+    font-weight: 700;
+    text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.5), -1px 1px 0 rgba(0, 0, 0, 0.5), 1px 1px 0 rgba(0, 0, 0, 0.5), 1px -1px 0 rgba(0, 0, 0, 0.5);
+}*/
+
+.paginate_button {
+/*     padding: 6px 6px; */
+    line-height: 1em;
+    border-radius: .25rem !important;
 }
