@@ -277,13 +277,16 @@
 
     function getRankedTeams() {
         $result = array();
-        $teams = getTeams();
+        $teams = array();
+
+        $rows = fetchAll("SELECT teams.team_id,teams.full_name,UNIX_TIMESTAMP(x.ts) AS ts FROM teams LEFT JOIN (SELECT team_id,MAX(ts) AS ts FROM solved GROUP BY team_id)x ON teams.team_id=x.team_id ORDER BY x.ts DESC");
+        foreach ($rows as $row)
+            $teams[$row["team_id"]] = array("full_name" => $row["full_name"], "ts" => $row["ts"]);
 
         $rankings = array();
-        foreach ($teams as $team_id) {
+        foreach ($teams as $team_id => $team) {
             $scores = getScores($team_id);
-            $row = fetchAll("SELECT full_name FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
-            $ranking = array("team_id" => $team_id, "full_name" => $row["full_name"], "cash" => $scores["cash"], "awareness" => $scores["awareness"]);
+            $ranking = array("team_id" => $team_id, "full_name" => $team["full_name"], "cash" => $scores["cash"], "awareness" => $scores["awareness"], "ts" => $team["ts"]);
             array_push($rankings, $ranking);
         }
 
@@ -291,6 +294,10 @@
             if ($team1["cash"] < $team2["cash"])
                 return 1;
             else if ($team1["cash"] > $team2["cash"])
+                return -1;
+            else if ($team1["ts"] > $team2["ts"])
+                return 1;
+            else if ($team1["ts"] < $team2["ts"])
                 return -1;
             else if ($team1["awareness"] < $team2["awareness"])
                 return 1;
