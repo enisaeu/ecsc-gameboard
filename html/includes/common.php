@@ -295,13 +295,13 @@
                 return 1;
             else if ($team1["cash"] > $team2["cash"])
                 return -1;
-            else if ($team1["ts"] > $team2["ts"])
-                return 1;
-            else if ($team1["ts"] < $team2["ts"])
-                return -1;
             else if ($team1["awareness"] < $team2["awareness"])
                 return 1;
             else if ($team1["awareness"] > $team2["awareness"])
+                return -1;
+            else if ($team1["ts"] > $team2["ts"])
+                return 1;
+            else if ($team1["ts"] < $team2["ts"])
                 return -1;
             else if ($team1["full_name"] < $team2["full_name"])
                 return -1;
