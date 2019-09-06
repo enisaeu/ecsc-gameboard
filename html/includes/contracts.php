@@ -11,24 +11,36 @@
             foreach ($visible as $contract_id) {
                 $contract = fetchAll("SELECT contracts.title, contracts.description, contracts.categories, SUM(tasks.cash) AS cash, SUM(tasks.awareness) AS awareness FROM contracts JOIN tasks ON contracts.contract_id=tasks.contract_id WHERE contracts.contract_id=:contract_id GROUP BY(contracts.contract_id)", array("contract_id" => $contract_id))[0];
                 $template = file_get_contents("templates/accepted.html");
-                $accepted = format($template, array("title" => $contract["title"] . (in_array($contract_id, $finished) ? ' <i class="far fa-check-circle" title="Finished" data-toggle="tooltip"></i>' : ""), "categories" => generateCategoriesHtml(explode(',', $contract["categories"])), "cash" => number_format(getDynamicScore(null, $contract_id)), "awareness" => number_format($contract["awareness"]), "description" => $contract["description"], "contract_id" => $contract_id));
+                $accepted = format($template, array("title" => $contract["title"] . (in_array($contract_id, $finished) ? ' <i class="far fa-check-circle" title="Finished" data-toggle="tooltip"></i>' : ""), "categories" => generateCategoriesHtml(explode(',', $contract["categories"])), "awareness" => number_format($contract["awareness"]), "description" => $contract["description"], "contract_id" => $contract_id));
 
                 $solved = getSolvedTasks($_SESSION["team_id"]);
                 $rows = fetchAll("SELECT * FROM tasks WHERE contract_id=:contract_id ORDER BY task_id ASC", array("contract_id" => $contract_id));
                 $tasks = "";
+                $total = 0;
+
                 foreach ($rows as $row) {
                     $template = file_get_contents("templates/task.html");
-                    $task = format($template, array("title" => $row["title"], "values" => generateValuesHtml(getDynamicScore($row["task_id"]), $row["awareness"]), "description" => $row["description"], "task_id" => $row["task_id"]));
+                    $task = format($template, array("title" => $row["title"], "description" => $row["description"], "task_id" => $row["task_id"]));
+
                     if (in_array($row["task_id"], $solved)) {
+                        $cash = getDynamicScore($row["task_id"], null, true);
+                        $task = format($task, array("values" => generateValuesHtml($cash, $row["awareness"])));
                         $task = str_replace("<div class=\"task card ", "<div class=\"task card solved ", $task);
                         $task = str_replace("Task answer", "Solved", $task);
                         $task = str_replace(" autocomplete", " disabled=\"disabled\" autocomplete", $task);
                         $task = str_replace(" type=\"submit\"", " disabled=\"disabled\" style=\"pointer-events: none\"", $task);
                         $task = str_replace("class=\"form-control\"", "class=\"form-control disabled\"", $task);
                     }
+                    else {
+                        $cash = getDynamicScore($row["task_id"]);
+                        $task = format($task, array("values" => generateValuesHtml($cash, $row["awareness"])));
+                    }
+
+                    $total += $cash;
                     $tasks = $tasks . ($tasks ? "\n" : "") . $task;
                 }
-                $accepted = format($accepted, array("tasks" => $tasks));
+
+                $accepted = format($accepted, array("cash" => $total, "tasks" => $tasks));
                 echo $accepted;
             }
 
