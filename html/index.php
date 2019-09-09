@@ -2,6 +2,12 @@
     require_once("includes/common.php");
     require_once("includes/exports.php");
 
+
+    if(preg_match("/\/captcha\?\d+$/", $_SERVER["REQUEST_URI"])) {
+        include_once("includes/captcha.php");
+        die();
+    }
+
     if (!isset($_SESSION["team_id"])) {
         if (empty($_SERVER["HTTP_X_REQUESTED_WITH"]))
             include_once("includes/signin.php");
