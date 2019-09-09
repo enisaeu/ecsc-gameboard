@@ -609,3 +609,7 @@ html {
     line-height: 1em;
     border-radius: .25rem !important;
 }
+
+#captcha-image {
+    cursor: pointer;
+}

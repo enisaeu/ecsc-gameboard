@@ -1,7 +1,10 @@
 <?php
-//     Reference: https://code.tutsplus.com/tutorials/build-your-own-captcha-and-contact-form-in-php--net-5362  (Note: derivative)
+    define("CAPTCHA_CHARS", "ABCDEFGHJKLMNPQRSTUVWXYZ23456789");
+    define("CAPTCHA_LENGTH", 6);
 
-    $permitted_chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    $CAPTCHA_FONTS = array(dirname(__FILE__) . "/../resources/acme.ttf", dirname(__FILE__) . "/../resources/ubuntu.ttf", dirname(__FILE__) . "/../resources/merriweather.ttf", dirname(__FILE__) . "/../resources/playfairdisplay.ttf");
+
+//     Reference: https://code.tutsplus.com/tutorials/build-your-own-captcha-and-contact-form-in-php--net-5362
 
     function randstr($input, $strength = 10) {
         $input_length = strlen($input);
@@ -40,18 +43,15 @@
     $white = imagecolorallocate($image, 255, 255, 255);
     $textcolors = [$black, $white];
 
-    $fonts = [dirname(__FILE__) . "/../resources/acme.ttf", dirname(__FILE__) . "/../resources/ubuntu.ttf", dirname(__FILE__) . "/../resources/merriweather.ttf", dirname(__FILE__) . "/../resources/playfairdisplay.ttf"];
-
-    $string_length = 6;
-    $captcha_string = randstr($permitted_chars, $string_length);
+    $captcha_string = randstr(CAPTCHA_CHARS, CAPTCHA_LENGTH);
 
     $_SESSION["captcha_text"] = $captcha_string;
 
-    for($i = 0; $i < $string_length; $i++) {
-        $letter_space = 170 / $string_length;
+    for($i = 0; $i < CAPTCHA_LENGTH; $i++) {
+        $letter_space = 170 / CAPTCHA_LENGTH;
         $initial = 15;
         
-        imagettftext($image, 24, rand(-15, 15), $initial + $i * $letter_space, rand(25, 45), $textcolors[rand(0, 1)], $fonts[array_rand($fonts)], $captcha_string[$i]);
+        imagettftext($image, 24, rand(-15, 15), $initial + $i * $letter_space, rand(25, 45), $textcolors[rand(0, 1)], $CAPTCHA_FONTS[array_rand($CAPTCHA_FONTS)], $captcha_string[$i]);
     }
 
     header("Content-type: image/png");

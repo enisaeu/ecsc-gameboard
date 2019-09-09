@@ -1,13 +1,16 @@
 <?php
     $error = false;
-    $timedout = false;
+    $time_out = false;
+    $wrong_captcha = false;
 
     if (isset($_POST["token"]) && isset($_SESSION["token"]) && ($_POST["token"] === $_SESSION["token"])) {
-        if (isset($_POST["login"]) && isset($_POST["password"])) {
+        if (isset($_POST["login"]) && isset($_POST["password"]) && isset($_POST["captcha"])) {
 
-            if ($_POST["login"] !== ADMIN_LOGIN_NAME) {
-                $timedout = $error = !checkStartEndTime();
-            }
+            if ($_POST["login"] !== ADMIN_LOGIN_NAME)
+                $time_out = $error = !checkStartEndTime();
+
+            if (strtoupper($_POST["captcha"]) !== strtoupper($_SESSION["captcha_text"]))
+                $wrong_captcha = $error = true;
 
             if (!$error) {
                 $rows = fetchAll("SELECT team_id, full_name, password_hash FROM teams WHERE login_name=:login", array("login" => $_POST["login"]));
@@ -27,14 +30,22 @@
             else
                 $masked = str_repeat('*', strlen($_POST["password"]));
 
-            logMessage("Login failed", LogLevel::WARNING, $timedout ? "Out of time boundaries" : $_POST["login"] . ":" . $masked);
+            $msg = $_POST["login"] . ":" . $masked;
+
+            if ($time_out)
+                $msg = "Out of time boundaries ('" . $msg . "')";
+            else if ($wrong_captcha)
+                $msg = "Wrong captcha ('" . $msg . "')";
+
+            logMessage("Login failed", LogLevel::WARNING, $msg);
+
             $error = true;
         }
     }
 
     require_once("header.php");
 
-    if ($timedout) {
+    if ($time_out) {
         echo <<<END
         <script>
             alert("Out-of-time");
@@ -83,6 +94,15 @@ END;
                                     <span class="input-group-addon"><i class="fas fa-lock mt-2"></i></span>
                                     <input type="password" class="form-control" name="password" placeholder="Password" required="required" autocomplete="off">
                                 </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fas fa-image mt-2"></i></span>
+                                    <input type="text" class="form-control" name="captcha" placeholder="Captcha text" required="required" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <center><img id="captcha-image" src="<?php echo joinPaths(PATHDIR, '/captcha') . '?' . time();?>" alt="Captcha image" title="Click to change" onclick="$(this).attr('src', $(this).attr('src').split('?')[0] + '?' + Date.now())"></center>
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary btn-block btn-lg">Sign in</button>
