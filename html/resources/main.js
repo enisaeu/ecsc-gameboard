@@ -359,8 +359,15 @@ $(document).ready(function() {
             });
     });
 
-    $('#logs_table').DataTable({"order": [[ 0, "desc" ]]});
-    $('#stats_table').DataTable({"order": [[ 3, "desc" ]]});
+    $('#logs_table').DataTable({
+        order: [[ 0, "desc" ]],
+        bStateSave: true
+    });
+
+    $('#stats_table').DataTable({
+        order: [[ 0, "asc" ]],
+        bStateSave: true
+    });
 
     periodicPullMessages();
 

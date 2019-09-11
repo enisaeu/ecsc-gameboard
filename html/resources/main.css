@@ -238,7 +238,7 @@ body::after {
     width: 20px;
 }
 
-#stats_table th:nth-child(3), #stats_table th:nth-child(4), #stats_table th:nth-child(5) {
+#stats_table th:nth-child(3), #stats_table th:nth-child(5) {
     white-space: nowrap;
     width: 20px;
 }
@@ -246,6 +246,14 @@ body::after {
 #scoreboard th:nth-child(4), #scoreboard td:nth-child(4), #scoreboard th:nth-child(5), #scoreboard td:nth-child(5) {
     text-align: right;
     width: 15ch;
+}
+
+#stats_table th:nth-child(4) {
+    text-align: right;
+}
+
+#stats_table td {
+    vertical-align: middle;
 }
 
 #scoreboard th {
