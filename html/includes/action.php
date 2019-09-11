@@ -212,6 +212,9 @@
         else if (isAdmin() && isset($_POST["team"])) {
             $team = json_decode($_POST["team"], true);
 
+            if ($team["email"] && !filter_var($team["email"], FILTER_VALIDATE_EMAIL))
+                die("Invalid email address");
+
             if ($team["team_id"] == -1) {
                 $success = execute("INSERT INTO teams(login_name, full_name, country_code, email, password_hash) VALUES(:login_name, :full_name, :country_code, :email, :password_hash)", array("login_name" => $team["login_name"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT)));
             }
