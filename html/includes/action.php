@@ -85,8 +85,10 @@
     else if (isAdmin() && ($_POST["action"] === "notification") && isset($_POST["message"])) {
         $success = execute("INSERT INTO notifications(content, category) VALUES(:message, :category)", array("message" => $_POST["message"], "category" => NotificationCategories::everybody));
 
-        if ($success)
+        if ($success) {
+            execute("INSERT INTO chat(team_id, content, room) VALUES(:team_id, :content, :room)", array("team_id" => $_SESSION["team_id"], "content" => "Sent new notification to everybody: '" . $_POST["message"] . "'", "room" => DEFAULT_ROOM));
             die("OK");
+        }
         else {
             header("HTTP/1.1 500 Internal Server Error");
             die(DEBUG ? $_SESSION["conn_error"] : null);
