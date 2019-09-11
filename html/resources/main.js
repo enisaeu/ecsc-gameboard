@@ -930,6 +930,18 @@ function periodicPullMessages() {
     setTimeout(pull, FAST_PULL_PERIOD);
 }
 
+function decodeBB(message) {
+    return message
+         .replace(/\[b\](.+)\[\/b\]/g, "<b>$1</b>")
+         .replace(/\[i\](.+)\[\/i\]/g, "<i>$1</i>")
+         .replace(/\[s\](.+)\[\/s\]/g, "<s>$1</s>")
+         .replace(/\[u\](.+)\[\/u\]/g, "<u>$1</u>")
+         .replace(/\[quote\](.+)\[\/quote\]/g, "<cite>$1</cite>")
+         .replace(/\[blockquote\](.+)\[\/blockquote\]/g, "<blockquote>$1</blockquote>")
+         .replace(/\[highlight=([a-z]+|#[0-9abcdef]+)\](.+)\[\/highlight\]/g, "<span style='background-color:$1'>$2</span>")
+         .replace(/\[color=([a-z]+|#[0-9abcdef]+)\](.+)\[\/color\]/g, "<span style='color:$1'>$2</span>");
+}
+
 function pullMessages(initial) {
     initial = initial || false;  // Reference: https://stackoverflow.com/a/15178735
 
@@ -954,7 +966,7 @@ function pullMessages(initial) {
                 message = result["chat"][i];
                 if ($("#chat_messages div[chat_id=" + message.id + "]").length !== 0)
                     continue;
-                $("#chat_messages").append($("<div chat_id='" + message.id + "'" + (counter % 2 === 0 ? " style='background: #f7f7f7'" : "") + "><p style='padding: 0px; padding-left: 15px; padding-right: 15px; margin: 5px'><b>" + escapeHtml(message.team) + "</b> <span style='font-size: larger'></span><span class='flag-icon flag-icon-" + escapeHtml(message.country).toLowerCase() + "' style='margin: 2px' data-toggle='tooltip' title='" + COUNTRIES[escapeHtml(message.country).toUpperCase()] + "'></span>:<span style='float: right'>(" + formatChatTime(message.ts) + ")</span> <br><span>" + escapeHtml(message.content) + "</span></p></div>"));
+                $("#chat_messages").append($("<div chat_id='" + message.id + "'" + (counter % 2 === 0 ? " style='background: #f7f7f7'" : "") + "><p style='padding: 0px; padding-left: 15px; padding-right: 15px; margin: 5px'><b>" + escapeHtml(message.team) + "</b> <span style='font-size: larger'></span><span class='flag-icon flag-icon-" + escapeHtml(message.country).toLowerCase() + "' style='margin: 2px' data-toggle='tooltip' title='" + COUNTRIES[escapeHtml(message.country).toUpperCase()] + "'></span>:<span style='float: right'>(" + formatChatTime(message.ts) + ")</span> <br><span>" + decodeBB(escapeHtml(message.content)) + "</span></p></div>"));
                 lastPullUpdate = new Date();
                 counter += 1;
             }
