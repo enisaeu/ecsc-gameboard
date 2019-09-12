@@ -824,7 +824,7 @@ function formatDateTime(timestamp) {
 }
 
 function formatChatTime(timestamp) {
-    return ((Date.now() / 1000) - timestamp < 24 * 3600) ? formatDateTime(timestamp).split(" ")[1] : formatDateTime(timestamp);
+    return (parseInt(timestamp / 3600 / 24) == parseInt(Date.now() / 1000 / 3600 / 24)) ? formatDateTime(timestamp).split(" ")[1] : formatDateTime(timestamp);
 }
 
 // Reference: https://raw.githubusercontent.com/garycourt/murmurhash-js/master/murmurhash3_gc.js
