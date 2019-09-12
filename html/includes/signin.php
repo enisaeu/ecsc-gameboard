@@ -52,6 +52,13 @@
         </script>
 END;
     }
+    else if ($wrong_captcha) {
+        echo <<<END
+        <script>
+            alert("Wrong captcha");
+        </script>
+END;
+    }
     else if ($error) {
         echo <<<END
         <script>
@@ -114,19 +121,7 @@ END;
                 </div>
             </div>
         </div>
-        <script>
+
 <?php
-$value = "";
-for ($i = 0; $i < strlen($_SESSION["token"]); $i++) {
-    if ($value)
-        $value .= ",";
-    $value .= ord($_SESSION["token"][$i]);
-}
-echo "              document.token = String.fromCharCode(" . $value . ");\n";
+    require_once("includes/footer.php");
 ?>
-        </script>
-        <noscript>
-            Javascript is disabled in your browser. You must have Javascript enabled to utilize the functionality of this page!
-        </noscript>
-    </body>
-</html>
