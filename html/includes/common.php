@@ -16,6 +16,8 @@
     define("FLAG_REGEX", "/ECSC\{.+\}/");
     define("FLAG_REDACTED", "ECSC{...}");
     define("ENABLE_PRIVATE_MESSAGES", true);
+    define("GD_INSTALLED", extension_loaded("gd"));
+    define("CAPTCHA_ENABLED", true && GD_INSTALLED);
 
     session_start();
 

@@ -4,13 +4,14 @@
     $wrong_captcha = false;
 
     if (isset($_POST["token"]) && isset($_SESSION["token"]) && ($_POST["token"] === $_SESSION["token"])) {
-        if (isset($_POST["login"]) && isset($_POST["password"]) && isset($_POST["captcha"])) {
+        if (isset($_POST["login"]) && isset($_POST["password"])) {
 
             if ($_POST["login"] !== ADMIN_LOGIN_NAME)
                 $time_out = $error = !checkStartEndTime();
 
-            if (strtoupper($_POST["captcha"]) !== strtoupper($_SESSION["captcha_text"]))
-                $wrong_captcha = $error = true;
+            if (CAPTCHA_ENABLED)
+                if (!isset($_POST["captcha"]) || !isset($_SESSION["captcha_text"]) || strtoupper($_POST["captcha"]) !== strtoupper($_SESSION["captcha_text"]))
+                    $wrong_captcha = $error = true;
 
             if (!$error) {
                 $rows = fetchAll("SELECT team_id, full_name, password_hash FROM teams WHERE login_name=:login", array("login" => $_POST["login"]));
@@ -102,6 +103,9 @@ END;
                                     <input type="password" class="form-control" name="password" placeholder="Password" required="required" autocomplete="off">
                                 </div>
                             </div>
+<?php
+    if (CAPTCHA_ENABLED) {
+        echo <<<END
                             <div class="form-group">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fas fa-image mt-2"></i></span>
@@ -111,6 +115,9 @@ END;
                             <div class="mb-4">
                                 <center><img id="captcha-image" src="<?php echo joinPaths(PATHDIR, '/captcha') . '?' . time();?>" alt="Captcha image" title="Click to change" onclick="$(this).attr('src', $(this).attr('src').split('?')[0] + '?' + Date.now())"></center>
                             </div>
+END;
+    }
+?>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary btn-block btn-lg">Sign in</button>
                             </div>
