@@ -105,7 +105,7 @@ END;
                             </div>
 <?php
     if (CAPTCHA_ENABLED) {
-        echo <<<END
+        $html = <<<END
                             <div class="form-group">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fas fa-image mt-2"></i></span>
@@ -113,9 +113,10 @@ END;
                                 </div>
                             </div>
                             <div class="mb-4">
-                                <center><img id="captcha-image" src="<?php echo joinPaths(PATHDIR, '/captcha') . '?' . time();?>" alt="Captcha image" title="Click to change" onclick="$(this).attr('src', $(this).attr('src').split('?')[0] + '?' + Date.now())"></center>
+                                <center><img id="captcha-image" src="%s" alt="Captcha image" title="Click to change" onclick="$(this).attr('src', $(this).attr('src').split('?')[0] + '?' + Date.now())"></center>
                             </div>
 END;
+        echo sprintf($html, joinPaths(PATHDIR, '/captcha') . '?' . time());
     }
 ?>
                             <div class="form-group">
