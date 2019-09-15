@@ -243,7 +243,7 @@
         return $result;
     }
 
-    function getDynamicScore($task_id=null, $contract_id=null, $finished=false) {
+    function getDynamicScore($task_id=null, $contract_id=null, $solver=false) {
         $total_penalty = 0;
 
         if (is_null($contract_id)) {
@@ -262,7 +262,7 @@
 
                 if (DYNAMIC_DECAY_PER_SOLVE > 0) {
                     $solves = fetchScalar("SELECT COUNT(*) FROM solved WHERE task_id=:task_id", array("task_id" => $task_id));
-                    if (($solves > 0) && $finished)
+                    if (($solves > 0) && $solver)
                         $solves -= 1;
                     $task_penalty += intval($task_cash * (DYNAMIC_DECAY_PER_SOLVE * $solves));
                     $task_penalty = min($task_penalty, DYNAMIC_DECAY_MAX_PENALTY * $task_cash);
