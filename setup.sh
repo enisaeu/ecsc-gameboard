@@ -88,6 +88,25 @@ Header unset ETag
 FileETag None
 EOF
 
+git checkout .
+read -s -p "Enter new password for MySQL user 'ecsc' (press <Enter> for default): " NEW_PWD
+echo
+if [[ $NEW_PWD != ${NEW_PWD//[\']/} ]]; then
+    echo "Single-quote (') character is unacceptable"
+    exit 1
+fi
+if [[ -n "$NEW_PWD" ]]; then
+    read -s -p "Confirm new password: " PWD_CONFIRM
+    echo
+    if [ $NEW_PWD == $PWD_CONFIRM ]; then
+        sed -i "s/define.\"MYSQL_PASSWORD\".*/define(\"MYSQL_PASSWORD\", \"$NEW_PWD\");/g" "$DEPLOYMENT_HTML/includes/common.php"
+        sed -i "s/IDENTIFIED BY.*/IDENTIFIED BY '$NEW_PWD';/g" "$DEPLOYMENT_SCHEMA"
+    else
+        echo "Passwords don't match"
+        exit 1
+    fi
+fi
+
 service mysql restart
 mysql < $DEPLOYMENT_SCHEMA
 
