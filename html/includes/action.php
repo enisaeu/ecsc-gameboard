@@ -276,9 +276,17 @@
     }
     else if (($_POST["action"] === "private") && (isset($_POST["to"])) && (isset($_POST["message"]) || isset($_POST["cash"]))) {
         $cash = (isset($_POST["cash"]) && is_numeric($_POST["cash"])) ? intval($_POST["cash"]) : NULL;
-        $message = (PRIVATE_MESSAGES_ENABLED && isset($_POST["message"])) ? $_POST["message"] : NULL;
         $to_id = fetchScalar("SELECT team_id FROM teams WHERE login_name=:login_name", array("login_name" => $_POST["to"]));
         $max = getScores($_SESSION["team_id"])["cash"];
+
+        if ($_POST["to"] === ADMIN_LOGIN_NAME) {
+            if (!SUPPORT_MESSAGES_ENABLED || !isset($_POST["message"]))
+                die();
+            else
+                $message = $_POST["message"];
+        }
+        else
+            $message = (PRIVATE_MESSAGES_ENABLED && isset($_POST["message"])) ? $_POST["message"] : NULL;
 
         if ((!is_null($cash)) && ((getSetting("transfers") === "false") || ($cash < 0)) && (!isAdmin()))
             $success = false;
