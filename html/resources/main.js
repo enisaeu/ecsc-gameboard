@@ -260,6 +260,11 @@ $(document).ready(function() {
         showSendMessageBox(login_name, full_name);
     });
 
+    $(".fa-life-ring").click(function(event) {
+        var row = $(event.target).closest("tr");
+        showSendMessageBox("admin", "Administrator");
+    });
+
     $(".fa-money-bill-wave").click(function(event) {
         var row = $(event.target).closest("tr");
         var login_name = row.find("sup").text().substr(1).slice(0, -1);
