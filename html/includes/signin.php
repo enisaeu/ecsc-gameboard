@@ -9,9 +9,13 @@
             if ($_POST["login"] !== ADMIN_LOGIN_NAME)
                 $time_out = $error = !checkStartEndTime();
 
-            if (CAPTCHA_ENABLED)
+            if (CAPTCHA_ENABLED) {
                 if (!isset($_POST["captcha"]) || !isset($_SESSION["captcha_text"]) || strtoupper($_POST["captcha"]) !== strtoupper($_SESSION["captcha_text"]))
                     $wrong_captcha = $error = true;
+                
+                if (isset($_SESSION["captcha_text"]))
+                    unset($_SESSION["captcha_text"]);
+            }
 
             if (!$error) {
                 $rows = fetchAll("SELECT team_id, full_name, password_hash FROM teams WHERE login_name=:login", array("login" => $_POST["login"]));
