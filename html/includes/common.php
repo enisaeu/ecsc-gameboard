@@ -101,20 +101,25 @@
         return $result;
     }
 
-    function getSolvedTasks($team_id) {
-        return fetchAll("SELECT task_id FROM solved WHERE team_id=:team_id ORDER BY ts ASC", array("team_id" => $team_id), PDO::FETCH_COLUMN);
+    function getSolvedTasks($team_id, $ts=null) {
+        return fetchAll("SELECT task_id FROM solved WHERE team_id=:team_id AND UNIX_TIMESTAMP(ts)<=COALESCE(:ts, UNIX_TIMESTAMP(NOW())) ORDER BY ts ASC", array("team_id" => $team_id, "ts" => $ts), PDO::FETCH_COLUMN);
     }
 
-    function getTimeStatus($team_id, $ts) {
-        $result = array();
-        $row = fetchAll("SELECT SUM(cash) AS cash, SUM(awareness) AS awareness FROM solved JOIN tasks ON solved.task_id=tasks.task_id WHERE team_id=:team_id AND UNIX_TIMESTAMP(solved.ts)<=:ts", array("team_id" => $team_id, "ts" => $ts))[0];
-        $result["cash"] = floatval($row["cash"]);
-        $result["awareness"] = floatval($row["awareness"]);
+    function getScores($team_id, $ts=null) {
+        $result = array("cash" => 0, "awareness" => 0);
+        $_ = getSolvedTasks($team_id, $ts);
+        if (count($_) > 0) {
+            foreach ($_ as $task_id) {
+                $task = fetchAll("SELECT * FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id))[0];
+                $result["cash"] += (getSetting("dynamic_scoring") == "true") ? getDynamicScore($task_id, null, true) : floatval($task["cash"]);
+                $result["awareness"] += floatval($task["awareness"]);
+            }
+        }
 
-        $_ = fetchScalar("SELECT SUM(cash) FROM privates WHERE from_id=:team_id AND UNIX_TIMESTAMP(ts)<=:ts", array("team_id" => $team_id, "ts" => $ts));
+        $_ = fetchScalar("SELECT SUM(cash) FROM privates WHERE from_id=:team_id AND UNIX_TIMESTAMP(ts)<=COALESCE(:ts, UNIX_TIMESTAMP(NOW()))", array("team_id" => $team_id, "ts" => $ts));
         $result["cash"] -= is_null($_) ? 0 : $_;
 
-        $_ = fetchScalar("SELECT SUM(cash) FROM privates WHERE to_id=:team_id AND UNIX_TIMESTAMP(ts)<=:ts", array("team_id" => $team_id, "ts" => $ts));
+        $_ = fetchScalar("SELECT SUM(cash) FROM privates WHERE to_id=:team_id AND UNIX_TIMESTAMP(ts)<=COALESCE(:ts, UNIX_TIMESTAMP(NOW()))", array("team_id" => $team_id, "ts" => $ts));
         $result["cash"] += is_null($_) ? 0 : $_;
 
         $result["cash"] = max($result["cash"], MIN_CASH_VALUE);
@@ -133,7 +138,7 @@
             $first = true;
             $timestamps = fetchAll("SELECT ts FROM (SELECT UNIX_TIMESTAMP(ts) AS ts FROM solved WHERE team_id=:team_id UNION ALL SELECT UNIX_TIMESTAMP(ts) AS ts FROM privates WHERE cash IS NOT NULL AND (from_id=:team_id OR to_id=:team_id)) AS result ORDER BY ts ASC", array("team_id" => $team_id), PDO::FETCH_COLUMN);
             foreach ($timestamps as $timestamp) {
-                $current = getTimeStatus($team_id, $timestamp);
+                $current = getScores($team_id, $timestamp);
                 if ($first) {
                     array_push($result[$team_name]["cash"], array("x" => intval($timestamp) - 1, "y" => 0));
                     array_push($result[$team_name]["awareness"], array("x" => intval($timestamp) - 1, "y" => 0));
@@ -167,7 +172,7 @@
                 $timestamp = (($min - 1) / $step) * $step;
 
                 while ($timestamp <= $max) {
-                    $current = getTimeStatus($team_id, $timestamp);
+                    $current = getScores($team_id, $timestamp);
                     array_push($result[$team_name]["cash"], array("x" => intval($timestamp), "y" => $current["cash"]));
                     array_push($result[$team_name]["awareness"], array("x" => intval($timestamp), "y" => $current["awareness"]));
                     $timestamp += $step;
@@ -223,31 +228,6 @@
         $___ = getConstraintedContracts($team_id);
         $____ = fetchAll("SELECT contract_id FROM contracts WHERE hidden=FALSE", null, PDO::FETCH_COLUMN);
         return array_diff($____, $___, $__, $_);
-    }
-
-    function getScores($team_id) {
-        $result = array("cash" => 0, "awareness" => 0);
-        $_ = getSolvedTasks($team_id);
-        if (count($_) > 0) {
-            foreach ($_ as $task_id) {
-                $task = fetchAll("SELECT * FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id))[0];
-                $result["cash"] += (getSetting("dynamic_scoring") == "true") ? getDynamicScore($task_id, null, true) : floatval($task["cash"]);
-                $result["awareness"] += floatval($task["awareness"]);
-            }
-        }
-
-        $_ = fetchScalar("SELECT SUM(cash) FROM privates WHERE from_id=:team_id", array("team_id" => $team_id));
-        $result["cash"] -= is_null($_) ? 0 : $_;
-
-        $_ = fetchScalar("SELECT SUM(cash) FROM privates WHERE to_id=:team_id", array("team_id" => $team_id));
-        $result["cash"] += is_null($_) ? 0 : $_;
-
-        $result["cash"] = max($result["cash"], MIN_CASH_VALUE);
-
-//         $_ = fetchScalar("SELECT SUM(penalty) FROM solved WHERE team_id=:team_id", array("team_id" => $team_id));
-//         $result["cash"] -= is_null($_) ? 0 : $_;
-
-        return $result;
     }
 
     function getDynamicScore($task_id=null, $contract_id=null, $solver=false) {
