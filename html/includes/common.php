@@ -6,6 +6,7 @@
     define("MYSQL_DATABASE", "ecsc");
     define("PATHDIR", dirname(htmlspecialchars($_SERVER["PHP_SELF"], ENT_QUOTES, "utf-8")));
     define("MOMENTUM_STEPS", 30);
+    define("MIN_CASH_VALUE", 0);
     define("ADMIN_LOGIN_NAME", "admin");
     define("TITLE", "ECSC " . date("Y"));
     define("CHAT_FILEPATH", "/var/run/shm/chat.htm");
@@ -115,6 +116,8 @@
 
         $_ = fetchScalar("SELECT SUM(cash) FROM privates WHERE to_id=:team_id AND UNIX_TIMESTAMP(ts)<=:ts", array("team_id" => $team_id, "ts" => $ts));
         $result["cash"] += is_null($_) ? 0 : $_;
+
+        $result["cash"] = max($result["cash"], MIN_CASH_VALUE);
 
         return $result;
     }
@@ -239,6 +242,8 @@
         $_ = fetchScalar("SELECT SUM(cash) FROM privates WHERE to_id=:team_id", array("team_id" => $team_id));
         $result["cash"] += is_null($_) ? 0 : $_;
 
+        $result["cash"] = max($result["cash"], MIN_CASH_VALUE);
+
 //         $_ = fetchScalar("SELECT SUM(penalty) FROM solved WHERE team_id=:team_id", array("team_id" => $team_id));
 //         $result["cash"] -= is_null($_) ? 0 : $_;
 
@@ -281,7 +286,7 @@
         $result = array();
         $teams = array();
 
-        $rows = fetchAll("SELECT teams.team_id,teams.full_name,UNIX_TIMESTAMP(x.ts) AS ts FROM teams LEFT JOIN (SELECT team_id,MAX(ts) AS ts FROM solved GROUP BY team_id)x ON teams.team_id=x.team_id ORDER BY x.ts DESC");
+        $rows = fetchAll("SELECT teams.team_id,teams.full_name,UNIX_TIMESTAMP(x.ts) AS ts FROM teams LEFT JOIN (SELECT team_id,MAX(ts) AS ts FROM solved GROUP BY team_id)x ON teams.team_id=x.team_id WHERE teams.login_name!=:admin_login_name ORDER BY x.ts DESC", array("admin_login_name" => ADMIN_LOGIN_NAME));
         foreach ($rows as $row)
             $teams[$row["team_id"]] = array("full_name" => $row["full_name"], "ts" => $row["ts"]);
 
