@@ -276,7 +276,7 @@
     }
     else if (($_POST["action"] === "private") && (isset($_POST["to"])) && (isset($_POST["message"]) || isset($_POST["cash"]))) {
         $cash = (isset($_POST["cash"]) && is_numeric($_POST["cash"])) ? intval($_POST["cash"]) : NULL;
-        $message = (ENABLE_PRIVATE_MESSAGES && isset($_POST["message"])) ? $_POST["message"] : NULL;
+        $message = (PRIVATE_MESSAGES_ENABLED && isset($_POST["message"])) ? $_POST["message"] : NULL;
         $to_id = fetchScalar("SELECT team_id FROM teams WHERE login_name=:login_name", array("login_name" => $_POST["to"]));
         $max = getScores($_SESSION["team_id"])["cash"];
 

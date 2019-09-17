@@ -7,6 +7,10 @@
         $template = str_replace("hide", "delete", $template);
         $template = str_replace("fa-eye-slash", "fa-trash-alt", $template);
     }
+    else if (!NOTIFICATIONS_HIDE_ENABLED) {
+        $template = preg_replace("/.+fa-eye-slash.+\n/", "", $template);
+        $template = str_replace("alert-dismissible ", "", $template);
+    }
 
     if (count($visible) > 0)
         foreach ($visible as $notification_id) {
