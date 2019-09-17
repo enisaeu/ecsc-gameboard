@@ -294,7 +294,7 @@
                         execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => (isAdmin() ? ($cash > 0 ? "You awarded " : "You penalized ") : "You sent ") . $cash . "€" . (isAdmin() ? (" with a note '" . $message . "'") : ($message ? " with a message '" . $message . "'" : "")) . " to team '" . $to_name . "'", "category" => NotificationCategories::sent_private));
                     }
 
-                    logMessage(isAdmin() ? ($cash > 0 ? "Award" : "Penalty") . " given" : "Cash sent", LogLevel::INFO, $cash . "€ => '" . $to_name . (isAdmin() ? ("' with a note '" . $message . "'") : ($message ? " with a message '" . $message . "'" : "")));
+                    logMessage(isAdmin() ? ($cash > 0 ? "Award" : "Penalty") . " given" : "Cash sent", $cash > 0 ? LogLevel::INFO : LogLevel::WARNING, $cash . "€ => '" . $to_name . (isAdmin() ? ("' with a note '" . $message . "'") : ($message ? " with a message '" . $message . "'" : "")));
 
                     $_ = getRankedTeams()[0];
                     if ($_ != $leader) {
