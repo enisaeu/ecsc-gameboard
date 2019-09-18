@@ -262,7 +262,7 @@ $(document).ready(function() {
 
     $(".fa-life-ring").click(function(event) {
         var row = $(event.target).closest("tr");
-        showSendMessageBox("admin", "Administrator");
+        showSendMessageBox("admin", "Administrator", "Send message to support");
     });
 
     $(".fa-money-bill-wave").click(function(event) {
@@ -678,14 +678,16 @@ function showSendNotificationBox() {
     dialog.modal();
 }
 
-function showSendMessageBox(login_name, full_name) {
+function showSendMessageBox(login_name, full_name, title) {
     var dialog = $("#prompt-box").clone();
 
     if (dialog.length === 0)
         return;
 
+    title = typeof title !== "undefined" ? title : "Send private message";
+
     dialog.removeAttr("id");
-    dialog.find(".modal-title").text("Send private message");
+    dialog.find(".modal-title").text(title);
     dialog.find(".modal-body").html("");
     dialog.find(".modal-body").append($("<textarea class='form-control' rows=4 placeholder='Message to \"" + full_name + "\"' style='width: 100%'></textarea>"));
 
