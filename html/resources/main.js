@@ -48,7 +48,7 @@ $(document).ready(function() {
     repositionSidebar();
 
     $(".card").not("#contract_editor").find(".collapse").each(function() {
-        if (localStorage.getItem($(this).prop("id")) == "hide") {
+        if ((localStorage.getItem($(this).prop("id")) == "hide") || ($(this).parent().find(".fa-check-circle").length)) {
             $(this).removeClass("show");
             $(this).closest(".card").find("[data-toggle=collapse]").addClass("collapsed");
         }
