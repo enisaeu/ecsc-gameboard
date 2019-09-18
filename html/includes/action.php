@@ -287,13 +287,13 @@
         $max = getScores($_SESSION["team_id"])["cash"];
 
         if ($_POST["to"] === ADMIN_LOGIN_NAME) {
-            if (!SUPPORT_MESSAGES_ENABLED || !isset($_POST["message"]))
+            if (getSetting(Setting::SUPPORT_MESSAGES) === "false" || !isset($_POST["message"]))
                 die();
             else
                 $message = $_POST["message"];
         }
         else
-            $message = (PRIVATE_MESSAGES_ENABLED && isset($_POST["message"])) ? $_POST["message"] : NULL;
+            $message = (getSetting(Setting::PRIVATE_MESSAGES) !== "false" && isset($_POST["message"])) ? $_POST["message"] : NULL;
 
         if ((!is_null($cash)) && ((getSetting(Setting::CASH_TRANSFERS) === "false") || ($cash < 0)) && (!isAdmin()))
             $success = false;

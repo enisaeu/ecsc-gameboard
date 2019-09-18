@@ -19,8 +19,6 @@
     define("GD_INSTALLED", extension_loaded("gd")); // Note: had problems on Ubuntu 18.04 when PHP has been updated to 7.2, while the 7.0 had still been used (hence, problems with GD arised) - thus, had to do the "apt remove php7.0" to get GD up and running
     define("CAPTCHA_ENABLED", true && GD_INSTALLED);
     define("NOTIFICATIONS_HIDE_ENABLED", true);     // Enable ability for users to hide individual notifications
-    define("PRIVATE_MESSAGES_ENABLED", true);       // Enable sending private messages between users
-    define("SUPPORT_MESSAGES_ENABLED", true);       // Enable sending support (private) messages to Administrator
 
     session_start();
 
@@ -52,6 +50,8 @@
         const GUESS_DELAY = "guess_delay";
         const GUESS_LOCKOUT = "guess_lockout";
         const CASH_TRANSFERS = "cash_transfers";
+        const PRIVATE_MESSAGES = "private_messages";
+        const SUPPORT_MESSAGES = "support_messages";
     }
 
     // PHP5 compatibility (can't use arrays in defines)
