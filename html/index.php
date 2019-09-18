@@ -23,13 +23,7 @@
             $login_name = fetchScalar("SELECT login_name FROM teams WHERE team_id=:team_id", array("team_id" => $_SESSION["team_id"]));
             logMessage("Sign out", LogLevel::DEBUG);
         }
-
-        session_unset();
-        session_destroy();
-        session_write_close();
-        setcookie(session_name(), '', 0, '/');
-        header("Location: " . PATHDIR);
-        die();
+        signOut();
     }
     else
         $_SESSION["team"] = $result[0];
@@ -126,11 +120,8 @@ END;
 
                 if (isset($_SESSION["last_wrong_counter"]) && is_numeric(getSetting("guess_lockout"))) {
                     if ($_SESSION["last_wrong_counter"] >= intval(getSetting("guess_lockout"))) {
-                        logMessage("Guess lockout", LogLevel::WARNING, "Potential brute-force detected");
-
-                        while (true) {
-                            sleep(10);
-                        }
+                        logMessage("Guess prevention", LogLevel::WARNING, "Potential brute-force detected");
+                        signOut();
                     }
                 }
 
