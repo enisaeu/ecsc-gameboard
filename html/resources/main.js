@@ -89,151 +89,7 @@ $(document).ready(function() {
 //         format: 'd-m H:i'
     });
 
-    if ($("#line_momentum").length)
-        $.post(window.location.href.split('#')[0], {token: document.token, action: "momentum"}, function(content) {
-            if (!content)
-                return;
-
-            try {
-                result = JSON.parse(content);
-            }
-            catch(e) {
-                console.error(e);
-                return;
-            }
-
-            var MAX_TOP_TEAMS = 10;
-            var DEFAULT_FONT_SIZE = 12;
-            var datasets = [];
-            var minTime = Number.MAX_SAFE_INTEGER || 9007199254740991;  // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
-            var maxTime = 0;
-            var maxCash = 0;
-            var totalPoints = 0;
-
-            for (var team_name in result)
-                totalPoints += result[team_name]["cash"].length;
-
-            var lineThickness = Math.max(1, 3 - Math.floor(totalPoints / 1000));
-
-            for (var team_name in result) {
-                dataPoints = [];
-                for (var i = 0; i < result[team_name]["cash"].length; i++) {
-                    current = result[team_name]["cash"][i];
-                    dataPoints.push({ x: new Date(current["x"] * 1000), y: current["y"] });
-                    minTime = Math.min(minTime, current["x"]);
-                    maxTime = Math.max(maxTime, current["x"]);
-                    maxCash = Math.max(maxCash, current["y"]);
-                }
-
-                dataset = { 
-                    type: "line",
-                    lineThickness: lineThickness,
-                    color: getHashColor(team_name),
-                    axisYType: "secondary",
-                    name: team_name,
-                    showInLegend: true,
-                    markerSize: 2 * lineThickness,
-//                     yValueFormatString: "#,###,#k",
-                    dataPoints: dataPoints
-                };
-                datasets.push(dataset);
-
-                if (datasets.length >= MAX_TOP_TEAMS)
-                    break;
-            }
-
-            if ((result.length == 0) || (isAdmin() && (maxCash == 0))) {
-                $("#line_momentum").hide(100, function() { $("#line_momentum").remove(); });
-                return;
-            }
-
-            if (maxTime === 0)
-                maxTime = parseInt(Date.now() / 1000);
-            else
-                maxTime = ((parseInt(Date.now() / 1000) - maxTime) < 3600 * 6) ? parseInt(Date.now() / 1000) : Math.min(maxTime + (maxTime - minTime) / 4, parseInt(Date.now() / 1000));  // maximum of inactivity to show (competition could be over)
-
-            var timePadding = ((maxTime - minTime) / 15) * 1000;
-            var fontFamily = "Arial";
-            var timeFormat = "";
-
-            if ((Date.now() / 1000) - minTime < 3600)
-                timeFormat = "HH:mm";  // :ss will be appended down below
-            else if ((Date.now() / 1000) - minTime < 24 * 3600)
-                timeFormat = "HH:mm";
-//             else if ((Date.now() / 1000) - minTime < 7 * 24 * 3600)
-//                 timeFormat = "DDD HH:mm";
-            else
-                timeFormat = "DD-MMM HH:mm";
-
-            if (maxTime - minTime < 3600)
-                timeFormat += ":ss";
-
-            chart = new CanvasJS.Chart("line_momentum", {
-                title: {
-                    text: "Top " + MAX_TOP_TEAMS + " Teams",
-                    fontSize: Math.floor(1.20 * DEFAULT_FONT_SIZE),
-                    fontFamily: "Arial"
-                },
-                axisX: {
-                    title: "Time",
-                    titleFontFamily: fontFamily,
-                    titleFontSize: DEFAULT_FONT_SIZE,
-                    titleFontStyle: "bold",
-                    valueFormatString: timeFormat,
-                    labelFontFamily: fontFamily,
-                    labelFontSize: DEFAULT_FONT_SIZE,
-                    minimum: minTime * 1000 - timePadding,
-                    maximum: maxTime * 1000 + timePadding,
-                },
-                axisY2: {
-                    title: "Cash (€)",
-                    titleFontFamily: fontFamily,
-                    titleFontSize: DEFAULT_FONT_SIZE,
-                    titleFontStyle: "bold",
-//                     prefix: "€",
-                    suffix: "",
-                    labelFontFamily: fontFamily,
-                    labelFontSize: DEFAULT_FONT_SIZE,
-                    gridThickness: 1,
-                    maximum: Math.max(maxCash < 500 ? 500 : 1000, maxCash) * 1.15,
-                    labelFormatter: function ( e ) {
-                        return (maxCash > 1000) ? (e.value / 1000).toLocaleString() + (e.value ? "k" : "") : e.value.toLocaleString();
-//                         return (e.value / 1000) + (e.value ? "k" : "");
-                    }
-                },
-                toolTip: {
-                    shared: true,
-                    fontFamily: fontFamily,
-                    borderColor: "#dee2e6",
-                    borderThickness: 1,
-                    fontStyle: "normal"
-                },
-                legend: {
-                    cursor: "pointer",
-                    verticalAlign: "top",
-                    horizontalAlign: "center",
-                    dockInsidePlotArea: true,
-                    itemclick: toogleDataSeries,
-                    fontFamily: fontFamily,
-                    fontSize: DEFAULT_FONT_SIZE,
-                },
-                data: datasets
-            });
-            chart.render();
-
-            $(".canvasjs-chart-credit").css("display", "none");
-
-            function toogleDataSeries(e) {
-                if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-                    e.dataSeries.visible = false;
-                } else {
-                    e.dataSeries.visible = true;
-                }
-                chart.render();
-            }
-    
-        });
-
+    drawLineMomentum();
     pullMessages(true);
 
     if (!isAdmin()) {
@@ -264,7 +120,7 @@ $(document).ready(function() {
         showSendMessageBox("admin", "Administrator", "Send message to support");
     });
 
-    $(".fa-key").click(function(event) {
+    $(".fa-key").click(function() {
         showChangePasswordBox();
     });
 
@@ -285,7 +141,7 @@ $(document).ready(function() {
     $("#settings_table input[type=checkbox]").click(function() {
         var name = $(this).prop("id");
         var value = $(this).is(":checked");
-        pushSetting(name, value);
+        pushSetting(name, value, name == "dynamic_scoring" ? reload : null);
     });
 
     $("#settings_table input[type=text]").change(function() {
@@ -390,8 +246,12 @@ function reload() {
     window.location = window.location.href.split('#')[0];
 }
 
-function pushSetting(name, value) {
-    $.post(window.location.href.split('#')[0], {token: document.token, action: "update", setting: name, value: value}).fail(function(jqXHR) {
+function pushSetting(name, value, onsuccess) {
+    $.post(window.location.href.split('#')[0], {token: document.token, action: "update", setting: name, value: value}, function() {
+        if (typeof onsuccess === "function") {
+            onsuccess();
+        }
+    }).fail(function(jqXHR) {
         alert("Something went wrong ('" + jqXHR.responseText + "')!");
     });
 }
@@ -1086,4 +946,150 @@ function openInNewTab(url) {
 function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
+}
+
+function drawLineMomentum() {
+    if ($("#line_momentum").length)
+        $.post(window.location.href.split('#')[0], {token: document.token, action: "momentum"}, function(content) {
+            if (!content)
+                return;
+
+            try {
+                result = JSON.parse(content);
+            }
+            catch(e) {
+                console.error(e);
+                return;
+            }
+
+            var MAX_TOP_TEAMS = 10;
+            var DEFAULT_FONT_SIZE = 12;
+            var datasets = [];
+            var minTime = Number.MAX_SAFE_INTEGER || 9007199254740991;  // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
+            var maxTime = 0;
+            var maxCash = 0;
+            var totalPoints = 0;
+
+            for (var team_name in result)
+                totalPoints += result[team_name]["cash"].length;
+
+            var lineThickness = Math.max(1, 3 - Math.floor(totalPoints / 1000));
+
+            for (var team_name in result) {
+                dataPoints = [];
+                for (var i = 0; i < result[team_name]["cash"].length; i++) {
+                    current = result[team_name]["cash"][i];
+                    dataPoints.push({ x: new Date(current["x"] * 1000), y: current["y"] });
+                    minTime = Math.min(minTime, current["x"]);
+                    maxTime = Math.max(maxTime, current["x"]);
+                    maxCash = Math.max(maxCash, current["y"]);
+                }
+
+                dataset = {
+                    type: "line",
+                    lineThickness: lineThickness,
+                    color: getHashColor(team_name),
+                    axisYType: "secondary",
+                    name: team_name,
+                    showInLegend: true,
+                    markerSize: 2 * lineThickness,
+//                     yValueFormatString: "#,###,#k",
+                    dataPoints: dataPoints
+                };
+                datasets.push(dataset);
+
+                if (datasets.length >= MAX_TOP_TEAMS)
+                    break;
+            }
+
+            if ((result.length == 0) || (isAdmin() && (maxCash == 0))) {
+                $("#line_momentum").hide(100, function() { $("#line_momentum").remove(); });
+                return;
+            }
+
+            if (maxTime === 0)
+                maxTime = parseInt(Date.now() / 1000);
+            else
+                maxTime = ((parseInt(Date.now() / 1000) - maxTime) < 3600 * 6) ? parseInt(Date.now() / 1000) : Math.min(maxTime + (maxTime - minTime) / 4, parseInt(Date.now() / 1000));  // maximum of inactivity to show (competition could be over)
+
+            var timePadding = ((maxTime - minTime) / 15) * 1000;
+            var fontFamily = "Arial";
+            var timeFormat = "";
+
+            if ((Date.now() / 1000) - minTime < 3600)
+                timeFormat = "HH:mm";  // :ss will be appended down below
+            else if ((Date.now() / 1000) - minTime < 24 * 3600)
+                timeFormat = "HH:mm";
+//             else if ((Date.now() / 1000) - minTime < 7 * 24 * 3600)
+//                 timeFormat = "DDD HH:mm";
+            else
+                timeFormat = "DD-MMM HH:mm";
+
+            if (maxTime - minTime < 3600)
+                timeFormat += ":ss";
+
+            chart = new CanvasJS.Chart("line_momentum", {
+                title: {
+                    text: "Top " + MAX_TOP_TEAMS + " Teams",
+                    fontSize: Math.floor(1.20 * DEFAULT_FONT_SIZE),
+                    fontFamily: "Arial"
+                },
+                axisX: {
+                    title: "Time",
+                    titleFontFamily: fontFamily,
+                    titleFontSize: DEFAULT_FONT_SIZE,
+                    titleFontStyle: "bold",
+                    valueFormatString: timeFormat,
+                    labelFontFamily: fontFamily,
+                    labelFontSize: DEFAULT_FONT_SIZE,
+                    minimum: minTime * 1000 - timePadding,
+                    maximum: maxTime * 1000 + timePadding,
+                },
+                axisY2: {
+                    title: "Cash (€)",
+                    titleFontFamily: fontFamily,
+                    titleFontSize: DEFAULT_FONT_SIZE,
+                    titleFontStyle: "bold",
+//                     prefix: "€",
+                    suffix: "",
+                    labelFontFamily: fontFamily,
+                    labelFontSize: DEFAULT_FONT_SIZE,
+                    gridThickness: 1,
+                    maximum: Math.max(maxCash < 500 ? 500 : 1000, maxCash) * 1.15,
+                    labelFormatter: function ( e ) {
+                        return (maxCash > 1000) ? (e.value / 1000).toLocaleString() + (e.value ? "k" : "") : e.value.toLocaleString();
+//                         return (e.value / 1000) + (e.value ? "k" : "");
+                    }
+                },
+                toolTip: {
+                    shared: true,
+                    fontFamily: fontFamily,
+                    borderColor: "#dee2e6",
+                    borderThickness: 1,
+                    fontStyle: "normal"
+                },
+                legend: {
+                    cursor: "pointer",
+                    verticalAlign: "top",
+                    horizontalAlign: "center",
+                    dockInsidePlotArea: true,
+                    itemclick: toogleDataSeries,
+                    fontFamily: fontFamily,
+                    fontSize: DEFAULT_FONT_SIZE,
+                },
+                data: datasets
+            });
+            chart.render();
+
+            $(".canvasjs-chart-credit").css("display", "none");
+
+            function toogleDataSeries(e) {
+                if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                    e.dataSeries.visible = false;
+                } else {
+                    e.dataSeries.visible = true;
+                }
+                chart.render();
+            }
+        });
 }
