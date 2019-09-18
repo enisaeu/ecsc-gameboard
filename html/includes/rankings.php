@@ -181,7 +181,7 @@ END;
         echo $script;
     }
     else {
-        if (getSetting("transfers") === "false") {
+        if (getSetting(Setting::CAST_TRANSFERS) === "false") {
         $script = <<<END
                                 <script>
                                     $(document).ready(function() {

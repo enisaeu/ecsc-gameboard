@@ -45,6 +45,15 @@
         const CRITICAL = "critical";
     }
 
+    abstract class Setting {
+        const DYNAMIC_SCORING = "dynamic_scoring";
+        const DATETIME_START = "datetime_start";
+        const DATETIME_END = "datetime_end";
+        const GUESS_DELAY = "guess_delay";
+        const GUESS_LOCKOUT = "guess_lockout";
+        const CASH_TRANSFERS = "cash_transfers";
+    }
+
     // PHP5 compatibility (can't use arrays in defines)
     const PREDEFINED_COLORS = array("Offensive" => "0078c4", "Web" => "41c4dc", "Crypto" => "8fc33f", "Reverse-engineering" => "fedd00", "Forensics" => "f8972a", "Networking" => "e3124f", "Multiple options" => "b01c91");
 
@@ -115,7 +124,7 @@
         if (count($_) > 0) {
             foreach ($_ as $task_id) {
                 $task = fetchAll("SELECT * FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id))[0];
-                $result["cash"] += (getSetting("dynamic_scoring") == "true") ? getDynamicScore($task_id, null, true) : floatval($task["cash"]);
+                $result["cash"] += (getSetting(Setting::DYNAMIC_SCORING) == "true") ? getDynamicScore($task_id, null, true) : floatval($task["cash"]);
                 $result["awareness"] += floatval($task["awareness"]);
             }
         }
@@ -246,7 +255,7 @@
             $task_ids = fetchAll("SELECT task_id FROM tasks WHERE contract_id=:contract_id", array("contract_id" => $contract_id), PDO::FETCH_COLUMN);
         }
 
-        if (getSetting("dynamic_scoring") == "true") {
+        if (getSetting(Setting::DYNAMIC_SCORING) == "true") {
             foreach ($task_ids as $task_id) {
                 $task_cash = fetchScalar("SELECT cash FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id));
                 $task_penalty = 0;
@@ -508,14 +517,14 @@
     function checkStartEndTime() {
         $valid = true;
 
-        if (strtotime(getSetting("datetime_start")) !== false) {
-            if (strtotime(getSetting("datetime_start")) > time()) {
+        if (strtotime(getSetting(Setting::DATETIME_START)) !== false) {
+            if (strtotime(getSetting(Setting::DATETIME_START)) > time()) {
                 $valid = false;
             }
         }
 
-        if (strtotime(getSetting("datetime_end")) !== false) {
-            if (strtotime(getSetting("datetime_end")) <= time()) {
+        if (strtotime(getSetting(Setting::DATETIME_END)) !== false) {
+            if (strtotime(getSetting(Setting::DATETIME_END)) <= time()) {
                 $valid = false;
             }
         }

@@ -295,7 +295,7 @@
         else
             $message = (PRIVATE_MESSAGES_ENABLED && isset($_POST["message"])) ? $_POST["message"] : NULL;
 
-        if ((!is_null($cash)) && ((getSetting("transfers") === "false") || ($cash < 0)) && (!isAdmin()))
+        if ((!is_null($cash)) && ((getSetting(Setting::CASH_TRANSFERS) === "false") || ($cash < 0)) && (!isAdmin()))
             $success = false;
         else if (!is_null($to_id) && ($_SESSION["team_id"] !== $to_id) && (isAdmin() || !(!is_null($cash) && ($cash > $max)) && !((is_null($cash) || $cash === 0) && (is_null($message) || $message === "")))) {
             $leader = getRankedTeams()[0];

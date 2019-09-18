@@ -82,7 +82,7 @@ END;
 
             else if (isset($_POST["answer"]) && isset($_POST["task_id"])) {
                 if (isset($_SESSION["last_wrong_time"])) {
-                    $delay = (is_numeric(getSetting("guess_delay")) ? intval(getSetting("guess_delay")) : 0) - (time() - $_SESSION["last_wrong_time"]);
+                    $delay = (is_numeric(getSetting(Setting::GUESS_DELAY)) ? intval(getSetting(Setting::GUESS_DELAY)) : 0) - (time() - $_SESSION["last_wrong_time"]);
                     if ($delay > 0)
                         sleep($delay);
                 }
@@ -118,8 +118,8 @@ END;
                     $_SESSION["last_wrong_taskid"] = $_POST["task_id"];
                 }
 
-                if (isset($_SESSION["last_wrong_counter"]) && is_numeric(getSetting("guess_lockout"))) {
-                    if ($_SESSION["last_wrong_counter"] >= intval(getSetting("guess_lockout"))) {
+                if (isset($_SESSION["last_wrong_counter"]) && is_numeric(getSetting(Setting::GUESS_LOCKOUT))) {
+                    if ($_SESSION["last_wrong_counter"] >= intval(getSetting(Setting::GUESS_LOCKOUT))) {
                         logMessage("Guess prevention", LogLevel::WARNING, "Potential brute-force detected");
                         signOut();
                     }
@@ -308,12 +308,12 @@ END;
 
 END;
         $settings = "";
-        $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Cash transfers", "transfers", getSetting("transfers") !== "false" ? " checked" : "");
-        $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Dynamic scoring", "dynamic_scoring", getSetting("dynamic_scoring") == "true" ? " checked" : "");
-        $settings .= "\n" . sprintf('                                    <tr><td>Guess answer penalty (secs): </td><td><input id="guess_delay" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting("guess_delay")) ? getSetting("guess_delay") : "0");
-        $settings .= "\n" . sprintf('                                    <tr><td>Max. attempts (optional): </td><td><input id="guess_lockout" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting("guess_lockout")) ? getSetting("guess_lockout") : "");
-        $settings .= "\n" . sprintf('                                    <tr><td>Start time (optional): </td><td><input id="datetime_start" type="text" value="%s" size="18"></td></tr>', getSetting("datetime_start"));
-        $settings .= "\n" . sprintf('                                    <tr><td>End time (optional): </td><td><input id="datetime_end" type="text" value="%s" size="18"></td></tr>', getSetting("datetime_end"));
+        $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Cash transfers", "cash_transfers", getSetting(Setting::CASH_TRANSFERS) !== "false" ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Dynamic scoring", "dynamic_scoring", getSetting(Setting::DYNAMIC_SCORING) == "true" ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr><td>Guess answer penalty (secs): </td><td><input id="guess_delay" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_DELAY)) ? getSetting(Setting::GUESS_DELAY) : "0");
+        $settings .= "\n" . sprintf('                                    <tr><td>Max. attempts (optional): </td><td><input id="guess_lockout" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_LOCKOUT)) ? getSetting(Setting::GUESS_LOCKOUT) : "");
+        $settings .= "\n" . sprintf('                                    <tr><td>Start time (optional): </td><td><input id="datetime_start" type="text" value="%s" size="18"></td></tr>', getSetting(Setting::DATETIME_START));
+        $settings .= "\n" . sprintf('                                    <tr><td>End time (optional): </td><td><input id="datetime_end" type="text" value="%s" size="18"></td></tr>', getSetting(Setting::DATETIME_END));
 
         echo sprintf($html, $settings);
     }
