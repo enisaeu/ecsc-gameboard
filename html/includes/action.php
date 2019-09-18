@@ -297,10 +297,10 @@
             $success = execute("INSERT INTO privates(from_id, to_id, cash, message) VALUES(:from_id, :to_id, :cash, :message)", array("from_id" => $_SESSION["team_id"], "to_id" => $to_id, "cash" => $cash, "message" => $message));
             if ($success) {
                 if ($cash) {
-                    if (!isAdmin()) {
-                        execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $to_id, "content" => (isAdmin() ? "'" : "Team '") . $from_name . (isAdmin() ? ($cash > 0 ? "' awarded you " : "' penalized you ") : "' sent you ") . $cash . "€" . (isAdmin() ? (" with a note '" . $message . "'") : ($message ? " with a message '" . $message . "'" : "")), "category" => NotificationCategories::received_private));
-                        execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => (isAdmin() ? ($cash > 0 ? "You awarded " : "You penalized ") : "You sent ") . $cash . "€" . (isAdmin() ? (" with a note '" . $message . "'") : ($message ? " with a message '" . $message . "'" : "")) . " to team '" . $to_name . "'", "category" => NotificationCategories::sent_private));
-                    }
+                    $category = $cash > 0 ? NotificationCategories::awarded : NotificationCategories::penalized;
+
+                    execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $to_id, "content" => (isAdmin() ? "'" : "Team '") . $from_name . (isAdmin() ? ($cash > 0 ? "' awarded you " : "' penalized you ") : "' sent you ") . $cash . "€" . (isAdmin() ? (" with a note '" . $message . "'") : ($message ? " with a message '" . $message . "'" : "")), "category" => $category));
+                    execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => (isAdmin() ? ($cash > 0 ? "You awarded " : "You penalized ") : "You sent ") . $cash . "€" . (isAdmin() ? (" with a note '" . $message . "'") : ($message ? " with a message '" . $message . "'" : "")) . " to team '" . $to_name . "'", "category" => $category));
 
                     logMessage(isAdmin() ? ($cash > 0 ? "Award" : "Penalty") . " given" : "Cash sent", $cash > 0 ? LogLevel::INFO : LogLevel::WARNING, $cash . "€ => '" . $to_name . (isAdmin() ? ("' with a note '" . $message . "'") : ($message ? " with a message '" . $message . "'" : "")));
 

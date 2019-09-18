@@ -32,7 +32,9 @@
         const everybody = "light";
         const finished_contract = "success";
         const sent_private = "info";
-        const received_private = "primary";
+        const received_private = "warning";
+        const awarded = "success";
+        const penalized = "danger";
     }
 
     abstract class LogLevel {
