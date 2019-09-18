@@ -34,19 +34,19 @@
         $success = false;
 
         if (isset($_POST["task_id"])) {
-            logMessage("Delete task initiated", LogLevel::DEBUG, "'task_id' => " . $_POST["task_id"]);
+            logMessage("Delete task initiated", LogLevel::DEBUG, "'task_id':" . $_POST["task_id"]);
             $success = deleteTask($_POST["task_id"]);
         }
         else if (isset($_POST["contract_id"])) {
-            logMessage("Delete contract initiated", LogLevel::DEBUG, "'contract_id' => " . $_POST["contract_id"]);
+            logMessage("Delete contract initiated", LogLevel::DEBUG, "'contract_id':" . $_POST["contract_id"]);
             $success = deleteContract($_POST["contract_id"]);
         }
         else if (isset($_POST["team_id"])) {
-            logMessage("Delete team initiated", LogLevel::DEBUG, "'team_id' => " . $_POST["team_id"]);
+            logMessage("Delete team initiated", LogLevel::DEBUG, "'team_id':" . $_POST["team_id"]);
             $success = deleteTeam($_POST["team_id"]);
         }
         else if (isset($_POST["login_name"])) {
-            logMessage("Delete team initiated", LogLevel::DEBUG, "'login_name' => '" . $_POST["login_name"] . "'");
+            logMessage("Delete team initiated", LogLevel::DEBUG, "'login_name':'" . $_POST["login_name"] . "'");
             $success = execute("DELETE FROM teams WHERE login_name=:login_name", array("login_name" => $_POST["login_name"]));
         }
         else if (isset($_POST["notification_id"])) {
@@ -134,13 +134,20 @@
             }
         }
         else if (isAdmin() && isset($_POST["setting"])) {
-            if ((strpos($_POST["setting"], "datetime_") === 0) && !preg_match("/[0-9]/", $_POST["value"]))
-                $success = execute("DELETE FROM settings WHERE name=:name", array("name" => $_POST["setting"]));
-            else
-                $success = execute("INSERT INTO settings(name, value) VALUES(:name, :value) ON DUPLICATE KEY UPDATE value=:value", array("name" => $_POST["setting"], "value" => $_POST["value"]));
+            $value = $_POST["value"];
 
-            if ($success)
+            if ((strpos($_POST["setting"], "datetime_") === 0) && !preg_match("/[0-9]/", $value)) {
+                $value = null;
+                $success = execute("DELETE FROM settings WHERE name=:name", array("name" => $_POST["setting"]));
+            }
+            else {
+                $success = execute("INSERT INTO settings(name, value) VALUES(:name, :value) ON DUPLICATE KEY UPDATE value=:value", array("name" => $_POST["setting"], "value" => $value));
+            }
+
+            if ($success) {
+                logMessage("Setting changed", LogLevel::DEBUG, "'" . $_POST["setting"] . "':'" . $value . "'");
                 die("OK");
+            }
             else {
                 header("HTTP/1.1 500 Internal Server Error");
                 die(DEBUG ? $_SESSION["conn_error"] : null);
