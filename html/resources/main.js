@@ -261,8 +261,11 @@ $(document).ready(function() {
     });
 
     $(".fa-life-ring").click(function(event) {
-        var row = $(event.target).closest("tr");
         showSendMessageBox("admin", "Administrator", "Send message to support");
+    });
+
+    $(".fa-key").click(function(event) {
+        showChangePasswordBox();
     });
 
     $(".fa-money-bill-wave").click(function(event) {

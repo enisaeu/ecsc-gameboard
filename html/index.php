@@ -261,7 +261,7 @@ END;
 
                     <!-- BEGIN: side bar -->
                     <div id="side_bar" class="col-md-3 mt-5">
-                        <div style="text-align: center"><h4 id="team_name" class="text-center mt-2" style="display: inline; vertical-align: middle"><?php echo cleanReflectedValue($_SESSION["team"]["full_name"]); ?></h4><span id="team_flag" class="flag-icon flag-icon-<?php echo cleanReflectedValue(strtolower($_SESSION["team"]["country_code"])); ?> ml-2" data-toggle="tooltip" title="<?php echo cleanReflectedValue(strtoupper($_SESSION["team"]["country_code"])); ?>" style="width: 20px; display: inline-block; vertical-align: middle"></span><i class="fas fa-key fa-sm ml-2" style="display: inline-block; vertical-align: middle; cursor: pointer" data-toggle="tooltip" title="Change password" onclick="showChangePasswordBox()"></i></div>
+                        <div style="text-align: center"><h4 id="team_name" class="text-center mt-2" style="display: inline; vertical-align: middle"><?php echo cleanReflectedValue($_SESSION["team"]["full_name"]); ?></h4><span id="team_flag" class="flag-icon flag-icon-<?php echo cleanReflectedValue(strtolower($_SESSION["team"]["country_code"])); ?> ml-2" data-toggle="tooltip" title="<?php echo cleanReflectedValue(strtoupper($_SESSION["team"]["country_code"])); ?>" style="width: 20px; display: inline-block; vertical-align: middle"></span><i class="fas fa-key fa-sm ml-2" style="display: <?php echo (isAdmin() ? "inline-block" : "none");?>; vertical-align: middle; cursor: pointer" data-toggle="tooltip" title="Change password"></i></div>
 
 <?php
     if (!isAdmin()) {
