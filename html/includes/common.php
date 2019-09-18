@@ -368,9 +368,15 @@
         $result = "";
 
         foreach ($categories as $category) {
-            $color = array_key_exists($category, PREDEFINED_COLORS) ? PREDEFINED_COLORS[$category] : substr(md5($category), 0, 6);
-            $result .= '<span class="badge badge-light border mr-1" style="color:' . getContrastYIQ($color) . '; background-color: #' . $color . '">' . $category . '</span>';
+            if ($category) {
+                $color = array_key_exists($category, PREDEFINED_COLORS) ? PREDEFINED_COLORS[$category] : substr(md5($category), 0, 6);
+                $result .= '<span class="badge badge-light border mr-1" style="color:' . getContrastYIQ($color) . '; background-color: #' . $color . '">' . $category . '</span>';
+            }
         }
+
+        if (!$result)
+            $result = "&nbsp;";
+
         return $result;
     }
 
