@@ -455,7 +455,7 @@
     }
 
     // Reference: https://codeblogmoney.com/validate-json-string-using-php/
-    function json_validator($data=NULL) {
+    function json_validator($data=null) {
         if (!empty($data)) {
             @json_decode($data);
             return (json_last_error() === JSON_ERROR_NONE);
@@ -463,8 +463,13 @@
         return false;
     }
 
-    function getSetting($name) {
-        return fetchScalar("SELECT value FROM settings WHERE name=:name", array("name" => $name));
+    function getSetting($name, $default=null) {
+        $result = fetchScalar("SELECT value FROM settings WHERE name=:name", array("name" => $name));
+
+        if (!is_null($default) && is_null($result))
+            $result = $default;
+
+        return $result;
     }
 
     function deleteContract($contract_id) {
