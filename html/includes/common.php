@@ -27,14 +27,14 @@
     if (!isset($_SESSION["token"]))
         $_SESSION["token"] = preg_replace('/[^0-9a-zA-Z]/', '', base64_encode(openssl_random_pseudo_bytes(32)));
 
-    abstract class NotificationCategories
+    abstract class NotificationCategory
     {
-        const everybody = "light";
-        const finished_contract = "success";
-        const sent_private = "info";
-        const received_private = "warning";
-        const awarded = "success";
-        const penalized = "danger";
+        const EVERYBODY = "light";
+        const FINISHED_CONTRACT = "success";
+        const SENT_PRIVATE = "info";
+        const RECEIVED_PRIVATE = "warning";
+        const AWARDED = "success";
+        const PENALIZED = "danger";
     }
 
     abstract class LogLevel {

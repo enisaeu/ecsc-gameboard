@@ -83,7 +83,7 @@
         }
     }
     else if (isAdmin() && ($_POST["action"] === "notification") && isset($_POST["message"])) {
-        $success = execute("INSERT INTO notifications(content, category) VALUES(:message, :category)", array("message" => $_POST["message"], "category" => NotificationCategories::everybody));
+        $success = execute("INSERT INTO notifications(content, category) VALUES(:message, :category)", array("message" => $_POST["message"], "category" => NotificationCategory::EVERYBODY));
 
         if ($success) {
             execute("INSERT INTO chat(team_id, content, room) VALUES(:team_id, :content, :room)", array("team_id" => $_SESSION["team_id"], "content" => "Sent new notification to everybody: '" . $_POST["message"] . "'", "room" => DEFAULT_ROOM));
@@ -304,7 +304,7 @@
             $success = execute("INSERT INTO privates(from_id, to_id, cash, message) VALUES(:from_id, :to_id, :cash, :message)", array("from_id" => $_SESSION["team_id"], "to_id" => $to_id, "cash" => $cash, "message" => $message));
             if ($success) {
                 if ($cash) {
-                    $category = $cash > 0 ? NotificationCategories::awarded : NotificationCategories::penalized;
+                    $category = $cash > 0 ? NotificationCategory::AWARDED : NotificationCategory::PENALIZED;
 
                     execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $to_id, "content" => (isAdmin() ? "'" : "Team '") . $from_name . (isAdmin() ? ($cash > 0 ? "' awarded you " : "' penalized you ") : "' sent you ") . $cash . "€" . (isAdmin() ? (" with a note '" . $message . "'") : ($message ? " with a message '" . $message . "'" : "")), "category" => $category));
                     execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => (isAdmin() ? ($cash > 0 ? "You awarded " : "You penalized ") : "You sent ") . $cash . "€" . (isAdmin() ? (" with a note '" . $message . "'") : ($message ? " with a message '" . $message . "'" : "")) . " to team '" . $to_name . "'", "category" => $category));
@@ -318,8 +318,8 @@
                     }
                 }
                 else {
-                    execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $to_id, "content" => "Team '" . $from_name . "' sent you a private message '" . $message . "'", "category" => NotificationCategories::received_private));
-                    execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => "You sent a private message '" . $message . "' to" . ($_POST["to"] === ADMIN_LOGIN_NAME ? "" : " team") . " '" . $to_name . "'", "category" => NotificationCategories::sent_private));
+                    execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $to_id, "content" => "Team '" . $from_name . "' sent you a private message '" . $message . "'", "category" => NotificationCategory::RECEIVED_PRIVATE));
+                    execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => "You sent a private message '" . $message . "' to" . ($_POST["to"] === ADMIN_LOGIN_NAME ? "" : " team") . " '" . $to_name . "'", "category" => NotificationCategory::SENT_PRIVATE));
                 }
             }
         }

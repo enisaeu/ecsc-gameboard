@@ -139,7 +139,7 @@ END;
                         print sprintf('<script>showMessageBox("Success", "Congratulations! You have completed the task \'%s\'", "success");</script>', $result[0]["task_title"]);
                         logMessage("Task completed", LogLevel::INFO, $result[0]["task_title"]);
                         if (count(getFinishedContracts($_SESSION["team_id"])) > count($previous)) {
-                            execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => "You successfully finished contract '" . $result[0]["contract_title"] . "'", "category" => NotificationCategories::finished_contract));
+                            execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => "You successfully finished contract '" . $result[0]["contract_title"] . "'", "category" => NotificationCategory::FINISHED_CONTRACT));
                         }
                         $_ = getRankedTeams()[0];
                         if ($_ != $leader) {
