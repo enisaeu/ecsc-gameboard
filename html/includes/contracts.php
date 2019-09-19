@@ -173,8 +173,6 @@ END;
 
                                             var options = JSON.parse('%s');
 
-                                            // HERE
-
                                             $("#constraints_checkbox").change(function() {
                                                 if ($(this).prop("checked")) {
                                                     var constraints_inputs = $("<div id='constraints_inputs'><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum cash</label><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum awareness</label></div>");

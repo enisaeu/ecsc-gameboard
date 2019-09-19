@@ -64,6 +64,7 @@
     }
     else if (isAdmin() && ($_POST["action"] === "export")) {
         $output = shell_exec("mysqldump --user='" . MYSQL_USERNAME . "' --password='" . MYSQL_PASSWORD . "' --host='" . MYSQL_SERVER . "' '" . MYSQL_DATABASE . "' 2>&1 | grep -v 'Using a password on the command line interface can be insecure'");
+        $output = isset($output) ? $output : "";
 
         header("Content-Type: application/octet-stream");
         header("Content-Disposition: attachment; filename=\"" . MYSQL_DATABASE . ".sql\"");
@@ -74,6 +75,7 @@
     }
     else if (isAdmin() && ($_POST["action"] === "import")) {
         $output = shell_exec("mysql --user='" . MYSQL_USERNAME . "' --password='" . MYSQL_PASSWORD . "' --host='" . MYSQL_SERVER . "' '" . MYSQL_DATABASE . "' 2>&1 < " . $_FILES["import_file"]["tmp_name"] . " | grep -v 'Using a password on the command line interface can be insecure'");
+        $output = isset($output) ? $output : "";
 
         $success = strlen($output) === 0;
 
@@ -106,8 +108,6 @@
         }
     }
     else if ($_POST["action"] === "update") {
-        global $conn;
-
         if (isset($_POST["password"])) {
 
             if (isAdmin()) {

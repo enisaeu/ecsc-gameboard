@@ -209,8 +209,6 @@ END;
                                 <li class="nav-item small">
                                     <a class="nav-link<?php echo (PAGE === "notifications" ? " active" : "") ?>" href="<?php echo joinPaths(PATHDIR, '/notifications/');?>">Notifications <span class="badge badge-light border counter" id="notification_count"><?php echo count(getVisibleNotifications($_SESSION["team_id"]));?></span></a>
                                 </li>
-
-
 <?php
     if (isAdmin()) {
         $html = <<<END

@@ -5,7 +5,7 @@
                     <div class="modal-header">
                         <h5 class="modal-title"></h5>
                         <button class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                            <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -26,12 +26,11 @@
                     <div class="modal-header">
                         <h5 class="modal-title"></h5>
                         <button class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                            <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div style="margin: 10px">
-                        </div>
+                        <div style="margin: 10px"></div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn" data-dismiss="modal">Close</button>

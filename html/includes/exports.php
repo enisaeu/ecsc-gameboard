@@ -74,8 +74,8 @@
             $entry->addAttribute("name", $_["name"]);
             $entry->addAttribute("code", $_["code"]);
             $entry->addAttribute("country", $_["country"]);
-            $entry->addAttribute("score", $_["score"]);
-            $entry->addAttribute("place", $_["place"]);
+            $entry->addAttribute("score", (string) $_["score"]);
+            $entry->addAttribute("place", (string) $_["place"]);
         }
 
 //         die($xml->asXML());
@@ -146,8 +146,8 @@
             $entry = $xml->addChild("entry");
             $entry->addAttribute("task", $_["task"]);
             $entry->addAttribute("contract", $_["contract"]);
-            $entry->addAttribute("cash", $_["cash"]);
-            $entry->addAttribute("solved_by", implode(',',$_["solved_by"]));
+            $entry->addAttribute("cash", (string) $_["cash"]);
+            $entry->addAttribute("solved_by", implode(',', $_["solved_by"]));
             $entry->addAttribute("average_time", $_["average_time"]);
         }
 
