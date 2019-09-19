@@ -325,7 +325,7 @@ function showResetBox(login_name, full_name) {
     dialog.find(".modal-body").append($('<div class="custom-control custom-checkbox"><input class="custom-control-input" id="delete_contracts" type="checkbox"><label class="custom-control-label" for="delete_contracts">Delete contracts</label></div>'));
     dialog.find(".modal-body").append($('<div class="custom-control custom-checkbox"><input class="custom-control-input" id="delete_chat" type="checkbox" checked><label class="custom-control-label" for="delete_chat">Delete chat messages</label></div>'));
     dialog.find(".modal-body").append($('<div class="custom-control custom-checkbox"><input class="custom-control-input" id="delete_privates" type="checkbox" checked><label class="custom-control-label" for="delete_privates">Delete privates (i.e. private messages and cash sends)</label></div>'));
-    dialog.find(".modal-body").append($('<div class="custom-control custom-checkbox"><input class="custom-control-input" id="delete_auxiliary" type="checkbox" checked><label class="custom-control-label" for="delete_auxiliary">Delete auxiliary (i.e. accepted contracts, solved tasks and notifications)</label></div>'));
+    dialog.find(".modal-body").append($('<div class="custom-control custom-checkbox"><input class="custom-control-input" id="delete_auxiliary" type="checkbox" checked><label class="custom-control-label" for="delete_auxiliary">Delete auxiliary (i.e. accepted contracts, solved tasks, notifications, settings and logs)</label></div>'));
     //localStorage.clear()
 
     // Reference: https://stackoverflow.com/a/31909778

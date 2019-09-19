@@ -23,6 +23,8 @@
             $success &= execute("DELETE FROM accepted");
             $success &= execute("DELETE FROM notifications");
             $success &= execute("DELETE FROM hide");
+            $success &= execute("DELETE FROM settings");
+            $success &= execute("DELETE FROM logs");
         }
 
         if ($success)
