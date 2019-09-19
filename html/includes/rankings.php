@@ -1,21 +1,23 @@
 <?php
-        if (isset($_POST["login_name"]) && isset($_POST["edit"])) {
-            $existing = $_POST["login_name"] != "";
+    require_once("common.php");
 
-            if ($existing)
-                $team = fetchAll("SELECT * FROM teams WHERE login_name=:login_name", array("login_name" => $_POST["login_name"]))[0];
-            else
-                $team = array("team_id" => "-1", "login_name" => "", "full_name" => "", "country_code" => "", "email" => "");
+    if (isset($_POST["login_name"]) && isset($_POST["edit"])) {
+        $existing = $_POST["login_name"] != "";
 
-            $template = file_get_contents("templates/team.html");
-            $html = format($template, array("action" => $existing ? "Update" : "Create", "team_id" => $team["team_id"], "login_name" => $team["login_name"], "full_name" => $team["full_name"], "email" => $team["email"]));
+        if ($existing)
+            $team = fetchAll("SELECT * FROM teams WHERE login_name=:login_name", array("login_name" => $_POST["login_name"]))[0];
+        else
+            $team = array("team_id" => "-1", "login_name" => "", "full_name" => "", "country_code" => "", "email" => "");
 
-            if (!$existing)
-                $html = preg_replace('/placeholder="[^"]+" /', "", $html);
+        $template = file_get_contents("templates/team.html");
+        $html = format($template, array("action" => $existing ? "Update" : "Create", "team_id" => $team["team_id"], "login_name" => $team["login_name"], "full_name" => $team["full_name"], "email" => $team["email"]));
 
-            echo $html;
+        if (!$existing)
+            $html = preg_replace('/placeholder="[^"]+" /', "", $html);
 
-            $script = <<<END
+        echo $html;
+
+        $script = <<<END
 
             <script>
                 $(document).ready(function() {
@@ -95,10 +97,10 @@
             </script>
 
 END;
-            echo sprintf($script, $existing ? "true" : "false", $team["country_code"]);
+        echo sprintf($script, $existing ? "true" : "false", $team["country_code"]);
 
-            return;
-        }
+        return;
+    }
 
 ?>
 

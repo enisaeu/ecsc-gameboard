@@ -1,4 +1,6 @@
 <?php
+    require_once("common.php");
+
     if (!isAdmin()) {
         $active = getActiveContracts($_SESSION["team_id"]);
         $finished = getFinishedContracts($_SESSION["team_id"]);

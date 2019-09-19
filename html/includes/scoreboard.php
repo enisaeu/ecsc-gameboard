@@ -1,5 +1,6 @@
 <?php
-    include_once("rankings.php");
+    require_once("common.php");
+    require_once("rankings.php");
 ?>
 <script>
     $(document).ready(function() {

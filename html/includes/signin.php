@@ -1,4 +1,6 @@
 <?php
+    require_once("common.php");
+
     $error = false;
     $time_out = false;
     $wrong_captcha = false;

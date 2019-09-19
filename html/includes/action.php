@@ -1,4 +1,6 @@
 <?php
+    require_once("common.php");
+
     if (isAdmin() && ($_POST["action"] === "reset")) {
         $success = true;
 

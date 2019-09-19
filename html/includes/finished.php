@@ -1,4 +1,6 @@
 <?php
+    require_once("common.php");
+
     $template = file_get_contents("templates/contract.html");
     $_ = getFinishedContracts($_SESSION["team_id"]);
 
