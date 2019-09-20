@@ -277,6 +277,15 @@ body::after {
     text-shadow: 1px 1px 1px #333;
 }
 
+#tab_line_momentum {
+    line-height: 1em;
+}
+
+#tab_line_momentum i {
+    opacity: 0.8;
+    cursor: pointer;
+}
+
 th {
     cursor: pointer;
 }
@@ -313,7 +322,7 @@ td.min {
 }
 
 @media only screen and (max-width: 767px) {
-    #side_bar, #line_momentum {
+    #side_bar, #line_momentum, #tab_line_momentum {
         display: none;
     }
 

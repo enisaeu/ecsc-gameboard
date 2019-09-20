@@ -103,6 +103,9 @@ END;
     }
 
 ?>
+                                <div id="tab_line_momentum" align="right">
+                                    <i class="far fa-window-restore fa-xs" data-toggle="tooltip" title="Open in new tab" onclick="openInNewTab('<?php echo joinPaths(PATHDIR, '/scoreboard');?>')"></i>
+                                </div>
                                 <div id="line_momentum" style="height: 370px; width: 100%;"></div>
                                 <table id="scoreboard" class="table table-hover table-condensed small mt-4">
                                     <thead><tr><th>#</th><th>Team name</th><th>Country</th><th style="white-space:nowrap">Cash (&euro;)</th><th>Awareness</th><th>Actions</th></tr></thead>
