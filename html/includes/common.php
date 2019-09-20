@@ -47,7 +47,7 @@
         const DATETIME_START = "datetime_start";
         const DATETIME_END = "datetime_end";
         const GUESS_DELAY = "guess_delay";
-        const GUESS_LOCKOUT = "guess_lockout";
+        const GUESS_LOGOUT = "guess_logout";
         const CASH_TRANSFERS = "cash_transfers";
         const PRIVATE_MESSAGES = "private_messages";
         const SUPPORT_MESSAGES = "support_messages";

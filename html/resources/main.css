@@ -475,7 +475,7 @@ h1, h4 {
     background-size: 12px;
 }
 
-#guess_delay, #guess_lockout {
+#guess_delay, #guess_logout {
     border: 1px solid rgba(0, 0, 0, 0.125);
     border-radius: .25rem;
     height: 30px;

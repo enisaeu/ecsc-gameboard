@@ -118,8 +118,8 @@ END;
                     $_SESSION["last_wrong_taskid"] = $_POST["task_id"];
                 }
 
-                if (isset($_SESSION["last_wrong_counter"]) && is_numeric(getSetting(Setting::GUESS_LOCKOUT))) {
-                    if ($_SESSION["last_wrong_counter"] >= intval(getSetting(Setting::GUESS_LOCKOUT))) {
+                if (isset($_SESSION["last_wrong_counter"]) && is_numeric(getSetting(Setting::GUESS_LOGOUT)) && (intval(getSetting(Setting::GUESS_LOGOUT)) > 0)) {
+                    if ($_SESSION["last_wrong_counter"] >= intval(getSetting(Setting::GUESS_LOGOUT))) {
                         logMessage("Guess prevention", LogLevel::WARNING, "Potential brute-force detected");
                         signOut();
                     }
@@ -310,8 +310,8 @@ END;
         $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Dynamic scoring", "dynamic_scoring", getSetting(Setting::DYNAMIC_SCORING) == "true" ? " checked" : "");
         $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Private messages", "private_messages", getSetting(Setting::PRIVATE_MESSAGES) !== "false" ? " checked" : "");
         $settings .= "\n" . sprintf('                                    <tr><td>%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Support messages", "support_messages", getSetting(Setting::SUPPORT_MESSAGES) !== "false" ? " checked" : "");
-        $settings .= "\n" . sprintf('                                    <tr><td>Guess answer penalty (secs): </td><td><input id="guess_delay" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_DELAY)) ? getSetting(Setting::GUESS_DELAY) : "0");
-        $settings .= "\n" . sprintf('                                    <tr><td>Max. attempts (optional): </td><td><input id="guess_lockout" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_LOCKOUT)) ? getSetting(Setting::GUESS_LOCKOUT) : "");
+        $settings .= "\n" . sprintf('                                    <tr><td>Guess attempt penalty (secs): </td><td><input id="guess_delay" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_DELAY)) ? getSetting(Setting::GUESS_DELAY) : "0");
+        $settings .= "\n" . sprintf('                                    <tr><td>Guess logout after attempts: </td><td><input id="guess_logout" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_LOGOUT)) ? getSetting(Setting::GUESS_LOGOUT) : "");
         $settings .= "\n" . sprintf('                                    <tr><td>Start time (optional): </td><td><input id="datetime_start" type="text" value="%s" size="18"></td></tr>', getSetting(Setting::DATETIME_START));
         $settings .= "\n" . sprintf('                                    <tr><td>End time (optional): </td><td><input id="datetime_end" type="text" value="%s" size="18"></td></tr>', getSetting(Setting::DATETIME_END));
 
