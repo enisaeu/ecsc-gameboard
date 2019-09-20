@@ -342,6 +342,13 @@
         $room = isset($_POST["room"]) ? $_POST["room"] : DEFAULT_ROOM;
 
         $chat_id = isset($_POST["chat_id"]) ? intval($_POST["chat_id"]) : 0;
+
+        $last_update = fetchScalar("SELECT last_update()");
+        if (isset($_SESSION["pull_last_update"]) && ($chat_id !== 0) && ($_SESSION["pull_last_update"] === $last_update))
+            die();
+        else
+            $_SESSION["pull_last_update"] = $last_update;
+
         $chat = fetchAll("SELECT message_id, chat.team_id AS team_id, login_name, country_code, content, UNIX_TIMESTAMP(chat.ts) AS ts FROM chat JOIN teams ON chat.team_id=teams.team_id WHERE message_id>:message_id AND room=:room ORDER BY ts ASC", array("message_id" => $chat_id, "room" => $room));
 
         foreach ($chat as $row) {

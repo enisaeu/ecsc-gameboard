@@ -822,6 +822,9 @@ function pullMessages(initial) {
         $("#chat_messages").attr("pull_lock", true);
 
         $.post(window.location.href.split('#')[0], {token: document.token, action: "pull", chat_id: $("#chat_messages div[chat_id]").last().attr("chat_id") || 0, room : $("#chat_room").val().replace('#', '')}, function(content) {
+            if (content === "")
+                return;
+
             try {
                 result = JSON.parse(content);
             }
