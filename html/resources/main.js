@@ -54,6 +54,10 @@ $(document).ready(function() {
         }
     });
 
+    if (localStorage.getItem("chat_room")) {
+        $("#chat_room").prop("value", localStorage.getItem("chat_room"));
+    }
+
     $(".collapse").on("show.bs.collapse", function(event) {
         localStorage.setItem($(event.target).prop("id"), "show");
     }).on("hide.bs.collapse", function(event) {
@@ -157,8 +161,9 @@ $(document).ready(function() {
     });
 
     $("#chat_room").change(function() {
+        localStorage.setItem("chat_room", $("#chat_room").prop("value"));
         $("#chat_messages").find("div").remove();
-            pullMessages();
+        pullMessages();
     });
 
     $(".actions i").css("cursor", "pointer");
@@ -807,6 +812,7 @@ function decodeBB(message) {
          .replace(/\[s\](.+)\[\/s\]/g, "<s>$1</s>")
          .replace(/\[u\](.+)\[\/u\]/g, "<u>$1</u>")
          .replace(/\[quote\](.+)\[\/quote\]/g, "<cite>$1</cite>")
+         .replace(/\[code\](.+)\[\/code\]/g, "<code>$1</code>")
          .replace(/\[blockquote\](.+)\[\/blockquote\]/g, "<blockquote>$1</blockquote>")
          .replace(/\[highlight=([a-z]+|#[0-9abcdef]+)\](.+)\[\/highlight\]/g, "<span style='background-color:$1'>$2</span>")
          .replace(/\[color=([a-z]+|#[0-9abcdef]+)\](.+)\[\/color\]/g, "<span style='color:$1'>$2</span>");
