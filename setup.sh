@@ -88,6 +88,18 @@ Header unset ETag
 FileETag None
 EOF
 
+# Note: expected memory footprint per worker-process is 20KB (RES)
+cat > /etc/apache2/mods-enabled/mpm_prefork.conf << EOF
+# Reference: https://www.liquidweb.com/kb/apache-performance-tuning-mpm-directives/
+<IfModule mpm_prefork_module>
+    MaxRequestWorkers   512
+    ServerLimit         512
+    MinSpareServers     100
+    MaxSpareServers     200
+    StartServers        100
+</IfModule>
+EOF
+
 git checkout .
 read -s -p "Enter new password for MySQL user 'ecsc' (press <Enter> for default): " NEW_PWD
 echo
