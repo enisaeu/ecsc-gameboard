@@ -986,15 +986,17 @@ function drawLineMomentum() {
             var maxCash = 0;
             var totalPoints = 0;
 
-            for (var team_name in result)
-                totalPoints += result[team_name]["cash"].length;
+            $(result).each(function() {
+                totalPoints += $(this).prop("cash").length;
+            });
+
 
             var lineThickness = Math.max(1, 3 - Math.floor(totalPoints / 1000));
 
-            for (var team_name in result) {
+            $(result).each(function() {
                 dataPoints = [];
-                for (var i = 0; i < result[team_name]["cash"].length; i++) {
-                    current = result[team_name]["cash"][i];
+                for (var i = 0; i < $(this).prop("cash").length; i++) {
+                    current = $(this).prop("cash")[i];
                     dataPoints.push({ x: new Date(current["x"] * 1000), y: current["y"] });
                     minTime = Math.min(minTime, current["x"]);
                     maxTime = Math.max(maxTime, current["x"]);
@@ -1004,21 +1006,21 @@ function drawLineMomentum() {
                 dataset = {
                     type: "line",
                     lineThickness: lineThickness,
-                    color: getHashColor(team_name),
+                    color: getHashColor($(this).prop("name")),
                     axisYType: "secondary",
-                    name: team_name,
+                    name: $(this).prop("name"),
                     showInLegend: true,
                     visible: dataPoints.length > 0,
                     markerSize: 2 * lineThickness,
-                    markerType: getMarkerType(team_name),
+                    markerType: getMarkerType($(this).prop("name")),
 //                     yValueFormatString: "#,###,#k",
                     dataPoints: dataPoints
                 };
                 datasets.push(dataset);
 
                 if (datasets.length >= MAX_TOP_TEAMS)
-                    break;
-            }
+                    return false;
+            });
 
             if ((result.length == 0) || (isAdmin() && (maxCash == 0))) {
                 $("#line_momentum").hide(100, function() { $("#line_momentum").remove(); });

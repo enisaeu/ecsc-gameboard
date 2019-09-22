@@ -145,20 +145,23 @@
 
         foreach ($teams as $team_id) {
             $team_name = fetchScalar("SELECT full_name FROM teams WHERE team_id=:team_id", array("team_id" => $team_id));
-            $result[$team_name] = array("cash" => array(), "awareness" => array());
+            $team = array("name" => $team_name, "cash" => array(), "awareness" => array());
 
             $first = true;
             $timestamps = fetchAll("SELECT ts FROM (SELECT UNIX_TIMESTAMP(ts) AS ts FROM solved WHERE team_id=:team_id UNION ALL SELECT UNIX_TIMESTAMP(ts) AS ts FROM privates WHERE cash IS NOT NULL AND (from_id=:team_id OR to_id=:team_id)) AS result ORDER BY ts ASC", array("team_id" => $team_id), PDO::FETCH_COLUMN);
+
             foreach ($timestamps as $timestamp) {
                 $current = getScores($team_id, $timestamp);
                 if ($first) {
-                    array_push($result[$team_name]["cash"], array("x" => intval($timestamp) - 1, "y" => 0));
-                    array_push($result[$team_name]["awareness"], array("x" => intval($timestamp) - 1, "y" => 0));
+                    array_push($team["cash"], array("x" => intval($timestamp) - 1, "y" => 0));
+                    array_push($team["awareness"], array("x" => intval($timestamp) - 1, "y" => 0));
                     $first = false;
                 }
-                array_push($result[$team_name]["cash"], array("x" => intval($timestamp), "y" => $current["cash"]));
-                array_push($result[$team_name]["awareness"], array("x" => intval($timestamp), "y" => $current["awareness"]));
+                array_push($team["cash"], array("x" => intval($timestamp), "y" => $current["cash"]));
+                array_push($team["awareness"], array("x" => intval($timestamp), "y" => $current["awareness"]));
             }
+
+            array_push($result, $team);
         }
 
         return $result;
