@@ -671,6 +671,13 @@ function getHashColor(value) {
     return "#" + pad(value.hashCode().toString(16), 6).substring(0, 6);
 }
 
+// Reference: https://canvasjs.com/docs/charts/basics-of-creating-html5-chart/markers/
+var markers = ["circle", "square", "cross", "triangle", "line"];
+
+function getMarkerType(value) {
+    return markers[parseInt(value.hashCode().toString(16), 16) % markers.length];
+}
+
 // Reference: https://stackoverflow.com/a/20426113
 var special = ['zeroth','first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'thirteenth', 'fourteenth', 'fifteenth', 'sixteenth', 'seventeenth', 'eighteenth', 'nineteenth'];
 var deca = ['twent', 'thirt', 'fort', 'fift', 'sixt', 'sevent', 'eight', 'ninet'];
@@ -1001,7 +1008,9 @@ function drawLineMomentum() {
                     axisYType: "secondary",
                     name: team_name,
                     showInLegend: true,
+                    visible: dataPoints.length > 0,
                     markerSize: 2 * lineThickness,
+                    markerType: getMarkerType(team_name),
 //                     yValueFormatString: "#,###,#k",
                     dataPoints: dataPoints
                 };
