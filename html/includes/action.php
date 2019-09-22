@@ -248,32 +248,8 @@
             }
         }
     }
-    else if ($_POST["action"] === "status") {
-        if (isAdmin()) {
-            $result = array();
-        }
-        else {
-            $result = array("progress" => array("cash" => array(0), "awareness" => array(0)), "places" => array());
-            $_ = array_values(getMomentum($_SESSION["team_id"]))[0];
-
-            foreach (array("cash", "awareness") as $key) {
-                foreach ($_[$key] as $current) {
-                    array_push($result["progress"][$key], $current["y"]);
-                }
-            }
-
-            foreach (getPlaces($_SESSION["team_id"]) as $key => $value)
-                $result["places"][$key] = $value;
-        }
-
-        $result["team_name"] = fetchScalar("SELECT full_name FROM teams WHERE team_id=:team_id", array("team_id" => $_SESSION["team_id"]));
-        $result["notifications"] = getNotifications($_SESSION["team_id"]);
-
-        echo json_encode($result);
-    }
-
     else if ($_POST["action"] === "momentum") {
-        echo json_encode(getMomentum_new());
+        echo json_encode(getMomentum());
     }
     else if (($_POST["action"] === "push") && (isset($_POST["message"]))) {
         $room = isset($_POST["room"]) ? $_POST["room"] : DEFAULT_ROOM;

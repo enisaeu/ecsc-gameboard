@@ -139,7 +139,7 @@
         return $result;
     }
 
-    function getMomentum_new($team_id=null) {
+    function getMomentum($team_id=null) {
         $result = array();
         $teams = is_null($team_id) ? getRankedTeams() : array($team_id);
 
@@ -158,41 +158,6 @@
                 }
                 array_push($result[$team_name]["cash"], array("x" => intval($timestamp), "y" => $current["cash"]));
                 array_push($result[$team_name]["awareness"], array("x" => intval($timestamp), "y" => $current["awareness"]));
-            }
-        }
-
-        return $result;
-    }
-
-    function getMomentum($team_id=null) {
-        $min = fetchScalar("SELECT IFNULL(UNIX_TIMESTAMP(MIN(ts)), UNIX_TIMESTAMP()) FROM accepted");
-        $max = 1 + fetchScalar("SELECT UNIX_TIMESTAMP()"); // +1 because of send cash + refresh quirk
-        $n = MOMENTUM_STEPS;
-        $step = ($max - $min) / $n;
-        $result = array();
-
-        $teams = is_null($team_id) ? getRankedTeams() : array($team_id);
-
-        foreach ($teams as $team_id) {
-            $team_name = fetchScalar("SELECT full_name FROM teams WHERE team_id=:team_id", array("team_id" => $team_id));
-            $result[$team_name] = array("cash" => array(), "awareness" => array());
-
-            array_push($result[$team_name]["cash"], array("x" => intval($min), "y" => 0));
-            array_push($result[$team_name]["awareness"], array("x" => intval($min), "y" => 0));
-
-            if ($step) {
-                $timestamp = (($min - 1) / $step) * $step;
-
-                while ($timestamp <= $max) {
-                    $current = getScores($team_id, $timestamp);
-                    array_push($result[$team_name]["cash"], array("x" => intval($timestamp), "y" => $current["cash"]));
-                    array_push($result[$team_name]["awareness"], array("x" => intval($timestamp), "y" => $current["awareness"]));
-                    $timestamp += $step;
-                }
-            }
-            else {
-                array_push($result[$team_name]["cash"], array("x" => intval($max), "y" => 0));
-                array_push($result[$team_name]["awareness"], array("x" => intval($max), "y" => 0));
             }
         }
 
