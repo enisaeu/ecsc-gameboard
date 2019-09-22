@@ -588,7 +588,7 @@ function showAwardCashBox(login_name, full_name) {
         return;
 
     dialog.removeAttr("id");
-    dialog.find(".modal-title").text("Award cash");
+    dialog.find(".modal-title").text("Award/penalize cash");
     dialog.find(".modal-body").html("");
     dialog.find(".modal-body").append($("<label>Amount:</label><input type='number' name='quantity' class='form-control ml-2' style='width: initial; display: inline-block' value='0' style='width: 6em'><hr>"));
     dialog.find(".modal-body").append($("<textarea class='form-control' rows=4 placeholder='Note (mandatory)' style='width: 100%'></textarea>"));

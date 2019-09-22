@@ -88,7 +88,7 @@ Header unset ETag
 FileETag None
 EOF
 
-# Note: expected memory footprint per worker-process is 20KB (RES)
+# Note: expected memory footprint per worker-process is 21KB (RES)
 cat > /etc/apache2/mods-enabled/mpm_prefork.conf << EOF
 # Reference: https://www.liquidweb.com/kb/apache-performance-tuning-mpm-directives/
 <IfModule mpm_prefork_module>
