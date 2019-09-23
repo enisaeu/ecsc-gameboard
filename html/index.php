@@ -167,7 +167,7 @@ END;
 ?>
     </head>
     <body>
-        <div class="container mt-1<?php echo (PAGE === "scoreboard") ? " hidden" : ""?>" id="main_container">
+        <div class="container mt-1<?php echo ((PAGE === "scoreboard") || (PAGE === "chat")) ? " hidden" : ""?>" id="main_container">
             <div class="container">
                 <div class="row">
                     <div class="col-md-9">
