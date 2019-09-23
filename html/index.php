@@ -245,7 +245,7 @@ END;
 
                         <!-- BEGIN: main content -->
                         <div id="main_content">
-                            <div class="container">
+                            <div class="container container-<?php echo PAGE;?>">
 <?php
     $path = sprintf("includes/%s.php", PAGE);
     if (isAdmin() && (PAGE == "teams"))
