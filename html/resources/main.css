@@ -637,4 +637,5 @@ html {
     overflow-y: auto;
     border: 1px solid rgba(0,0,0,.125);
     padding: 5px;
+    width: 96%;
 }
