@@ -870,7 +870,7 @@ function pullMessages(initial) {
                 }
             }
 
-            if ($("#notification_count").text() != result["notifications"]) {
+            if (($("#notification_count").length > 0) && ($("#notification_count").text() != result["notifications"])) {
                 $("#notification_count").text(result["notifications"]);
                 if ($(".active").html().indexOf("notification_") >= 0) {
                     setInterval(function() {
