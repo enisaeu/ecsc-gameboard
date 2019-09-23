@@ -238,6 +238,9 @@ $(document).ready(function() {
         bStateSave: true
     });
 
+    $('#logs_table').removeClass("hidden");
+    $('#stats_table').removeClass("hidden");
+
     periodicPullMessages();
 
     $('[data-toggle="tooltip"]').tooltip();

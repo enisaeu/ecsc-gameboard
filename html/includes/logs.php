@@ -5,7 +5,7 @@
         die();
 ?>
 
-                                <table id="logs_table" class="table table-hover table-condensed small mt-4">
+                                <table id="logs_table" class="table table-hover table-condensed small mt-4 hidden">
                                     <thead>
                                         <tr><th>Timestamp</th><th>Level</th><th>Message</th><th>Details</th><th>Team name</th><th>Country</th><th>IP</th></tr>
                                     </thead>

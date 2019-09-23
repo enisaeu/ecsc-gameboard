@@ -248,7 +248,7 @@ body::after {
     width: 15ch;
 }
 
-#stats_table th:nth-child(4) {
+#stats_table th:nth-child(3), #stats_table th:nth-child(4), #stats_table th:nth-child(5) {
     text-align: right;
 }
 
@@ -272,7 +272,7 @@ body::after {
 
 #stats_table th {
     color: white;
-    background-color: #777777;
+    background-color: #2db94b;
     font-weight: bold;
     text-shadow: 1px 1px 1px #333;
 }
@@ -288,6 +288,7 @@ body::after {
 
 th {
     cursor: pointer;
+    white-space: nowrap;
 }
 
 td.min {

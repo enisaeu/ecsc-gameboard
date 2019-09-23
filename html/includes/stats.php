@@ -5,7 +5,7 @@
         die();
 ?>
 
-                                <table id="stats_table" class="table table-hover table-condensed small mt-4">
+                                <table id="stats_table" class="table table-hover table-condensed small mt-4 hidden">
                                     <thead>
                                         <tr><th>Task</th><th>Contract</th><th>Cash value (&euro;)</th><th>Teams solved</th><th>Avg. solve time</th></tr>
                                     </thead>
