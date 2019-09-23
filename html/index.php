@@ -320,7 +320,7 @@ END;
 ?>
                         <div class="card mt-3">
                             <div class="card-header">
-                                <i class="fas fa-comments" data-toggle="tooltip" title="Open in new tab" style="cursor:pointer" onclick="openInNewTab('<?php echo joinPaths(PATHDIR, '/chat');?>')"></i> <select id="chat_room" class="badge"><option value="general">#general</option><option value="news">#news</option><option value="random">#random</option><option value="team">#team &#x1F512;</option></select> <span class="badge badge-light" style="float:right; line-height: 1.5; color: gray">(chat)</span>
+                                <i class="fas fa-comments" data-toggle="tooltip" title="Chat"></i> <select id="chat_room" class="badge"><option value="general">#general</option><option value="news">#news</option><option value="random">#random</option><option value="team">#team &#x1F512;</option></select> <span class="badge badge-light" style="float:right; line-height: 1.5; color: gray">(chat)</span> <i class="far fa-window-restore" style="position: absolute; right: 10px; top: 10px" data-toggle="tooltip" title="Open in new tab" onclick="openInNewTab('<?php echo joinPaths(PATHDIR, '/chat');?>')"></i>
                             </div>
                             <div id="chat_messages" class="scroll-box">
                             </div>

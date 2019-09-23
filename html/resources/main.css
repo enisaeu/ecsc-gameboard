@@ -281,9 +281,10 @@ body::after {
     line-height: 1em;
 }
 
-#tab_line_momentum i {
+.fa-window-restore {
     opacity: 0.8;
     cursor: pointer;
+    font-size: 10px;
 }
 
 th {
