@@ -319,11 +319,18 @@
 
         $chat_id = isset($_POST["chat_id"]) ? intval($_POST["chat_id"]) : 0;
 
-        $last_update = fetchScalar("SELECT last_update()");
-        if (isset($_SESSION["pull_last_update"]) && ($chat_id !== 0) && ($_SESSION["pull_last_update"] === $last_update))
-            die();
-        else
-            $_SESSION["pull_last_update"] = $last_update;
+        if (isset($_POST["unique_id"])) {
+            $unique_id = $_POST["unique_id"];
+            $last_update = fetchScalar("SELECT last_update()");
+
+            if (!isset($_SESSION["pull_last_update"]))
+                $_SESSION["pull_last_update"] = array();
+
+            if (isset($_SESSION["pull_last_update"][$unique_id]) && ($chat_id !== 0) && ($_SESSION["pull_last_update"][$unique_id] === $last_update))
+                die();
+            else
+                $_SESSION["pull_last_update"][$unique_id] = $last_update;
+        }
 
         $chat = fetchAll("SELECT message_id, chat.team_id AS team_id, login_name, country_code, content, UNIX_TIMESTAMP(chat.ts) AS ts FROM chat JOIN teams ON chat.team_id=teams.team_id WHERE message_id>:message_id AND room=:room ORDER BY ts ASC", array("message_id" => $chat_id, "room" => $room));
 

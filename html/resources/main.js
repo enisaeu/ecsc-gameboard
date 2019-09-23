@@ -54,6 +54,8 @@ $(document).ready(function() {
         }
     });
 
+    $("#chat_messages").attr("uid", Math.floor(Math.random() * 100000));
+
     if (localStorage.getItem("chat_room")) {
         $("#chat_room").prop("value", localStorage.getItem("chat_room"));
     }
@@ -837,7 +839,7 @@ function pullMessages(initial) {
     if (!$("#chat_messages").is("[pull_lock]")) {
         $("#chat_messages").attr("pull_lock", true);
 
-        $.post(window.location.href.split('#')[0], {token: document.token, action: "pull", chat_id: $("#chat_messages div[chat_id]").last().attr("chat_id") || 0, room : $("#chat_room").val().replace('#', '')}, function(content) {
+        $.post(window.location.href.split('#')[0], {token: document.token, action: "pull", chat_id: $("#chat_messages div[chat_id]").last().attr("chat_id") || 0, room : $("#chat_room").val().replace('#', ''), unique_id: $("#chat_messages").attr("uid")}, function(content) {
             if (content === "")
                 return;
 
