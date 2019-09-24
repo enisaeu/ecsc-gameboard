@@ -229,16 +229,16 @@ body::after {
     border-collapse: collapse;
 }
 
-#scoreboard th:nth-child(1), #scoreboard td:nth-child(1), #scoreboard th:nth-child(4), #scoreboard td:nth-child(4), #scoreboard th:nth-child(5), #scoreboard td:nth-child(5), #stats_table td:nth-child(3), #stats_table td:nth-child(4), #stats_table td:nth-child(5) {
+#scoreboard th:nth-child(1), #scoreboard td:nth-child(1), #scoreboard th:nth-child(4), #scoreboard td:nth-child(4), #scoreboard th:nth-child(5), #scoreboard td:nth-child(5), #stats_table td:nth-child(3), #stats_table td:nth-child(4), #stats_table td:nth-child(6) {
     text-align: right;
 }
 
-#scoreboard th:nth-child(3), #scoreboard td:nth-child(3), #scoreboard th:nth-child(6), #scoreboard td:nth-child(6), #logs_table td:nth-child(6) {
+#scoreboard th:nth-child(3), #scoreboard td:nth-child(3), #scoreboard th:nth-child(6), #scoreboard td:nth-child(6), #logs_table td:nth-child(6), #stats_table td:nth-child(5) {
     text-align: center;
     width: 20px;
 }
 
-#stats_table th:nth-child(3), #stats_table th:nth-child(5) {
+#stats_table th:nth-child(3), #stats_table th:nth-child(6) {
     white-space: nowrap;
     width: 20px;
 }
@@ -248,7 +248,7 @@ body::after {
     width: 15ch;
 }
 
-#stats_table th:nth-child(3), #stats_table th:nth-child(4), #stats_table th:nth-child(5) {
+#stats_table th:nth-child(3), #stats_table th:nth-child(4), #stats_table th:nth-child(6) {
     text-align: right;
 }
 
@@ -639,4 +639,11 @@ html {
     border: 1px solid rgba(0,0,0,.125);
     padding: 5px;
     width: 96%;
+}
+
+.sparkline-tooltip {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background-color: black;
 }

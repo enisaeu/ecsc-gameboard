@@ -186,7 +186,6 @@ $(document).ready(function() {
         $(this).prepend($("<span class='mr-1' style='color: " + color + "'>&#9646;</span>"));
     });
 
-
     // Reference: https://stackoverflow.com/a/3160718
     $("table").each(function() {
         $(this).find("th")
@@ -242,6 +241,8 @@ $(document).ready(function() {
 
     $('#logs_table').removeClass("hidden");
     $('#stats_table').removeClass("hidden");
+
+    $('.heartbeat').sparkline("html", { type: "line", tooltipClassname: "sparkline-tooltip", disableTooltips: true, disableInteraction: true, spotRadius: 0 });
 
     periodicPullMessages();
 

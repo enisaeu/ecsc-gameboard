@@ -19,6 +19,7 @@
     define("GD_INSTALLED", extension_loaded("gd")); // Note: had problems on Ubuntu 18.04 when PHP has been updated to 7.2, while the 7.0 had still been used (hence, problems with GD arised) - thus, had to do the "apt remove php7.0" to get GD up and running
     define("CAPTCHA_ENABLED", true && GD_INSTALLED);
     define("NOTIFICATIONS_HIDE_ENABLED", true);     // Enable ability for users to hide individual notifications
+    define("HEARTBEAT_POINTS", 24);
 
     session_start();
 
