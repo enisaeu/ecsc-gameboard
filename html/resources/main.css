@@ -252,8 +252,8 @@ body::after {
     text-align: right;
 }
 
-#stats_table td {
-    vertical-align: middle;
+td {
+    vertical-align: middle !important;
 }
 
 #scoreboard th {
