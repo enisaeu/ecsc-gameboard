@@ -256,6 +256,10 @@ td {
     vertical-align: middle !important;
 }
 
+.heartbeat {
+/*     vertical-align: bottom !important; */
+}
+
 #scoreboard th {
     color: white;
     background-color: #0074e8;

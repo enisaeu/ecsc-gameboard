@@ -154,7 +154,10 @@ END;
         <script>
             $(document).ready(function() {
                 var element = $("[name=task_id][value=%s]").parent().parent();
-                wrongValueEffect(element);
+
+                $([document.documentElement]).animate({scrollTop: $(element).offset().top}, "fast", function() {
+                    wrongValueEffect(element);
+                });
             });
         </script>
 
