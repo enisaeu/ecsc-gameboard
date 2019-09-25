@@ -1,3 +1,61 @@
+@media only screen and (max-width: 990px) {
+    #side_bar {
+        display: none;
+    }
+
+    .col-md-9 {
+        max-width: 100%;
+        flex: 0 0 100%;
+    }
+
+    .container {
+        max-width: initial;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    #side_bar, #line_momentum, #tab_line_momentum {
+        display: none;
+    }
+
+    h1 {
+        font-size: 36px !important;
+    }
+
+    #logo {
+        width: 40px;
+        margin-left: 4px !important;
+    }
+
+    .contract {
+        width: 100%;
+    }
+
+    .time {
+        float: initial;
+    }
+
+    .time::before {
+        content: "\00a0";
+    }
+
+    #scoreboard td, #scoreboard th {
+        padding: 5px;
+    }
+
+    #scoreboard td:nth-child(2) {
+/*         font-size: 90% !important; */
+    }
+
+    #scoreboard th:nth-child(6), #scoreboard td:nth-child(6) {
+        display: none;
+    }
+
+    .container {
+        padding: 10px;
+    }
+}
+
 #noscript {
     position: absolute;
     top: 50%;
@@ -310,64 +368,6 @@ td.min {
     float: right;
     line-height: 24px;
     white-space: nowrap;
-}
-
-@media only screen and (max-width: 990px) {
-    #side_bar {
-        display: none;
-    }
-
-    .col-md-9 {
-        max-width: 100%;
-        flex: 0 0 100%;
-    }
-
-    .container {
-        max-width: initial;
-    }
-}
-
-@media only screen and (max-width: 767px) {
-    #side_bar, #line_momentum, #tab_line_momentum {
-        display: none;
-    }
-
-    h1 {
-        font-size: 36px !important;
-    }
-
-    #logo {
-        width: 40px;
-        margin-left: 4px !important;
-    }
-
-    .contract {
-        width: 100%;
-    }
-
-    .time {
-        float: initial;
-    }
-
-    .time::before {
-        content: "\00a0";
-    }
-
-    #scoreboard td, #scoreboard th {
-        padding: 5px;
-    }
-
-    #scoreboard td:nth-child(2) {
-/*         font-size: 90% !important; */
-    }
-
-    #scoreboard th:nth-child(6), #scoreboard td:nth-child(6) {
-        display: none;
-    }
-
-    .container {
-        padding: 10px;
-    }
 }
 
 table { 

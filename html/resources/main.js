@@ -863,7 +863,7 @@ function pullMessages(initial) {
                 counter += 1;
             }
 
-            if (result["chat"].length) {
+            if ((result["chat"].length > 0) && ($('#chat_messages').length > 0)) {
                 try {
                     $('#chat_messages').animate({scrollTop: $('#chat_messages')[0].scrollHeight}, initial ? 0 : "fast");
                 }

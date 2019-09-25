@@ -8,7 +8,7 @@
         element.detach();
         $('body').append(element);
         $("#main_container").remove();
-        $("#line_momentum").css({'height': ($(window).height()) + 'px'});
+        $("#line_momentum").css({'height': ($(window).height()) + 'px', "display": "block"});
 
         // Note: dirty patch for proper resizing / redrawing
         var $_ = function() {
