@@ -166,6 +166,7 @@ $(document).ready(function() {
         localStorage.setItem("chat_room", $("#chat_room").prop("value"));
         $("#chat_messages").find("div").remove();
         pullMessages();
+        $("#chat_message").focus();
     });
 
     $(".actions i").css("cursor", "pointer");
@@ -247,6 +248,12 @@ $(document).ready(function() {
     periodicPullMessages();
 
     $('[data-toggle="tooltip"]').tooltip();
+
+    $(document).on('shown.bs.tooltip', function (e) {
+        setTimeout(function () {
+            $(e.target).tooltip('hide');
+        }, 3000);
+    });
 
     // Note: just in case
     repositionSidebar();
