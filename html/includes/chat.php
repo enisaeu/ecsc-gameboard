@@ -5,6 +5,6 @@
         $('body').append(element);
         $("#main_container").remove();
         $("#chat_messages").css({'height': ($(window).height() - ($("#chat_messages").offset().top + $("#chat_message").height() + $(".card-header").offset().top)) + 'px'});
-        $(".fa-window-restore").remove();
+        $(".fa-external-link-alt").remove();
     });
 </script>

@@ -323,7 +323,7 @@ END;
 ?>
                         <div class="card mt-3">
                             <div class="card-header">
-                                <i class="fas fa-comments" data-toggle="tooltip" title="Chat"></i> <select id="chat_room" class="badge"><option value="general">#general</option><option value="news">#news</option><option value="random">#random</option><option value="team">#team &#x1F512;</option></select> <span class="badge badge-light" style="float:right; line-height: 1.5; color: gray">(chat)</span> <i class="far fa-window-restore" style="position: absolute; right: 8px; top: 8px" data-toggle="tooltip" title="Open in new tab" onclick="openInNewTab('<?php echo joinPaths(PATHDIR, '/chat');?>')"></i>
+                                <i class="fas fa-comments" data-toggle="tooltip" title="Chat"></i> <select id="chat_room" class="badge"><option value="general">#general</option><option value="news">#news</option><option value="random">#random</option><option value="team">#team &#x1F512;</option></select> <span class="badge badge-light" style="float:right; line-height: 1.5; color: gray">(chat)</span> <i class="fas fa-external-link-alt" style="position: absolute; right: 7px; top: 8px" data-toggle="tooltip" title="Open in new tab" onclick="openInNewTab('<?php echo joinPaths(PATHDIR, '/chat');?>')"></i>
                             </div>
                             <div id="chat_messages" class="scroll-box">
                             </div>
