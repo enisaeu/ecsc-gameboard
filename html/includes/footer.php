@@ -51,7 +51,6 @@ for ($i = 0; $i < strlen($_SESSION["token"]); $i++) {
 echo "              document.token = String.fromCharCode(" . $value . ");\n";
 ?>
         </script>
-
         <noscript>
             Javascript is disabled in your browser. You must have Javascript enabled to utilize the functionality of this page!
         </noscript>

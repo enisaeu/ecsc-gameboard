@@ -57,6 +57,7 @@
         <script>
             alert("Out-of-time");
         </script>
+
 END;
     }
     else if ($wrong_captcha) {
@@ -64,6 +65,7 @@ END;
         <script>
             alert("Wrong captcha");
         </script>
+
 END;
     }
     else if ($error) {
@@ -73,6 +75,7 @@ END;
                 $("input").effect("highlight", {color: "red"});
             });
         </script>
+
 END;
     }
 ?>
@@ -119,7 +122,7 @@ END;
                                 </div>
                             </div>
                             <div class="mb-4">
-                                <center><img id="captcha-image" src="%s" alt="Captcha image" title="Click to change" onclick="$(this).attr('src', $(this).attr('src').split('?')[0] + '?' + Date.now())"></center>
+                                <img id="captcha-image" src="%s" alt="Captcha image" class="center" title="Click to change" onclick="$(this).attr('src', $(this).attr('src').split('?')[0] + '?' + Date.now())">
                             </div>
 END;
         echo sprintf($html, joinPaths(PATHDIR, '/captcha') . '?' . time());
@@ -130,7 +133,6 @@ END;
                             </div>
                         </form>
                     </div>
-        <!--            <div class="modal-footer">Don't have an account?&nbsp;<a href="#">Create one</a></div>-->
                     <div class="modal-footer"><?php echo TITLE; ?> platform</div>
                 </div>
             </div>

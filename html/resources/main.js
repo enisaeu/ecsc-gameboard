@@ -208,8 +208,8 @@ $(document).ready(function() {
                             return parseFloat($(a).attr("value")) > parseFloat($(b).attr("value")) ?
                                 inverse ? -1 : 1
                                 : inverse ? 1 : -1;
-                        else if ($.isNumeric($(a).text().replace(",", "")) && $.isNumeric($(b).text().replace(",", "")))
-                            return parseFloat($.text([a]).replace(",", "")) > parseFloat($.text([b]).replace(",", "")) ?
+                        else if ($.isNumeric($(a).text().replace(/[,?]/g, "") || -1) && $.isNumeric($(b).text().replace(/[,?]/g, "") || -1))
+                            return parseFloat($.text([a]).replace(/[,?]/g, "") || -1) > parseFloat($.text([b]).replace(/[,?]/g, "") || -1) ?
                                 inverse ? -1 : 1
                                 : inverse ? 1 : -1;
                         else if ($(a).find(".log-level").length)
@@ -217,7 +217,7 @@ $(document).ready(function() {
                                 inverse ? -1 : 1
                                 : inverse ? 1 : -1;
                         else
-                            return $.text([a]) > $.text([b]) ?
+                            return $.text([a]).replace(/\?/g, "") > $.text([b]).replace(/\?/g, "") ?
                                 inverse ? -1 : 1
                                 : inverse ? 1 : -1;
                     }, function(){

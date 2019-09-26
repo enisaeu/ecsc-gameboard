@@ -9,7 +9,7 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"/>
         <meta name="description" content="<?php echo TITLE; ?> - European Cyber Security Challenge">
-        <meta name="keywords" content="CTF,Capture the Flag,Challenges,Competition,Puzzles,Security,Cybersecurity,ENISA,EU">
+        <meta name="keywords" content="CTF,Capture the Flag,Challenge,Competition,Puzzles,Security,Cybersecurity,ENISA,EU">
         <link rel="shortcut icon" href="<?php echo joinPaths(PATHDIR, '/favicon.ico');?>">
         <link rel="preload" href="<?php echo joinPaths(PATHDIR, '/resources/agency-fb.woff');?>" as="font" crossorigin="anonymous"/>
         <link rel="preload" href="<?php echo joinPaths(PATHDIR, '/resources/logo.jpg');?>" as="image" crossorigin="anonymous"/>
@@ -27,7 +27,6 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/jquery.dataTables.min.js" integrity="sha256-t5ZQTZsbQi8NxszC10CseKjJ5QeMw5NINtOXQrESGSU=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js" integrity="sha256-BuAkLaFyq4WYXbN3TFSsG1M5GltEeFehAMURi4KBpUM=" crossorigin="anonymous"></script>
-
         <script src="<?php echo joinPaths(PATHDIR, '/resources/jquery.sortElements.js');?>"></script>
         <script src="<?php echo joinPaths(PATHDIR, '/resources/main.js');?>"></script>
         <noscript>
