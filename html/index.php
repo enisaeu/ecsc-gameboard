@@ -153,10 +153,10 @@ END;
                     $html = <<<END
         <script>
             $(document).ready(function() {
-                var element = $("[name=task_id][value=%s]").parent().parent();
+                var element = $("[name=task_id][value=%s]");
 
-                $([document.documentElement]).animate({scrollTop: $(element).offset().top}, "fast", function() {
-                    wrongValueEffect(element);
+                $([document.documentElement]).animate({scrollTop: $(element.closest(".card")).offset().top}, "fast", function() {
+                    wrongValueEffect($(element).closest(".card-body"));
                 });
             });
         </script>
