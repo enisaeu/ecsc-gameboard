@@ -20,6 +20,8 @@
     define("CAPTCHA_ENABLED", true && GD_INSTALLED);
     define("NOTIFICATIONS_HIDE_ENABLED", true);     // Enable ability for users to hide individual notifications
     define("HEARTBEAT_POINTS", 24);
+    define("DETAILS_TRUNCATE_LENGTH", 200);
+    define("DETAILS_WRAP_LENGTH", 30);
 
     session_start();
 
@@ -575,5 +577,14 @@
         setcookie(session_name(), '', 0, '/');
         header("Location: " . PATHDIR);
         die();
+    }
+
+    function truncate($string, $max_length) {
+        if (!empty($string))
+            $result = (strlen($string) > $max_length) ? substr($string, 0, $max_length) . "..." : $string;
+        else
+            $result = $string;
+
+        return $result;
     }
 ?>
