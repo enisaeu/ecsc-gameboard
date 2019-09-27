@@ -107,7 +107,7 @@ END;
                 $success |= $options["ignore_order"] && wordMatch($correct, $answer);
 
                 if (!$success) {
-                    logMessage("Wrong answer", LogLevel::DEBUG, "'" . $answer . "' => '" . $task_title . "'");
+                    logMessage("Wrong answer", LogLevel::DEBUG, "'" . $_POST["answer"] . "' => '" . $task_title . "'");
 
                     if (isset($_SESSION["last_wrong_taskid"]) && ($_SESSION["last_wrong_taskid"] == $_POST["task_id"])) {
                         $_SESSION["last_wrong_counter"] = (isset($_SESSION["last_wrong_counter"]) ? $_SESSION["last_wrong_counter"] : 0) + 1;
@@ -125,8 +125,8 @@ END;
                     }
                 }
 
-                if (!checkStartEndTime()) {
-                    logMessage("Correct answer, but out of time", LogLevel::DEBUG, "'" . $answer . "' => '" . $task_title . "'");
+                if (!checkStartEndTime() && $success) {
+                    logMessage("Correct answer, but out of time", LogLevel::DEBUG, "'" . $_POST["answer"] . "' => '" . $task_title . "'");
                     $success = false;
                 }
 
