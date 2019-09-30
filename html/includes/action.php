@@ -249,7 +249,18 @@
         }
     }
     else if ($_POST["action"] === "momentum") {
-        echo json_encode(getMomentum());
+        $last_update = fetchScalar("SELECT last_update()");
+        $result = fetchScalar("SELECT value FROM cache WHERE name=:name AND ts=FROM_UNIXTIME(:last_update)", array("name" => Cache::MOMENTUM, "last_update" => $last_update));
+
+        if (is_null($result)) {
+            $result = json_encode(getMomentum());
+            if ($last_update === fetchScalar("SELECT last_update()")) {  // Note: safety check to prevent dirty-write
+                execute("DELETE FROM cache WHERE name=:name", array("name" => Cache::MOMENTUM));
+                execute("INSERT INTO cache(name, value, ts) VALUES(:name, :value, FROM_UNIXTIME(:last_update))", array("name" => Cache::MOMENTUM, "value" => $result, "last_update" => $last_update));
+            }
+        }
+
+        echo $result;
     }
     else if (($_POST["action"] === "push") && (isset($_POST["message"]))) {
         $room = isset($_POST["room"]) ? $_POST["room"] : DEFAULT_ROOM;

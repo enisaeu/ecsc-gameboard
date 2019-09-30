@@ -56,6 +56,10 @@
         const SUPPORT_MESSAGES = "support_messages";
     }
 
+    abstract class Cache {
+        const MOMENTUM = "momentum";
+    }
+
     // PHP5 compatibility (can't use arrays in defines)
     const PREDEFINED_COLORS = array("Offensive" => "0078c4", "Web" => "41c4dc", "Crypto" => "8fc33f", "Reverse-engineering" => "fedd00", "Forensics" => "f8972a", "Networking" => "e3124f", "Multiple options" => "b01c91");
 
