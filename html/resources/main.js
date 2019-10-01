@@ -269,6 +269,13 @@ $(document).ready(function() {
 
     $('[data-toggle="tooltip"]').tooltip();
 
+    $('#logs_table').DataTable().on("mouseup", "td", function (event) {
+        if (event.button === 0) {  // left mouse button
+            if (event.target.classList.contains("log-level"))
+                $('#logs_table').DataTable().search(event.target.innerHTML).draw();
+        }
+    });
+
     $(document).on('shown.bs.tooltip', function (e) {
         setTimeout(function () {
             $(e.target).tooltip('hide');

@@ -601,6 +601,7 @@ html {
 .log-level {
     float: center;
     padding: 1px 2px;
+    cursor: pointer;
     text-align: center;
     width: 50px;
     box-sizing: border-box;
