@@ -233,6 +233,7 @@ $(document).ready(function() {
     $('#logs_table').DataTable({
         order: [[ 0, "desc" ]],
         bStateSave: true,
+        aLengthMenu: [ [10, 25, 50], [10, 25, 50] ],
         oLanguage: {
             sLengthMenu: "_MENU_ events per page",
             sZeroRecords: "No matching events found",
@@ -247,6 +248,7 @@ $(document).ready(function() {
     $('#stats_table').DataTable({
         order: [[ 0, "asc" ]],
         bStateSave: true,
+        aLengthMenu: [ [10, 25, 50], [10, 25, 50] ],
         oLanguage: {
             sLengthMenu: "_MENU_ tasks per page",
             sZeroRecords: "No matching tasks found",
