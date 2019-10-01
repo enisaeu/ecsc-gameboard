@@ -334,7 +334,7 @@ td {
 
 #stats_table th {
     color: white;
-    background-color: #2db94b;
+    background-color: #999;
     font-weight: bold;
     text-shadow: 1px 1px 1px #333;
 }
@@ -662,4 +662,8 @@ input[type=search] {
     background: url("search.png") no-repeat scroll 98% 50%;
     background-color: white;
     padding-right: 16px;
+}
+
+.dataTables_wrapper div {
+    font-size: 70%;
 }

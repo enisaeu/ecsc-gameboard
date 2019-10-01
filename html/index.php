@@ -235,7 +235,7 @@ END;
                                     <a class="nav-link btn-danger ml-1" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="showResetBox()">Reset</a>
                                 </li>
                                 <li class="nav-item small">
-                                    <a class="nav-link btn-success ml-1" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="showDatabaseBox()">Database</a>
+                                    <a class="nav-link btn-secondary ml-1" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="showDatabaseBox()">Database</a>
                                 </li>
 
 END;
