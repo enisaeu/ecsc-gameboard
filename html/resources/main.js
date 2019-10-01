@@ -232,12 +232,30 @@ $(document).ready(function() {
 
     $('#logs_table').DataTable({
         order: [[ 0, "desc" ]],
-        bStateSave: true
+        bStateSave: true,
+        oLanguage: {
+            sLengthMenu: "_MENU_ events per page",
+            sZeroRecords: "No matching events found",
+            sInfo: "Showing _START_ to _END_ of <span class='details_total'>_TOTAL_</span> events",
+            sInfoEmpty: "Showing 0 to 0 of <span class='details_total'>0</span> total events",
+            sInfoFiltered: "(<span style='color: red'>filtered</span> from _MAX_ total events)",
+            sSearchPlaceholder: "Filter",
+            sSearch: ""
+        }
     });
 
     $('#stats_table').DataTable({
         order: [[ 0, "asc" ]],
-        bStateSave: true
+        bStateSave: true,
+        oLanguage: {
+            sLengthMenu: "_MENU_ tasks per page",
+            sZeroRecords: "No matching tasks found",
+            sInfo: "Showing _START_ to _END_ of <span class='details_total'>_TOTAL_</span> tasks",
+            sInfoEmpty: "Showing 0 to 0 of <span class='details_total'>0</span> total tasks",
+            sInfoFiltered: "(<span style='color: red'>filtered</span> from _MAX_ total tasks)",
+            sSearchPlaceholder: "Filter",
+            sSearch: ""
+        }
     });
 
     $('#logs_table').removeClass("hidden");
