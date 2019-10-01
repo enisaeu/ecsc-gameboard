@@ -668,3 +668,7 @@ input[type=search] {
 .dataTables_wrapper div {
     font-size: 70%;
 }
+
+.fa-times {
+    opacity: 0.8;
+}

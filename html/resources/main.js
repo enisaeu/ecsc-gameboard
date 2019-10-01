@@ -241,7 +241,7 @@ $(document).ready(function() {
             sInfoEmpty: "Showing 0 to 0 of <span class='details_total'>0</span> total events",
             sInfoFiltered: "(<span style='color: red'>filtered</span> from _MAX_ total events)",
             sSearchPlaceholder: "Filter",
-            sSearch: ""
+            sSearch: "<i class='fas fa-times' data-toggle='tooltip' title='Clear filter' onclick='$(\"#logs_table\").DataTable().search(\"\").draw()'></i>"
         }
     });
 
@@ -256,7 +256,7 @@ $(document).ready(function() {
             sInfoEmpty: "Showing 0 to 0 of <span class='details_total'>0</span> total tasks",
             sInfoFiltered: "(<span style='color: red'>filtered</span> from _MAX_ total tasks)",
             sSearchPlaceholder: "Filter",
-            sSearch: ""
+            sSearch: "<i class='fas fa-times' data-toggle='tooltip' title='Clear filter' onclick='$(\"#stats_table\").DataTable().search(\"\").draw()'></i>"
         }
     });
 
