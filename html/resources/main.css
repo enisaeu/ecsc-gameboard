@@ -90,6 +90,10 @@
     transform: rotate(0deg) ;
 }
 
+[data-toggle="collapse"] {
+    cursor: pointer;
+}
+
 .modal {
   text-align: center;
   padding: 0 !important;
@@ -680,6 +684,7 @@ input[type=search] {
 .constrained .border {
     border: 1px solid #ced4da !important;
 }
+
 .constrained .badge {
     background-color: #e9ecef;
     color: gray !important;
