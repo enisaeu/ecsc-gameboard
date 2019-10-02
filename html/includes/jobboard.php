@@ -27,7 +27,7 @@
         $constraint = fetchAll("SELECT * FROM constraints WHERE contract_id=:contract_id", array("contract_id" => $contract_id))[0];
         $contract = fetchAll("SELECT contracts.title, contracts.description, contracts.categories, SUM(tasks.cash) AS cash, SUM(tasks.awareness) AS awareness FROM contracts JOIN tasks ON contracts.contract_id=tasks.contract_id WHERE contracts.contract_id=:contract_id GROUP BY(contracts.contract_id)", array("contract_id" => $contract_id))[0];
         $description = $contract["description"];
-        $description .= "<p class=\"smaller\">Note: To take this contract you'll need: ";
+        $description .= "<p class=\"smaller\"><u>Note:</u> To take this contract you'll need: ";
 
         if (!is_null($constraint["min_cash"]))
             $description .= sprintf("<b>&euro; %s</b> ", number_format($constraint["min_cash"]));
@@ -37,8 +37,9 @@
         $description .= "</p>";
 
         $html = format($template, array("title" => $contract["title"], "values" => generateValuesHtml(getDynamicScore(null, $contract_id), $contract["awareness"]), "description" => $description, "categories" => generateCategoriesHtml(explode(',', $contract["categories"])), "contract_id" => $contract_id));
-        $html = str_replace('class="card ', 'class="card text-white bg-secondary ', $html);
+        $html = str_replace('class="card ', 'class="card text-white bg-secondary constrained ', $html);
         $html = preg_replace("/<form.+form>\n?/s", "", $html);
+        $html = preg_replace("/style=\"[^\"]+background-color:[^\"]+\"/s", "", $html);
         echo $html;
         $success = true;
 

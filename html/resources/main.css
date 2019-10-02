@@ -672,3 +672,15 @@ input[type=search] {
 .fa-times {
     opacity: 0.8;
 }
+
+.constrained {
+    opacity: 0.9;
+}
+
+.constrained .border {
+    border: 1px solid #ced4da !important;
+}
+.constrained .badge {
+    background-color: #e9ecef;
+    color: gray !important;
+}
