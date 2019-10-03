@@ -1,7 +1,7 @@
 <?php
     require_once("common.php");
 
-    if (isset($_POST["login_name"]) && isset($_POST["edit"])) {
+    if (isAdmin() && isset($_POST["login_name"]) && isset($_POST["edit"])) {
         $existing = $_POST["login_name"] != "";
 
         if ($existing)
