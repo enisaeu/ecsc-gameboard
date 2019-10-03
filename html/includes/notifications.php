@@ -20,7 +20,8 @@
             echo format($template, array("category" => (is_null($row["category"]) ? "info" : $row["category"]), "content" => cleanReflectedValue(breakLongWords($row["content"])), "notification_id" => $notification_id, "time" => $row["ts"]));
         }
 
-    if (isAdmin()) {
+    if (isAdmin())
         echo '<div class="ml-4 mb-3"><button class="btn btn-info" onclick="showSendNotificationBox()">New notification</button></div>';
-    }
+    else if (NOTIFICATIONS_HIDE_ENABLED)
+        echo '<div class="ml-4 mb-3"><button class="btn btn-info" onclick="hideNotification(-1)">Unhide hidden</button></div>';
 ?>

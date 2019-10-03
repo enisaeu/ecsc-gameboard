@@ -101,7 +101,11 @@
         }
     }
     else if ($_POST["action"] === "hide") {
-        $success = execute("INSERT INTO hide(notification_id, team_id) VALUES(:notification_id, :team_id)", array("notification_id" => $_POST["notification_id"], "team_id" => $_SESSION["team_id"]));
+        if ($_POST["notification_id"] == -1)
+            $success = execute("DELETE FROM hide WHERE team_id=:team_id", array("team_id" => $_SESSION["team_id"]));
+        else
+            $success = execute("INSERT INTO hide(notification_id, team_id) VALUES(:notification_id, :team_id)", array("notification_id" => $_POST["notification_id"], "team_id" => $_SESSION["team_id"]));
+
         if ($success)
             die("OK");
         else {
