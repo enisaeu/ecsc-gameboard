@@ -23,6 +23,10 @@
     define("DETAILS_TRUNCATE_LENGTH", 200);
     define("DETAILS_WRAP_LENGTH", 30);
 
+    // Reference: https://stackoverflow.com/a/2886224
+    if ((!empty($_SERVER["HTTPS"]) && strtolower($_SERVER["HTTPS"]) !== "off") || $_SERVER["SERVER_PORT"] == 443)
+        ini_set("session.cookie_secure", "1");
+
     session_start();
 
     if (!isset($_SESSION["token"]))
