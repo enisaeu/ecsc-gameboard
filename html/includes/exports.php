@@ -1,9 +1,9 @@
 <?php
     require_once("common.php");
 
-    if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/scores.json")) {
-        $callback = isset($_GET["callback"]) ? $_GET["callback"] : null;
+    $callback = isset($_GET["callback"]) ? preg_replace("/[^A-Za-z0-9 ]/", '', $_GET["callback"]) : null;
 
+    if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/scores.json")) {
         if (is_null($callback))
             header("Content-Type: application/json");
         else
@@ -89,8 +89,6 @@
     }
 
     else if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/stats.json")) {
-        $callback = isset($_GET["callback"]) ? $_GET["callback"] : null;
-
         if (is_null($callback))
             header("Content-Type: application/json");
         else
