@@ -10,18 +10,20 @@
     define("ADMIN_LOGIN_NAME", "admin");
     define("TITLE", "ECSC " . date("Y"));
     define("CHAT_FILEPATH", "/var/run/shm/chat.htm");
-    define("DYNAMIC_DECAY_PER_SOLVE", 0.04);        // Decaying per-solve ratio (0 <= _ <= 1) used for calculating penalty from initial (task) score (e.g. if initial score 100, after 4 solves with decay ratio 0.1 penalty will become 40 -> effective score 60)
-    define("DYNAMIC_DECAY_MAX_PENALTY", 0.8);       // Decaying max-penalty ratio (0 <= _ <= 1) used for calculating maximum penalty from initial (task) score (e.g. if initial score 100, with max-penalty ratio 0.20 maximum penalty will become 20 -> effective score 80)
+    define("DYNAMIC_DECAY_PER_SOLVE", 0.04);            // Decaying per-solve ratio (0 <= _ <= 1) used for calculating penalty from initial (task) score (e.g. if initial score 100, after 4 solves with decay ratio 0.1 penalty will become 40 -> effective score 60)
+    define("DYNAMIC_DECAY_MAX_PENALTY", 0.8);           // Decaying max-penalty ratio (0 <= _ <= 1) used for calculating maximum penalty from initial (task) score (e.g. if initial score 100, with max-penalty ratio 0.20 maximum penalty will become 20 -> effective score 80)
     define("DEFAULT_ROOM", "general");
     define("PRIVATE_ROOM", "team");
     define("FLAG_REGEX", "/ECSC\{.+\}/");
     define("FLAG_REDACTED", "ECSC{...}");
-    define("GD_INSTALLED", extension_loaded("gd")); // Note: had problems on Ubuntu 18.04 when PHP has been updated to 7.2, while the 7.0 had still been used (hence, problems with GD arised) - thus, had to do the "apt remove php7.0" to get GD up and running
+    define("GD_INSTALLED", extension_loaded("gd"));     // Note: had problems on Ubuntu 18.04 when PHP has been updated to 7.2, while the 7.0 had still been used (hence, problems with GD arised) - thus, had to do the "apt remove php7.0" to get GD up and running
     define("CAPTCHA_ENABLED", true && GD_INSTALLED);
-    define("NOTIFICATIONS_HIDE_ENABLED", false);     // Enable ability for users to hide individual notifications
+    define("NOTIFICATIONS_HIDE_ENABLED", false);        // Enable ability for users to hide individual notifications
     define("HEARTBEAT_POINTS", 24);
     define("DETAILS_TRUNCATE_LENGTH", 200);
     define("DETAILS_WRAP_LENGTH", 30);
+    define("CHAT_TRUNCATE_LENGTH", 128);                // Note: maximum chat message length for non-admin
+    define("PRIVATE_TRUNCATE_LENGTH", 256);             // Note: maximum private message length for non-admin
 
     // Reference: https://stackoverflow.com/a/2886224
     if ((!empty($_SERVER["HTTPS"]) && strtolower($_SERVER["HTTPS"]) !== "off") || $_SERVER["SERVER_PORT"] == 443)

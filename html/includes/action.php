@@ -268,7 +268,7 @@
     }
     else if (($_POST["action"] === "push") && (isset($_POST["message"]))) {
         $room = isset($_POST["room"]) ? $_POST["room"] : DEFAULT_ROOM;
-        $success = execute("INSERT INTO chat(team_id, content, room) VALUES(:team_id, :content, :room)", array("team_id" => $_SESSION["team_id"], "content" => $_POST["message"], "room" => $room));
+        $success = execute("INSERT INTO chat(team_id, content, room) VALUES(:team_id, :content, :room)", array("team_id" => $_SESSION["team_id"], "content" => isAdmin() ? $_POST["message"] : truncate($_POST["message"], CHAT_TRUNCATE_LENGTH), "room" => $room));
         if ($success)
             die("OK");
         else {
@@ -280,6 +280,7 @@
         $cash = (isset($_POST["cash"]) && is_numeric($_POST["cash"])) ? intval($_POST["cash"]) : NULL;
         $to_id = fetchScalar("SELECT team_id FROM teams WHERE login_name=:login_name", array("login_name" => $_POST["to"]));
         $max = getScores($_SESSION["team_id"])["cash"];
+        $message = NULL;
 
         if ($_POST["to"] === ADMIN_LOGIN_NAME) {
             if (getSetting(Setting::SUPPORT_MESSAGES) === "false" || !isset($_POST["message"]))
@@ -289,6 +290,9 @@
         }
         else
             $message = (getSetting(Setting::PRIVATE_MESSAGES) !== "false" && isset($_POST["message"])) ? $_POST["message"] : NULL;
+
+        if (!is_null($message))
+            $message = isAdmin() ? $message : truncate($message, PRIVATE_TRUNCATE_LENGTH);
 
         if ((!is_null($cash)) && ((getSetting(Setting::CASH_TRANSFERS) === "false") || ($cash < 0)) && (!isAdmin()))
             $success = false;
