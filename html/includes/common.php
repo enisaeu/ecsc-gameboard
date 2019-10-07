@@ -481,7 +481,7 @@
     }
 
     function cleanReflectedValue($value) {
-        return htmlspecialchars($value, ENT_QUOTES, "utf-8");
+        return nl2br(htmlspecialchars($value, ENT_QUOTES, "utf-8"), false);
     }
 
     function breakLongWords($value) {
