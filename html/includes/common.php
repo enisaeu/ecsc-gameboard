@@ -4,7 +4,7 @@
     define("MYSQL_USERNAME", "ecsc");
     define("MYSQL_PASSWORD", "<blank>");
     define("MYSQL_DATABASE", "ecsc");
-    define("PATHDIR", dirname(htmlspecialchars($_SERVER["PHP_SELF"], ENT_QUOTES, "utf-8")));
+    define("PATHDIR", dirname(preg_replace("[a-zA-Z0-9/._-]", "", $_SERVER["PHP_SELF"])));
     define("MOMENTUM_STEPS", 30);
     define("MIN_CASH_VALUE", 0);
     define("ADMIN_LOGIN_NAME", "admin");
