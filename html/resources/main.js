@@ -257,6 +257,9 @@ $(document).ready(function() {
             sInfoFiltered: "(<span style='color: red'>filtered</span> from _MAX_ total tasks)",
             sSearchPlaceholder: "Filter",
             sSearch: "<i class='fas fa-times' data-toggle='tooltip' title='Clear filter' onclick='$(\"#stats_table\").DataTable().search(\"\").draw()'></i>"
+        },
+        fnDrawCallback: function( oSettings ) {
+            $(".heartbeat:contains(',')").sparkline("html", { type: "line", tooltipClassname: "sparkline-tooltip", disableTooltips: true, disableInteraction: true, spotRadius: 0 });
         }
     });
 
