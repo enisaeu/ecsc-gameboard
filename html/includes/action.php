@@ -362,6 +362,10 @@
                 $content = preg_replace(FLAG_REGEX, FLAG_REDACTED, $content);
 
             $_ = array("id" => $row["message_id"], "team" => $row["login_name"], "country" => $row["country_code"], "content" => $content, "ts" => $row["ts"]);
+
+            if (!json_encode($_))
+                continue;
+
             array_push($result["chat"], $_);
         }
 
