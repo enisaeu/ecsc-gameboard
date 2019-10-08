@@ -25,7 +25,7 @@ ErrorDocument 500 " "
 </IfModule>
 <IfModule mod_rewrite.c>
     RewriteEngine on
-    RewriteRule ^(robots.txt|favicon.ico)$ $1 [L]
+    RewriteRule ^(robots.txt|favicon.ico|server-status)$ $1 [L]
     RewriteRule ^(files|resources)/(.*) $1/$2 [L]
     RewriteRule .* index.php [L]
 </IfModule>
