@@ -95,20 +95,24 @@ END;
                     $options = array("note" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
 
                 $answer = $_POST["answer"];
-                $correct = fetchScalar("SELECT answer FROM tasks WHERE task_id=:task_id", array("task_id" => $_POST["task_id"]));
+                $correct = fetchScalar("SELECT answer FROM tasks JOIN contracts ON tasks.contract_id=contracts.contract_id WHERE task_id=:task_id AND contracts.hidden IS NOT TRUE", array("task_id" => $_POST["task_id"]));
                 $task_title = fetchScalar("SELECT title FROM tasks WHERE task_id=:task_id", array("task_id" => $_POST["task_id"]));
 
-                if ($options["ignore_case"]) {
-                    $answer = strtoupper($answer);
-                    $correct = strtoupper($correct);
+                if (!is_null($correct)) {
+                    if ($options["ignore_case"]) {
+                        $answer = strtoupper($answer);
+                        $correct = strtoupper($correct);
+                    }
+
+                    $correct = preg_replace("/\s+/", "", $correct);
+                    $answer = preg_replace("/\s+/", "", $answer);
+
+                    $success = $correct === $answer;
+                    $success |= $options["is_regex"] && preg_match("/" . $correct . "/", $answer);
+                    $success |= $options["ignore_order"] && wordMatch($correct, $answer);
                 }
-
-                $correct = preg_replace("/\s+/", "", $correct);
-                $answer = preg_replace("/\s+/", "", $answer);
-
-                $success = $correct === $answer;
-                $success |= $options["is_regex"] && preg_match("/" . $correct . "/", $answer);
-                $success |= $options["ignore_order"] && wordMatch($correct, $answer);
+                else
+                    $success = false;
 
                 if (!$success) {
                     logMessage("Wrong answer", LogLevel::DEBUG, "'" . $_POST["answer"] . "' => '" . $task_title . "'");
