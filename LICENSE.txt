@@ -1,3 +1,0 @@
-The European Cyber Security Challenge Gameboard project is provided under the
-European Union Public Licence (EUPL) License, which is available in 23 official
-languages of the European Union here: https://eupl.eu/.
