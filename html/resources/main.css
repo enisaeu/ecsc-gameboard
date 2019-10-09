@@ -675,6 +675,7 @@ input[type=search] {
 
 .fa-times {
     opacity: 0.8;
+    cursor: pointer;
 }
 
 .constrained {
