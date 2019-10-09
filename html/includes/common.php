@@ -101,11 +101,15 @@
         return $str;
     }
 
-    function generateValuesHtml($cash, $awareness) {
+    function generateValuesHtml($cash, $awareness, $dynamic=null) {
         if (is_numeric($cash))
             $result = format('<span class="badge {appearance} border mr-2">&euro; {cash}</span>', array("cash" => number_format($cash), "appearance" => ($cash > 0 ? "badge-success" : ($cash < 0 ? "badge-danger" : "badge-light"))));
         else
             $result = format('<span class="badge {appearance} border mr-2">&euro; {cash}</span>', array("cash" => $cash, "appearance" => "badge-light"));
+
+        if (!is_null($dynamic) && ($dynamic != $cash))
+            $result = str_replace('</span>', '/' . $dynamic . '</span>', $result);
+
         if (is_numeric($awareness))
             $result .= format('<span class="badge {appearance} border mr-2">{awareness} <i class="fas fa-eye"></i></span>', array("awareness" => number_format($awareness), "appearance" => ($awareness > 0 ? "badge-success" : ($awareness < 0 ? "badge-danger" : "badge-light"))));
         else

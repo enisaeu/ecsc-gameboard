@@ -286,6 +286,7 @@ END;
                         $row = fetchAll("SELECT title, description, categories, hidden, 0 AS cash, 0 AS awareness FROM contracts WHERE contracts.contract_id=:contract_id", array("contract_id" => $contract_id));
 
                     $row = $row[0];
+                    $dynamic = getDynamicScore(null, $contract_id);
                     $note = "";
                     if (in_array($contract_id, $__)) {
                         $constraint = fetchAll("SELECT * FROM constraints WHERE contract_id=:contract_id", array("contract_id" => $contract_id))[0];
@@ -298,7 +299,7 @@ END;
                         $note .= "</p>";
                     }
                     $html = str_replace("</b>", '</b><button class="close" data-dismiss="modal" aria-label="Delete contract" title="Delete contract" data-toggle="tooltip"><span aria-hidden="true">×</span></button>', $template);
-                    $html = format($html, array("title" => $row["title"]. ($row["hidden"] ? '<i class="far fa-eye-slash ml-2" title="Hidden" data-toggle="tooltip"></i>' : ""), "values" => generateValuesHtml($row["cash"], $row["awareness"]), "description" => $row["description"] . $note, "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
+                    $html = format($html, array("title" => $row["title"]. ($row["hidden"] ? '<i class="far fa-eye-slash ml-2" title="Hidden" data-toggle="tooltip"></i>' : ""), "values" => generateValuesHtml($row["cash"], $row["awareness"], $dynamic), "description" => $row["description"] . $note, "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
                     $html = preg_replace("/Take contract/s", "Edit contract", $html);
                     $html = preg_replace("/btn-success/s", "btn-primary", $html);
                     if ($row["hidden"]) {
