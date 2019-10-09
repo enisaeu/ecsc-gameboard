@@ -21,6 +21,13 @@
                 $total = 0;
 
                 foreach ($rows as $row) {
+                    $result = fetchAll("SELECT * FROM options WHERE task_id=:task_id", array("task_id" => $row["task_id"]));
+
+                    if ($result)
+                        $options = $result[0];
+                    else
+                        $options = array("note" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
+
                     $template = file_get_contents("templates/task.html");
                     $task = format($template, array("title" => $row["title"], "description" => $row["description"], "task_id" => $row["task_id"]));
 
@@ -36,6 +43,9 @@
                     else {
                         $cash = getDynamicScore($row["task_id"]);
                         $task = format($task, array("values" => generateValuesHtml($cash, $row["awareness"])));
+
+                        if ($options["note"])
+                            $task = str_replace("Task answer", cleanReflectedValue($options["note"]), $task);
                     }
 
                     $total += $cash;
