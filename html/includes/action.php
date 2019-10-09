@@ -289,7 +289,7 @@
                 $message = $_POST["message"];
         }
         else
-            $message = (getSetting(Setting::PRIVATE_MESSAGES) !== "false" && isset($_POST["message"])) ? $_POST["message"] : NULL;
+            $message = ((isAdmin() || (getSetting(Setting::PRIVATE_MESSAGES) !== "false")) && isset($_POST["message"])) ? $_POST["message"] : NULL;
 
         if (!is_null($message))
             $message = isAdmin() ? $message : truncate($message, PRIVATE_TRUNCATE_LENGTH);
