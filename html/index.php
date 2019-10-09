@@ -102,6 +102,10 @@ END;
                     $answer = strtoupper($answer);
                     $correct = strtoupper($correct);
                 }
+
+                $correct = preg_replace("/\s+/", "", $correct);
+                $answer = preg_replace("/\s+/", "", $answer);
+
                 $success = $correct === $answer;
                 $success |= $options["is_regex"] && preg_match("/" . $correct . "/", $answer);
                 $success |= $options["ignore_order"] && wordMatch($correct, $answer);
