@@ -1,11 +1,4 @@
-# mysql -t -u root -p < schema.sql
-
-DROP DATABASE IF EXISTS ecsc;
-
-CREATE DATABASE ecsc CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; -- Reference: https://dba.stackexchange.com/a/76789
-GRANT ALL ON ecsc.* TO ecsc@localhost IDENTIFIED BY '<blank>';
-
-USE ecsc;
+USE scoreboard;
 
 ###
 
