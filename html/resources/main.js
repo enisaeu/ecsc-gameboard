@@ -260,7 +260,10 @@ $(document).ready(function() {
         },
         fnDrawCallback: function( oSettings ) {
             $(".heartbeat:contains(',')").sparkline("html", { type: "line", tooltipClassname: "sparkline-tooltip", disableTooltips: true, disableInteraction: true, spotRadius: 0 });
-        }
+        },
+        columnDefs: [
+            { orderSequence: [ "desc", "asc" ], targets: [ 3, 4, 5 ] },
+        ]
     });
 
     $('#logs_table').removeClass("hidden");
