@@ -253,6 +253,40 @@
         }
     }
     else if ($_POST["action"] === "momentum") {
+        $done = false;
+        $last_update = fetchScalar("SELECT last_update()");
+        $result = fetchAll("SELECT UNIX_TIMESTAMP(ts) AS ts, value FROM cache WHERE name=:name", array("name" => Cache::MOMENTUM));
+
+        if ($result) {
+            // Reference: https://stackoverflow.com/a/15273676
+            ignore_user_abort(true);
+            set_time_limit(0);
+
+            ob_start();
+            echo $result[0]["value"];
+            header('Connection: close');
+            header('Content-Length: ' . ob_get_length());
+            header("Content-Encoding: none");  // Dirty "patch" for bypassing encoders stall
+            ob_end_flush();
+            ob_flush();
+            flush();
+
+            $done = true;
+        }
+
+        if (!$done || ($result[0]["ts"] != $last_update)) {
+            $result = json_encode(getMomentum());
+            if ($last_update === fetchScalar("SELECT last_update()")) {  // Note: safety check to prevent dirty-write
+                execute("DELETE FROM cache WHERE name=:name", array("name" => Cache::MOMENTUM));
+                execute("INSERT INTO cache(name, value, ts) VALUES(:name, :value, FROM_UNIXTIME(:last_update))", array("name" => Cache::MOMENTUM, "value" => $result, "last_update" => $last_update));
+            }
+
+            if (!$done)
+                echo $result;
+        }
+    }
+//     else if ($_POST["action"] === "momentum") {
+    else if (false) {
         $last_update = fetchScalar("SELECT last_update()");
         $result = fetchScalar("SELECT value FROM cache WHERE name=:name AND ts=FROM_UNIXTIME(:last_update)", array("name" => Cache::MOMENTUM, "last_update" => $last_update));
 
