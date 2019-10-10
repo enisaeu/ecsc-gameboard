@@ -295,7 +295,7 @@ END;
         $scores = getScores($_SESSION["team_id"]);
         $places = getPlaces($_SESSION["team_id"]);
         $medals = array(1 => "first.jpg", 2 => "second.jpg", 3 => "third.jpg");
-        $active = getActiveContracts($_SESSION["team_id"]);
+        $active = array_diff(getActiveContracts($_SESSION["team_id"]), getHiddenContracts());
         $finished = getFinishedContracts($_SESSION["team_id"]);
         $active_ = $active ? fetchScalar("SELECT GROUP_CONCAT(title ORDER BY title ASC) FROM contracts WHERE contract_id IN (" . implode(",", $active) . ")") : "-";
         $finished_ = $finished ? fetchScalar("SELECT GROUP_CONCAT(title ORDER BY title ASC) FROM contracts WHERE contract_id IN (" . implode(",", $finished) . ")") : "-";
