@@ -266,7 +266,7 @@ END;
         }
         else {
             $template = file_get_contents("templates/contract.html");
-            $_ = getAllContracts($_SESSION["team_id"]);
+            $_ = getAllContracts();
             $__ = getConstraintedContracts($_SESSION["team_id"]);
 
             define("CLEARFIX_HTML", "                                <div class=\"clearfix\"></div>\n");
