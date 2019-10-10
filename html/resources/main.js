@@ -860,15 +860,15 @@ function periodicPullMessages() {
 
 function decodeBB(message) {
     return message
-         .replace(/\[b\](.+)\[\/b\]/g, "<b>$1</b>")
-         .replace(/\[i\](.+)\[\/i\]/g, "<i>$1</i>")
-         .replace(/\[s\](.+)\[\/s\]/g, "<s>$1</s>")
-         .replace(/\[u\](.+)\[\/u\]/g, "<u>$1</u>")
-         .replace(/\[quote\](.+)\[\/quote\]/g, "<cite>$1</cite>")
-         .replace(/\[code\](.+)\[\/code\]/g, "<code>$1</code>")
-         .replace(/\[blockquote\](.+)\[\/blockquote\]/g, "<blockquote>$1</blockquote>")
-         .replace(/\[highlight=([a-z]+|#[0-9abcdef]+)\](.+)\[\/highlight\]/g, "<span style='background-color:$1'>$2</span>")
-         .replace(/\[color=([a-z]+|#[0-9abcdef]+)\](.+)\[\/color\]/g, "<span style='color:$1'>$2</span>");
+         .replace(/\[b\](.+?)\[\/b\]/g, "<b>$1</b>")
+         .replace(/\[i\](.+?)\[\/i\]/g, "<i>$1</i>")
+         .replace(/\[s\](.+?)\[\/s\]/g, "<s>$1</s>")
+         .replace(/\[u\](.+?)\[\/u\]/g, "<u>$1</u>")
+         .replace(/\[quote\](.+?)\[\/quote\]/g, "<cite>$1</cite>")
+         .replace(/\[code\](.+?)\[\/code\]/g, "<code>$1</code>")
+         .replace(/\[blockquote\](.+?)\[\/blockquote\]/g, "<blockquote>$1</blockquote>")
+         .replace(/\[highlight=([a-z]+|#[0-9abcdef]+)\](.+?)\[\/highlight\]/g, "<span style='background-color:$1'>$2</span>")
+         .replace(/\[color=([a-z]+|#[0-9abcdef]+)\](.+?)\[\/color\]/g, "<span style='color:$1'>$2</span>");
 }
 
 function pullMessages(initial) {

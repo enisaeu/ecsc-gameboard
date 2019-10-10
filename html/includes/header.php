@@ -28,7 +28,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js" integrity="sha256-BuAkLaFyq4WYXbN3TFSsG1M5GltEeFehAMURi4KBpUM=" crossorigin="anonymous"></script>
         <script src="<?php echo joinPaths(PATHDIR, '/resources/jquery.sortElements.js');?>"></script>
-        <script src="<?php echo joinPaths(PATHDIR, '/resources/main.js?v2');?>"></script>
+        <script src="<?php echo joinPaths(PATHDIR, '/resources/main.js?v3');?>"></script>
         <noscript>
             <style>
                 #main_container { display: none; }
