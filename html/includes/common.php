@@ -135,10 +135,15 @@
 
     function getScores($team_id, $ts=null) {
         $result = array("cash" => 0, "awareness" => 0);
-        $_ = getSolvedTasks($team_id, $ts);
-        if (count($_) > 0) {
-            foreach ($_ as $task_id) {
-                $task = fetchAll("SELECT * FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id))[0];
+        $solved = getSolvedTasks($team_id, $ts);
+        if (count($solved) > 0) {
+            $tasks = array();
+            $_ = fetchAll("SELECT task_id, cash, awareness FROM tasks");
+            foreach ($_ as $row)
+                $tasks[$row["task_id"]] = $row;
+
+            foreach ($solved as $task_id) {
+                $task = $tasks[$task_id];
                 $result["cash"] += (getSetting(Setting::DYNAMIC_SCORING) == "true") ? getDynamicScore($task_id, null, true) : floatval($task["cash"]);
                 $result["awareness"] += floatval($task["awareness"]);
             }
