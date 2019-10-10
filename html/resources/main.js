@@ -699,7 +699,7 @@ function showSendCashBox(login_name, full_name) {
 
 function wrongValueEffect(element) {
     $(element).effect("shake");
-    $(element).parent().effect("highlight", {color: "red"});
+//     $(element).parent().effect("highlight", {color: "red"});
 }
 
 String.prototype.hashCode = function() {
