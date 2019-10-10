@@ -374,6 +374,10 @@ td.min {
     white-space: nowrap;
 }
 
+.alert {
+    overflow: hidden;
+}
+
 table { 
     border: 1px solid #ddd;
     border-collapse: separate;
