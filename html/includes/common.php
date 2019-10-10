@@ -13,7 +13,7 @@
     define("DYNAMIC_DECAY_MAX_PENALTY", 0.8);           // Decaying max-penalty ratio (0 <= _ <= 1) used for calculating maximum penalty from initial (task) score (e.g. if initial score 100, with max-penalty ratio 0.20 maximum penalty will become 20 -> effective score 80)
     define("DEFAULT_ROOM", "general");
     define("PRIVATE_ROOM", "team");
-    define("FLAG_REGEX", "/ECSC\{.+\}/");
+    define("FLAG_REGEX", "/ECSC\{[^\}]+\}?/i");
     define("FLAG_REDACTED", "ECSC{...}");
     define("GD_INSTALLED", extension_loaded("gd"));     // Note: had problems on Ubuntu 18.04 when PHP has been updated to 7.2, while the 7.0 had still been used (hence, problems with GD arised) - thus, had to do the "apt remove php7.0" to get GD up and running
     define("CAPTCHA_ENABLED", true && GD_INSTALLED);
