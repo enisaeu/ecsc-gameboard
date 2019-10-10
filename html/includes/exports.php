@@ -46,46 +46,53 @@
     else if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/scores.xml")) {
         header("Content-Type: application/xml; charset=utf-8");
 
-        $teams = getRankedTeams();
-        $previous = -1;
-        $place = 0;
+        if (file_exists("scores.xml")) {
+            $result = file_get_contents("scores.xml");
+        }
+        else {
+            $teams = getRankedTeams();
+            $previous = -1;
+            $place = 0;
 
-        $result = array();
-        foreach ($teams as $team_id) {
-            $row = fetchAll("SELECT * FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
-            $scores = getScores($team_id);
+            $result = array();
+            foreach ($teams as $team_id) {
+                $row = fetchAll("SELECT * FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
+                $scores = getScores($team_id);
 
-            if ($scores["cash"] !== $previous) {
-                $place += 1;
-                $previous = $scores["cash"];
+                if ($scores["cash"] !== $previous) {
+                    $place += 1;
+                    $previous = $scores["cash"];
+                }
+
+                $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $place);
+                array_push($result, $_);
             }
 
-            $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $place);
-            array_push($result, $_);
+            $result = array_filter($result, function($value) {
+                return !(($value["score"] === 0) && is_null($value["country"]));
+            });
+
+            $xml = new SimpleXMLElement("<?xml version=\"1.0\" encoding=\"UTF-8\"?><scoreboard/>");
+            foreach($result as $_) {
+                $entry = $xml->addChild("entry");
+                $entry->addAttribute("name", $_["name"]);
+                $entry->addAttribute("code", $_["code"]);
+                $entry->addAttribute("country", $_["country"]);
+                $entry->addAttribute("score", (string) $_["score"]);
+                $entry->addAttribute("place", (string) $_["place"]);
+            }
+
+    //         die($xml->asXML());
+
+            # Reference: https://stackoverflow.com/a/17948879
+            $domxml = new DOMDocument("1.0");
+            $domxml->preserveWhiteSpace = false;
+            $domxml->formatOutput = true;
+            $domxml->loadXML($xml->asXML());
+            $result = $domxml->saveXML();
         }
 
-        $result = array_filter($result, function($value) {
-            return !(($value["score"] === 0) && is_null($value["country"]));
-        });
-
-        $xml = new SimpleXMLElement("<?xml version=\"1.0\" encoding=\"UTF-8\"?><scoreboard/>");
-        foreach($result as $_) {
-            $entry = $xml->addChild("entry");
-            $entry->addAttribute("name", $_["name"]);
-            $entry->addAttribute("code", $_["code"]);
-            $entry->addAttribute("country", $_["country"]);
-            $entry->addAttribute("score", (string) $_["score"]);
-            $entry->addAttribute("place", (string) $_["place"]);
-        }
-
-//         die($xml->asXML());
-
-        # Reference: https://stackoverflow.com/a/17948879
-        $domxml = new DOMDocument("1.0");
-        $domxml->preserveWhiteSpace = false;
-        $domxml->formatOutput = true;
-        $domxml->loadXML($xml->asXML());
-        die($domxml->saveXML());
+        die($result);
     }
 
     else if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/stats.json")) {
