@@ -1077,8 +1077,6 @@ function drawLineMomentum() {
 
             if (maxTime === 0)
                 maxTime = parseInt(Date.now() / 1000);
-            else
-                maxTime = ((parseInt(Date.now() / 1000) - maxTime) < 3600 * 6) ? parseInt(Date.now() / 1000) : Math.min(maxTime + (maxTime - minTime) / 4, parseInt(Date.now() / 1000));  // maximum of inactivity to show (competition could be over)
 
             var timePadding = ((maxTime - minTime) / 15) * 1000;
             var fontFamily = "Arial";
