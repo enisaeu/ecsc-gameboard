@@ -718,7 +718,7 @@ function getHashColor(value) {
 }
 
 // Reference: https://canvasjs.com/docs/charts/basics-of-creating-html5-chart/markers/
-var markers = ["circle", "square", "cross", "triangle", "line"];
+var markers = ["circle", "square", "cross", "triangle"];
 
 function getMarkerType(value) {
     return markers[parseInt(value.hashCode().toString(16), 16) % markers.length];
@@ -1128,7 +1128,7 @@ function drawLineMomentum() {
                     }
                 },
                 toolTip: {
-                    shared: true,
+                    shared: false,
                     fontFamily: fontFamily,
                     borderColor: "#dee2e6",
                     borderThickness: 1,
