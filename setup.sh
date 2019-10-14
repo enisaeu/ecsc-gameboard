@@ -44,9 +44,6 @@ APT::Periodic::Update-Package-Lists "1";
 APT::Periodic::Unattended-Upgrade "1";
 EOF
 
-sed -i 's/PermitRootLogin.*/PermitRootLogin without-password/g' /etc/ssh/sshd_config
-dpkg-statoverride --update --add root sudo 4750 /bin/su &>/dev/null
-
 touch /var/log/wtmp
 
 if [ -f "/etc/php5/apache2/php.ini" ]; then
