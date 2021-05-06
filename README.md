@@ -14,7 +14,7 @@ Have fun!
 
 ## Overview
 
-The ECSC2018 gameplay aims to train you on the trade-offs of managing a successful cyber-security company in a competitive environment, while leveraging your technical, time management and tactical skills.
+The ECSC2021 gameplay aims to train you on the trade-offs of managing a successful cyber-security company in a competitive environment, while leveraging your technical, time management and tactical skills.
 
 You will be playing the role of incident responders within a national cybersecurity company offering cybersecurity services to individual clients, private companies and public organisations. For each contract successfully completed, you will receive money and reputation. 
 
