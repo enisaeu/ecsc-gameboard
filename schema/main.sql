@@ -1,9 +1,10 @@
-# mysql -t -u root -p < schema.sql
+# mysql -t -u root -p < main.sql
 
 DROP DATABASE IF EXISTS ecsc;
 
 CREATE DATABASE ecsc CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; -- Reference: https://dba.stackexchange.com/a/76789
-GRANT ALL ON ecsc.* TO ecsc@localhost IDENTIFIED BY '<blank>';
+CREATE USER IF NOT EXISTS ecsc@localhost IDENTIFIED BY '<blank>';
+GRANT ALL ON ecsc.* TO ecsc@localhost;
 
 USE ecsc;
 
@@ -136,6 +137,7 @@ CREATE TABLE cache (
 
 CREATE FUNCTION last_update()
     RETURNS INT
+    READS SQL DATA
     RETURN (SELECT UNIX_TIMESTAMP(MAX(UPDATE_TIME)) AS last_update FROM information_schema.tables WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME NOT IN ('cache', 'logs') GROUP BY TABLE_SCHEMA);
 
 ###
