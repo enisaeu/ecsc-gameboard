@@ -27,9 +27,9 @@ fi
 
 result=`apt-cache search --names-only '^php5$'`
 if [ -z "$result" ] ; then
-    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive default-mysql-server default-mysql-client php-mysql php-gd php-xml php-simplexml openssh-server unattended-upgrades
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive nullmailer default-mysql-server default-mysql-client php-mysql php-gd php-xml php-simplexml openssh-server unattended-upgrades
 else
-    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive mysql-server mysql-client php5-mysql php5-gd php5-xml php5-simplexml openssh-server unattended-upgrades
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive nullmailer mysql-server mysql-client php5-mysql php5-gd php5-xml php5-simplexml openssh-server unattended-upgrades
 fi
 
 sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
@@ -98,12 +98,15 @@ cat > /etc/apache2/mods-enabled/mpm_prefork.conf << EOF
 EOF
 
 git checkout .
+
 read -s -p "Enter new password for MySQL user 'ecsc' (press <Enter> for default): " NEW_PWD
 echo
+
 if [[ $NEW_PWD != ${NEW_PWD//[\']/} ]]; then
     echo "Single-quote (') character is unacceptable"
     exit 1
 fi
+
 if [[ -n "$NEW_PWD" ]]; then
     read -s -p "Confirm new password: " PWD_CONFIRM
     echo

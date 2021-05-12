@@ -65,7 +65,7 @@
         }
     }
     else if (isAdmin() && ($_POST["action"] === "export")) {
-        $output = shell_exec("mysqldump --user='" . MYSQL_USERNAME . "' --password='" . MYSQL_PASSWORD . "' --host='" . MYSQL_SERVER . "' '" . MYSQL_DATABASE . "' 2>&1 | grep -v 'Using a password on the command line interface can be insecure'");
+        $output = shell_exec("mysqldump --no-tablespaces --user='" . MYSQL_USERNAME . "' --password='" . MYSQL_PASSWORD . "' --host='" . MYSQL_SERVER . "' '" . MYSQL_DATABASE . "' 2>&1 | grep -v 'Using a password on the command line interface can be insecure'");
         $output = isset($output) ? $output : "";
 
         header("Content-Type: application/octet-stream");
