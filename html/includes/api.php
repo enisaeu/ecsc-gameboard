@@ -20,16 +20,17 @@
                 $rows = fetchAll("SELECT password_hash FROM teams WHERE login_name=:login", array("login" => ADMIN_LOGIN_NAME));
                 if (count($rows) === 1)
                     if (password_verify($body["password"], $rows[0]["password_hash"])) {
-                        $token = sha1($body["password"] . rand() . time());
+                        $token = generateRandomString(32);
                         execute("INSERT INTO tokens(value) VALUES(:value)", array("value" => $token));
-                        $authorized = True;
+                        header("Content-Type: application/json");
+                        die(json_encode(array("access_token" => $token, "expires_in" => TOKEN_LIFE)));
                     }
             }
         }
     }
 
-    if (!empty($_SERVER["HTTP_AUTHORIZATION"])) {
-        echo 1;
+    if ((getBearerToken() !== null) && (count(fetchAll("SELECT * FROM tokens WHERE value=:value", array("value" => getBearerToken()))) > 0)) {
+        $authorized = True;
     }
 
     if (!$authorized) {
