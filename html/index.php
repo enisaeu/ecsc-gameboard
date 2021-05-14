@@ -8,6 +8,11 @@
         die();
     }
 
+    if(preg_match("/\/api\/\w+/", $_SERVER["REQUEST_URI"])) {
+        include_once("includes/api.php");
+        die();
+    }
+
     if (!isset($_SESSION["team_id"])) {
         if (empty($_SERVER["HTTP_X_REQUESTED_WITH"]))
             include_once("includes/signin.php");

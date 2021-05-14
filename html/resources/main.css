@@ -207,7 +207,7 @@ body::after {
     border-radius: 0;
 }
 
-.modal-login .btn {        
+.modal-login .btn {
     font-size: 16px;
     font-weight: bold;
     background: #007bff;
@@ -378,7 +378,7 @@ td.min {
     overflow: hidden;
 }
 
-table { 
+table {
     border: 1px solid #ddd;
     border-collapse: separate;
     border-radius: 4px;
