@@ -24,7 +24,7 @@
     define("CHAT_TRUNCATE_LENGTH", 128);                // Note: maximum chat message length for non-admin
     define("PRIVATE_TRUNCATE_LENGTH", 256);             // Note: maximum private message length for non-admin
     define("OFFICIAL_RULES_URL", "https://ecsc.eu/about/ecscrules.pdf/download");
-    define("TOKEN_LIFE", 2 * 24 * 3600);
+    define("TOKEN_LIFE", 4 * 24 * 3600);
 
     // Reference: https://stackoverflow.com/a/2886224
     if ((!empty($_SERVER["HTTPS"]) && strtolower($_SERVER["HTTPS"]) !== "off") || $_SERVER["SERVER_PORT"] == 443)

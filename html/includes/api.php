@@ -6,8 +6,11 @@
     $parts = explode('/', $matches[1]);
     $method = $parts[0];
     $args = array_slice($parts, 1);
-    $body = json_decode(file_get_contents("php://input"), true);
     $authorized = False;
+
+    $body = file_get_contents("php://input");
+    if (strpos($body, '{') === 0)
+        $body = json_decode($body, true);
 
     # access_token, expires_in (JSON)
     # Authorization: Bearer
@@ -39,11 +42,25 @@
     }
 
     if ($method === "export") {
-        if ($args[0] === "logs") {
+        // NOTE: curl http://<server>/api/export/logs -H "Authorization: Bearer ..."
+        if (preg_match("/\w+/", $args[0])) {
+            $rows = fetchAll("SELECT * FROM " . $args[0], null, PDO::FETCH_ASSOC);
+            header("Content-Type: application/json");
+            die(json_encode($rows));
         }
-        else if ($args[0] === "stats") {
+    }
+    else if ($method === "execute") {
+        // NOTE: curl http://<server>/api/execute/sql -H "Authorization: Bearer ..." --data-raw "SELECT * FROM logs"
+        if ($args[0] === "sql") {
+            if (preg_match("/^\s*SELECT /i", $body)) {
+                $rows = fetchAll($body, null, PDO::FETCH_ASSOC);
+                header("Content-Type: application/json");
+                die(json_encode($rows));
+            }
+            else {
+                die(execute($body));
+            }
         }
-        echo 1;
     }
     else if ($method === "action") {
     }
