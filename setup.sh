@@ -27,9 +27,9 @@ fi
 
 result=`apt-cache search --names-only '^php5$'`
 if [ -z "$result" ] ; then
-    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive nullmailer default-mysql-server default-mysql-client php-mysql php-gd php-xml php-simplexml openssh-server unattended-upgrades
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive nullmailer default-mysql-server default-mysql-client php-mysql php-gd php-xml php-simplexml openssh-server unattended-upgrades cron php-curl
 else
-    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive nullmailer mysql-server mysql-client php5-mysql php5-gd php5-xml php5-simplexml openssh-server unattended-upgrades
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive nullmailer mysql-server mysql-client php5-mysql php5-gd php5-xml php5-simplexml openssh-server unattended-upgrades cron php5-curl
 fi
 
 sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
@@ -131,3 +131,11 @@ a2enmod -q evasive
 a2enmod -q reqtimeout
 a2enmod -q rewrite
 service apache2 restart
+
+jobs_file=$(mktemp)
+crontab -l > $jobs_file
+cat >> $jobs_file << "EOF"
+*/1 * * * * test -f /var/www/.cron && php /var/www/.cron
+EOF
+crontab $jobs_file
+rm $jobs_file

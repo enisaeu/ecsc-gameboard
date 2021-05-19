@@ -1,0 +1,35 @@
+<?php
+    // NOTE: file (.cron) being run at minute basis (e.g. to send JSON results to external platform)
+
+    require_once("html/includes/common.php");
+
+    $teams = getRankedTeams();
+    $previous = -1;
+    $place = 0;
+
+    $result = array();
+    foreach ($teams as $team_id) {
+        $row = fetchAll("SELECT * FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
+        $scores = getScores($team_id);
+
+        if ($scores["cash"] !== $previous) {
+            $place += 1;
+            $previous = $scores["cash"];
+        }
+
+        $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $place);
+        array_push($result, $_);
+    }
+
+    $result = array_filter($result, function($value) {
+        return !(($value["score"] === 0) && is_null($value["country"]));
+    });
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "example.com");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type:application/json"));
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($result));
+    curl_exec($ch);
+    curl_close($ch);
+?>
