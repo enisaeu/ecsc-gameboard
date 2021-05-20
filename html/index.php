@@ -189,7 +189,7 @@ END;
                     <div class="col-md-9">
                         <div style="overflow: auto;">
                             <h1 class="display-4 float-left" style="font-family: 'Agency FB'; font-size: 64px; letter-spacing: 4px;"><?php echo TITLE . " platform"; ?></h1>
-                            <img id="logo" src="<?php echo joinPaths(PATHDIR, '/resources/logo.jpg');?>" class="ml-3" width="70px"/>
+                            <img id="logo" src="<?php echo joinPaths(PATHDIR, '/resources/logo.jpg');?>" class="ml-3" width="70" height="70"/>
                         </div>
 
                         <!-- BEGIN: navigation bar -->
