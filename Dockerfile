@@ -1,5 +1,4 @@
-FROM debian:stable
-#FROM ubuntu:latest
+FROM ubuntu:focal
 RUN apt-get update && apt-get install -y git
 COPY . /var/www
 RUN cd /var/www && ./setup.sh
