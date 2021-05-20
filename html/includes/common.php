@@ -2,7 +2,7 @@
     define("DEBUG", file_exists("../.debug"));
     define("MYSQL_SERVER", "localhost");
     define("MYSQL_USERNAME", "ecsc");
-    define("MYSQL_PASSWORD", "<blank>");
+    define("MYSQL_PASSWORD", "changeme!");
     define("MYSQL_DATABASE", "ecsc");
     define("PATHDIR", dirname(preg_replace("/[^a-zA-Z0-9\/._-]/", "", $_SERVER["PHP_SELF"])));
     define("MOMENTUM_STEPS", 30);

@@ -3,7 +3,7 @@
 DROP DATABASE IF EXISTS ecsc;
 
 CREATE DATABASE ecsc CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; -- Reference: https://dba.stackexchange.com/a/76789
-CREATE USER IF NOT EXISTS ecsc@localhost IDENTIFIED BY '<blank>';
+CREATE USER IF NOT EXISTS ecsc@localhost IDENTIFIED BY 'changeme!';
 GRANT ALL ON ecsc.* TO ecsc@localhost;
 
 USE ecsc;
