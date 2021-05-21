@@ -64,6 +64,20 @@
             die(DEBUG ? $_SESSION["conn_error"] : null);
         }
     }
+    else if (isAdmin() && ($_POST["action"] === "export") && (isset($_POST["contract_id"]))) {
+        $contract = fetchAll("SELECT * FROM contracts WHERE contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]), PDO::FETCH_ASSOC);
+        $tasks = fetchAll("SELECT * FROM tasks WHERE contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]), PDO::FETCH_ASSOC);
+        $constraints = fetchAll("SELECT * FROM constraints WHERE contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]), PDO::FETCH_ASSOC);
+        $result = array("contract" => $contract[0], "tasks" => $tasks, "constraints" => $constraints);
+        $output = json_encode($result, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
+
+        header("Content-Type: application/octet-stream");
+        header("Content-Disposition: attachment; filename=\"" . "contract" . ".json\"");
+        header("Content-Length: " . strlen($output));
+        header("Connection: close");
+
+        die($output);
+    }
     else if (isAdmin() && ($_POST["action"] === "export")) {
         $output = shell_exec("mysqldump --no-tablespaces --user='" . MYSQL_USERNAME . "' --password='" . MYSQL_PASSWORD . "' --host='" . MYSQL_SERVER . "' '" . MYSQL_DATABASE . "' 2>&1 | grep -v 'Using a password on the command line interface can be insecure'");
         $output = isset($output) ? $output : "";

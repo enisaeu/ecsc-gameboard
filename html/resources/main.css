@@ -694,3 +694,13 @@ input[type=search] {
     background-color: #e9ecef;
     color: gray !important;
 }
+
+.fa-upload {
+    cursor: pointer;
+    color: #007bff;
+}
+
+.fa-download {
+    cursor: pointer;
+    color: #6f42c1;
+}

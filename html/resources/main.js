@@ -115,6 +115,29 @@ $(document).ready(function() {
         }
     });
 
+    $(".fa-upload").click(function(event) {
+        var contract_id = $(event.target).closest(".contract").attr("contract_id");
+    });
+
+    $(".fa-download").click(function(event) {
+        var contract_id = $(event.target).closest(".contract").attr("contract_id");
+        var contract_title = $(event.target).closest(".contract").attr("contract_title").toLowerCase().replace(/[^\w]/, "_");
+
+        $.post(window.location.href.split('#')[0], {token: document.token, action: "export", contract_id: contract_id}, function(content) {
+            if (content.indexOf("contract_id") > -1) {
+                var blob = new Blob([content], { type: "application/octet-stream" });
+                var a = document.createElement("a");
+                a.href = window.URL.createObjectURL(blob);
+                a.download = contract_title + ".json";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+            else
+                alert("Something went wrong ('" + content + "')!");
+        });
+    });
+
     $(".fa-envelope").click(function(event) {
         var row = $(event.target).closest("tr");
         var login_name = row.find("sup").text().substr(1).slice(0, -1);
