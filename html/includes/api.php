@@ -25,7 +25,7 @@
                     if (password_verify($body["password"], $rows[0]["password_hash"])) {
                         $token = generateRandomString(32);
                         execute("INSERT INTO tokens(value) VALUES(:value)", array("value" => $token));
-                        header("Content-Type: application/json");
+                        header("Content-Type: application/json; charset=utf-8");
                         die(json_encode(array("access_token" => $token, "expires_in" => TOKEN_LIFE)));
                     }
             }
@@ -45,7 +45,7 @@
         // NOTE: curl http://<server>/api/export/logs -H "Authorization: Bearer ..."
         if (preg_match("/\w+/", $args[0])) {
             $rows = fetchAll("SELECT * FROM " . $args[0], null, PDO::FETCH_ASSOC);
-            header("Content-Type: application/json");
+            header("Content-Type: application/json; charset=utf-8");
             die(json_encode($rows));
         }
     }
@@ -54,7 +54,7 @@
         if ($args[0] === "sql") {
             if (preg_match("/^\s*SELECT /i", $body)) {
                 $rows = fetchAll($body, null, PDO::FETCH_ASSOC);
-                header("Content-Type: application/json");
+                header("Content-Type: application/json; charset=utf-8");
                 die(json_encode($rows));
             }
             else {

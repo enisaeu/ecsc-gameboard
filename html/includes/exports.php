@@ -5,9 +5,9 @@
 
     if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/scores.json")) {
         if (is_null($callback))
-            header("Content-Type: application/json");
+            header("Content-Type: application/json; charset=utf-8");
         else
-            header("Content-Type: application/javascript");
+            header("Content-Type: application/javascript; charset=utf-8");
 
         if (file_exists("scores.json")) {
             $_ = file_get_contents("scores.json");
@@ -96,9 +96,9 @@
 
     else if (endsWith(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/stats.json")) {
         if (is_null($callback))
-            header("Content-Type: application/json");
+            header("Content-Type: application/json; charset=utf-8");
         else
-            header("Content-Type: application/javascript");
+            header("Content-Type: application/javascript; charset=utf-8");
 
         if (file_exists("stats.json")) {
             $_ = file_get_contents("stats.json");
