@@ -89,6 +89,37 @@
 
         die($output);
     }
+    else if (isAdmin() && ($_POST["action"] === "import") && (isset($_POST["contract_id"]))) {
+        $success = true;
+        $contract_id = intval($_POST["contract_id"]);
+
+        if ($contract_id > 0)
+            execute("DELETE FROM contracts WHERE contract_id=:contract_id", array("contract_id" => $contract_id));
+
+        $data = json_decode(file_get_contents($_FILES['import_contract']['tmp_name']), true);
+        $contract = $data["contract"];
+
+        execute("DELETE FROM contracts WHERE title=:title", array("title" => $contract["title"]));
+
+        $success &= execute("INSERT INTO contracts(title, description, categories, hidden) VALUES(:title, :description, :categories, :hidden)", array("title" => $contract["title"], "description" => $contract["description"], "categories" => $contract["categories"], "hidden" => $contract["hidden"]));
+
+        $contract_id = fetchScalar("SELECT contract_id FROM contracts WHERE title=:title", array("title" => $contract["title"]));
+
+        foreach ($data["tasks"] as $task)
+            $success &= execute("INSERT INTO tasks(contract_id, title, description, answer, cash, awareness) VALUES(:contract_id, :title, :description, :answer, :cash, :awareness)", array("contract_id" => $contract_id, "title" => $task["title"], "description" => $task["description"], "answer" => $task["answer"], "cash" => $task["cash"], "awareness" => $task["awareness"]));
+
+        foreach ($data["constraints"] as $constraints)
+            $success &= execute("INSERT INTO tasks(contract_id, min_cash, min_awareness) VALUES(:contract_id, :min_cash, :min_awareness)", array("contract_id" => $contract_id, "min_cash" => $constraints["min_cash"], "min_awareness" => $constraints["min_awareness"]));
+
+        # TODO: options (e.g. tasks JOIN options)
+
+        if ($success)
+            die("<html><head><meta http-equiv='refresh' content='1;url='" . PATHDIR . " /></head>OK</html>");
+        else {
+            header("HTTP/1.1 500 Internal Server Error");
+            die($output);
+        }
+    }
     else if (isAdmin() && ($_POST["action"] === "import")) {
         $output = shell_exec("mysql --user='" . MYSQL_USERNAME . "' --password='" . MYSQL_PASSWORD . "' --host='" . MYSQL_SERVER . "' '" . MYSQL_DATABASE . "' 2>&1 < " . $_FILES["import_file"]["tmp_name"] . " | grep -v 'Using a password on the command line interface can be insecure'");
         $output = isset($output) ? $output : "";

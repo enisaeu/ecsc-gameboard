@@ -117,6 +117,14 @@ $(document).ready(function() {
 
     $(".fa-upload").click(function(event) {
         var contract_id = $(event.target).closest(".contract").attr("contract_id");
+
+        if (!$("#import_contract").length)
+            $("body").append($('<form method="post" enctype="multipart/form-data" class="hidden"><input type="file" name="import_contract" id="import_contract"><input type="hidden" name="action" value="import"><input type="hidden" name="contract_id" value="' + contract_id + '"><input type="hidden" name="token" value="' + document.token + '"><input type="submit" name="submit"></form>'));
+
+        $("#import_contract").trigger("click");
+        $("#import_contract").change(function() {
+            $("#import_contract").closest("form").find("input[type=submit]").trigger("click");
+        });
     });
 
     $(".fa-download").click(function(event) {
