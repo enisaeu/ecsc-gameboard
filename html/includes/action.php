@@ -68,7 +68,8 @@
         $contract = fetchAll("SELECT * FROM contracts WHERE contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]), PDO::FETCH_ASSOC);
         $tasks = fetchAll("SELECT * FROM tasks WHERE contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]), PDO::FETCH_ASSOC);
         $constraints = fetchAll("SELECT * FROM constraints WHERE contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]), PDO::FETCH_ASSOC);
-        $result = array("contract" => $contract[0], "tasks" => $tasks, "constraints" => $constraints);
+        $options = fetchAll("SELECT * FROM options WHERE task_id IN (SELECT task_id FROM tasks WHERE contract_id=:contract_id)", array("contract_id" => $_POST["contract_id"]), PDO::FETCH_ASSOC);
+        $result = array("contract" => $contract[0], "tasks" => $tasks, "constraints" => $constraints, "options" => $options);
         $output = json_encode($result, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
 
         header("Content-Type: application/octet-stream");
