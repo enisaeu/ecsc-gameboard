@@ -76,6 +76,7 @@
         header("Content-Length: " . strlen($output));
         header("Connection: close");
 
+        logMessage("Contract exported", LogLevel::DEBUG, $contract[0]["title"]);
         die($output);
     }
     else if (isAdmin() && ($_POST["action"] === "export")) {
@@ -113,8 +114,10 @@
 
         # TODO: options (e.g. tasks JOIN options)
 
-        if ($success)
+        if ($success) {
+            logMessage("Contract imported", LogLevel::DEBUG, $contract["title"]);
             die("<html><head><meta http-equiv='refresh' content='1;url='" . PATHDIR . " /></head>OK</html>");
+        }
         else {
             header("HTTP/1.1 500 Internal Server Error");
             die($output);
