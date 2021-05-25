@@ -1,4 +1,14 @@
 <?php
+    function fatal_handler() {
+        $error = error_get_last();
+
+        if($error !== NULL)
+            logMessage("Fatal error", LogLevel::CRITICAL, $error["file"] . ":" . $error["line"] . " " . $error["message"]);
+    }
+
+    // Reference: https://stackoverflow.com/a/2146171
+    register_shutdown_function("fatal_handler");
+
     define("DEBUG", file_exists("../.debug"));
     define("MYSQL_SERVER", "localhost");
     define("MYSQL_USERNAME", "ecsc");
