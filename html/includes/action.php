@@ -107,13 +107,18 @@
 
         $contract_id = fetchScalar("SELECT contract_id FROM contracts WHERE title=:title", array("title" => $contract["title"]));
 
-        foreach ($data["tasks"] as $task)
+        foreach ($data["tasks"] as $task) {
             $success &= execute("INSERT INTO tasks(contract_id, title, description, answer, cash, awareness) VALUES(:contract_id, :title, :description, :answer, :cash, :awareness)", array("contract_id" => $contract_id, "title" => $task["title"], "description" => $task["description"], "answer" => $task["answer"], "cash" => $task["cash"], "awareness" => $task["awareness"]));
+
+            $last_id = fetchScalar("SELECT LAST_INSERT_ID()");
+            foreach ($data["options"] as $option) {
+                if ($option["task_id"] === $task["task_id"])
+                    $success &= execute("INSERT INTO options(task_id, note, is_regex, ignore_case, ignore_order) VALUES(:task_id, :note, :is_regex, :ignore_case, :ignore_order)", array("task_id" => $last_id, "note" => $option["note"], "is_regex" => $option["is_regex"], "ignore_case" => $option["ignore_case"], "ignore_order" => $option["ignore_order"]));
+            }
+        }
 
         foreach ($data["constraints"] as $constraints)
             $success &= execute("INSERT INTO tasks(contract_id, min_cash, min_awareness) VALUES(:contract_id, :min_cash, :min_awareness)", array("contract_id" => $contract_id, "min_cash" => $constraints["min_cash"], "min_awareness" => $constraints["min_awareness"]));
-
-        # TODO: options (e.g. tasks JOIN options)
 
         if ($success) {
             logMessage("Contract imported", LogLevel::DEBUG, $contract["title"]);
