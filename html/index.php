@@ -2,6 +2,10 @@
     require_once("includes/common.php");
     require_once("includes/exports.php");
 
+//     require_once("includes/report.php");
+//
+//     generateReport();
+//     die();
 
     if(preg_match("/\/captcha\?\d+$/", $_SERVER["REQUEST_URI"])) {
         include_once("includes/captcha.php");
@@ -249,6 +253,9 @@ END;
                                 </li>
                                 <li class="nav-item small">
                                     <a class="nav-link btn-warning ml-1" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="showDatabaseBox()">Database</a>
+                                </li>
+                                <li class="nav-item small">
+                                    <a class="nav-link btn-success ml-1" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="getReport()">Report</a>
                                 </li>
 
 END;

@@ -34,6 +34,22 @@
             die(DEBUG ? $_SESSION["conn_error"] : null);
         }
     }
+    else if (isAdmin() && ($_POST["action"] === "report")) {
+        $success = true;
+
+        require_once("report.php");
+
+        logMessage("Report generation initiated", LogLevel::DEBUG);
+
+        generateReport();
+
+        if ($success)
+            die("OK");
+        else {
+            header("HTTP/1.1 500 Internal Server Error");
+            die(DEBUG ? $_SESSION["conn_error"] : null);
+        }
+    }
     else if (isAdmin() && ($_POST["action"] === "delete")) {
         $success = false;
 

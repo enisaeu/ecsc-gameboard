@@ -432,6 +432,23 @@ function showResetBox(login_name, full_name) {
     dialog.modal();
 }
 
+function getReport() {
+    $.post(window.location.href.split('#')[0], {token: document.token, action: "report"}, function(content) {
+
+//         if (content.indexOf("contract_id") > -1) {
+//             var blob = new Blob([content], { type: "application/octet-stream" });
+//             var a = document.createElement("a");
+//             a.href = window.URL.createObjectURL(blob);
+//             a.download = contract_title + ".json";
+//             document.body.appendChild(a);
+//             a.click();
+//             document.body.removeChild(a);
+//         }
+//         else
+//             alert("Something went wrong ('" + content + "')!");
+    });
+}
+
 function showDatabaseBox(login_name, full_name) {
     var dialog = $("#prompt-box").clone();
 

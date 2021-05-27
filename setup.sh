@@ -27,9 +27,9 @@ fi
 
 result=`apt-cache search --names-only '^php5$'`
 if [ -z "$result" ] ; then
-    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive nullmailer default-mysql-server default-mysql-client php-mysql php-gd php-xml php-simplexml openssh-server unattended-upgrades cron php-curl pwgen apt-utils
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive nullmailer default-mysql-server default-mysql-client php-mysql php-tcpdf php-gd php-xml php-simplexml openssh-server unattended-upgrades cron php-curl pwgen apt-utils
 else
-    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive nullmailer mysql-server mysql-client php5-mysql php5-gd php5-xml php5-simplexml openssh-server unattended-upgrades cron php5-curl pwgen apt-utils
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive nullmailer mysql-server mysql-client php5-mysql php5-tcpdf php5-gd php5-xml php5-simplexml openssh-server unattended-upgrades cron php5-curl pwgen apt-utils
 fi
 
 sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
