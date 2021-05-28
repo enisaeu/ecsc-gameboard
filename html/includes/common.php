@@ -1,4 +1,14 @@
 <?php
+    function fatal_handler() {
+        $error = error_get_last();
+
+        if($error !== NULL)
+            logMessage("Fatal error", LogLevel::CRITICAL, $error["file"] . ":" . $error["line"] . " " . $error["message"]);
+    }
+
+    // Reference: https://stackoverflow.com/a/2146171
+    register_shutdown_function("fatal_handler");
+
     define("DEBUG", file_exists("../.debug"));
     define("MYSQL_SERVER", "database");
     define("MYSQL_USERNAME", getenv('MYSQL_USER'));
@@ -13,7 +23,7 @@
     define("DYNAMIC_DECAY_MAX_PENALTY", 0.8);           // Decaying max-penalty ratio (0 <= _ <= 1) used for calculating maximum penalty from initial (task) score (e.g. if initial score 100, with max-penalty ratio 0.20 maximum penalty will become 20 -> effective score 80)
     define("DEFAULT_ROOM", "general");
     define("PRIVATE_ROOM", "team");
-    define("FLAG_REGEX", "/ECSC\{.+\}/");
+    define("FLAG_REGEX", "/ECSC\{[^\}]+\}?/i");
     define("FLAG_REDACTED", "ECSC{...}");
     define("GD_INSTALLED", extension_loaded("gd"));     // Note: had problems on Ubuntu 18.04 when PHP has been updated to 7.2, while the 7.0 had still been used (hence, problems with GD arised) - thus, had to do the "apt remove php7.0" to get GD up and running
     define("CAPTCHA_ENABLED", true && GD_INSTALLED);
@@ -23,10 +33,13 @@
     define("DETAILS_WRAP_LENGTH", 30);
     define("CHAT_TRUNCATE_LENGTH", 128);                // Note: maximum chat message length for non-admin
     define("PRIVATE_TRUNCATE_LENGTH", 256);             // Note: maximum private message length for non-admin
+    define("OFFICIAL_RULES_URL", "https://ecsc.eu/about/ecscrules.pdf/download");
+    define("TOKEN_LIFE", 4 * 24 * 3600);
 
-    // Reference: https://stackoverflow.com/a/2886224
-    if ((!empty($_SERVER["HTTPS"]) && strtolower($_SERVER["HTTPS"]) !== "off") || $_SERVER["SERVER_PORT"] == 443)
-        ini_set("session.cookie_secure", "1");
+    if (isset($_SERVER['REMOTE_ADDR']))
+        // Reference: https://stackoverflow.com/a/2886224
+        if ((!empty($_SERVER["HTTPS"]) && strtolower($_SERVER["HTTPS"]) !== "off") || $_SERVER["SERVER_PORT"] == 443)
+            ini_set("session.cookie_secure", "1");
 
     session_start();
 
@@ -94,6 +107,46 @@
         return fetchScalar("SELECT last_update()");
     }
 
+    function generateRandomString($length=10) {
+        $pool = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $retval = '';
+        for ($i = 0; $i < $length; $i++) {
+            $retval .= $pool[rand(0, strlen($pool) - 1)];
+        }
+        return $retval;
+    }
+
+    // Reference: https://stackoverflow.com/a/40582472
+    function getAuthorizationHeader(){
+            $headers = null;
+            if (isset($_SERVER['Authorization'])) {
+                $headers = trim($_SERVER["Authorization"]);
+            }
+            else if (isset($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
+                $headers = trim($_SERVER["HTTP_AUTHORIZATION"]);
+            } elseif (function_exists('apache_request_headers')) {
+                $requestHeaders = apache_request_headers();
+                // Server-side fix for bug in old Android versions (a nice side-effect of this fix means we don't care about capitalization for Authorization)
+                $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
+                //print_r($requestHeaders);
+                if (isset($requestHeaders['Authorization'])) {
+                    $headers = trim($requestHeaders['Authorization']);
+                }
+            }
+            return $headers;
+        }
+
+    function getBearerToken() {
+        $headers = getAuthorizationHeader();
+        // HEADER: Get the access token from the header
+        if (!empty($headers)) {
+            if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
+                return $matches[1];
+            }
+        }
+        return null;
+    }
+
     function format($str, $args) {
         foreach ($args as $key => $value) {
             $str = str_replace('{' . $key . '}', $value, $str);
@@ -101,11 +154,15 @@
         return $str;
     }
 
-    function generateValuesHtml($cash, $awareness) {
+    function generateValuesHtml($cash, $awareness, $dynamic=null) {
         if (is_numeric($cash))
             $result = format('<span class="badge {appearance} border mr-2">&euro; {cash}</span>', array("cash" => number_format($cash), "appearance" => ($cash > 0 ? "badge-success" : ($cash < 0 ? "badge-danger" : "badge-light"))));
         else
             $result = format('<span class="badge {appearance} border mr-2">&euro; {cash}</span>', array("cash" => $cash, "appearance" => "badge-light"));
+
+        if (!is_null($dynamic) && ($dynamic != $cash))
+            $result = str_replace('</span>', '/' . $dynamic . '</span>', $result);
+
         if (is_numeric($awareness))
             $result .= format('<span class="badge {appearance} border mr-2">{awareness} <i class="fas fa-eye"></i></span>', array("awareness" => number_format($awareness), "appearance" => ($awareness > 0 ? "badge-success" : ($awareness < 0 ? "badge-danger" : "badge-light"))));
         else
@@ -131,10 +188,15 @@
 
     function getScores($team_id, $ts=null) {
         $result = array("cash" => 0, "awareness" => 0);
-        $_ = getSolvedTasks($team_id, $ts);
-        if (count($_) > 0) {
-            foreach ($_ as $task_id) {
-                $task = fetchAll("SELECT * FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id))[0];
+        $solved = getSolvedTasks($team_id, $ts);
+        if (count($solved) > 0) {
+            $tasks = array();
+            $_ = fetchAll("SELECT task_id, cash, awareness FROM tasks");
+            foreach ($_ as $row)
+                $tasks[$row["task_id"]] = $row;
+
+            foreach ($solved as $task_id) {
+                $task = $tasks[$task_id];
                 $result["cash"] += (getSetting(Setting::DYNAMIC_SCORING) == "true") ? getDynamicScore($task_id, null, true) : floatval($task["cash"]);
                 $result["awareness"] += floatval($task["awareness"]);
             }
@@ -393,7 +455,7 @@
         if ($args !== null)
             foreach ($args as $key => $value) {
                 $key = ":" . $key;
-                $stmt->bindValue($key, $value); 
+                $stmt->bindValue($key, $value);
             }
 
         $stmt->execute();
@@ -415,7 +477,7 @@
         if ($args !== null)
             foreach ($args as $key => $value) {
                 $key = ":" . $key;
-                $stmt->bindValue($key, $value); 
+                $stmt->bindValue($key, $value);
             }
 
         try {

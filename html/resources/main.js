@@ -115,6 +115,37 @@ $(document).ready(function() {
         }
     });
 
+    $(".fa-upload").click(function(event) {
+        var contract_id = $(event.target).closest(".contract").attr("contract_id");
+
+        if (!$("#import_contract").length)
+            $("body").append($('<form method="post" enctype="multipart/form-data" class="hidden"><input type="file" name="import_contract" id="import_contract"><input type="hidden" name="action" value="import"><input type="hidden" name="contract_id" value="' + contract_id + '"><input type="hidden" name="token" value="' + document.token + '"><input type="submit" name="submit"></form>'));
+
+        $("#import_contract").trigger("click");
+        $("#import_contract").change(function() {
+            $("#import_contract").closest("form").find("input[type=submit]").trigger("click");
+        });
+    });
+
+    $(".fa-download").click(function(event) {
+        var contract_id = $(event.target).closest(".contract").attr("contract_id");
+        var contract_title = $(event.target).closest(".contract").attr("contract_title").toLowerCase().replace(/[^\w]/, "_");
+
+        $.post(window.location.href.split('#')[0], {token: document.token, action: "export", contract_id: contract_id}, function(content) {
+            if (content.indexOf("contract_id") > -1) {
+                var blob = new Blob([content], { type: "application/octet-stream" });
+                var a = document.createElement("a");
+                a.href = window.URL.createObjectURL(blob);
+                a.download = contract_title + ".json";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+            else
+                alert("Something went wrong ('" + content + "')!");
+        });
+    });
+
     $(".fa-envelope").click(function(event) {
         var row = $(event.target).closest("tr");
         var login_name = row.find("sup").text().substr(1).slice(0, -1);
@@ -260,7 +291,10 @@ $(document).ready(function() {
         },
         fnDrawCallback: function( oSettings ) {
             $(".heartbeat:contains(',')").sparkline("html", { type: "line", tooltipClassname: "sparkline-tooltip", disableTooltips: true, disableInteraction: true, spotRadius: 0 });
-        }
+        },
+        columnDefs: [
+            { orderSequence: [ "desc", "asc" ], targets: [ 3, 4, 5 ] },
+        ]
     });
 
     $('#logs_table').removeClass("hidden");
@@ -396,6 +430,23 @@ function showResetBox(login_name, full_name) {
     });
 
     dialog.modal();
+}
+
+function getReport() {
+    $.post(window.location.href.split('#')[0], {token: document.token, action: "report"}, function(content) {
+
+//         if (content.indexOf("contract_id") > -1) {
+//             var blob = new Blob([content], { type: "application/octet-stream" });
+//             var a = document.createElement("a");
+//             a.href = window.URL.createObjectURL(blob);
+//             a.download = contract_title + ".json";
+//             document.body.appendChild(a);
+//             a.click();
+//             document.body.removeChild(a);
+//         }
+//         else
+//             alert("Something went wrong ('" + content + "')!");
+    });
 }
 
 function showDatabaseBox(login_name, full_name) {
@@ -696,7 +747,7 @@ function showSendCashBox(login_name, full_name) {
 
 function wrongValueEffect(element) {
     $(element).effect("shake");
-    $(element).parent().effect("highlight", {color: "red"});
+//     $(element).parent().effect("highlight", {color: "red"});
 }
 
 String.prototype.hashCode = function() {
@@ -715,7 +766,7 @@ function getHashColor(value) {
 }
 
 // Reference: https://canvasjs.com/docs/charts/basics-of-creating-html5-chart/markers/
-var markers = ["circle", "square", "cross", "triangle", "line"];
+var markers = ["circle", "square", "cross", "triangle"];
 
 function getMarkerType(value) {
     return markers[parseInt(value.hashCode().toString(16), 16) % markers.length];
@@ -857,15 +908,15 @@ function periodicPullMessages() {
 
 function decodeBB(message) {
     return message
-         .replace(/\[b\](.+)\[\/b\]/g, "<b>$1</b>")
-         .replace(/\[i\](.+)\[\/i\]/g, "<i>$1</i>")
-         .replace(/\[s\](.+)\[\/s\]/g, "<s>$1</s>")
-         .replace(/\[u\](.+)\[\/u\]/g, "<u>$1</u>")
-         .replace(/\[quote\](.+)\[\/quote\]/g, "<cite>$1</cite>")
-         .replace(/\[code\](.+)\[\/code\]/g, "<code>$1</code>")
-         .replace(/\[blockquote\](.+)\[\/blockquote\]/g, "<blockquote>$1</blockquote>")
-         .replace(/\[highlight=([a-z]+|#[0-9abcdef]+)\](.+)\[\/highlight\]/g, "<span style='background-color:$1'>$2</span>")
-         .replace(/\[color=([a-z]+|#[0-9abcdef]+)\](.+)\[\/color\]/g, "<span style='color:$1'>$2</span>");
+         .replace(/\[b\](.+?)\[\/b\]/g, "<b>$1</b>")
+         .replace(/\[i\](.+?)\[\/i\]/g, "<i>$1</i>")
+         .replace(/\[s\](.+?)\[\/s\]/g, "<s>$1</s>")
+         .replace(/\[u\](.+?)\[\/u\]/g, "<u>$1</u>")
+         .replace(/\[quote\](.+?)\[\/quote\]/g, "<cite>$1</cite>")
+         .replace(/\[code\](.+?)\[\/code\]/g, "<code>$1</code>")
+         .replace(/\[blockquote\](.+?)\[\/blockquote\]/g, "<blockquote>$1</blockquote>")
+         .replace(/\[highlight=([a-z]+|#[0-9abcdef]+)\](.+?)\[\/highlight\]/g, "<span style='background-color:$1'>$2</span>")
+         .replace(/\[color=([a-z]+|#[0-9abcdef]+)\](.+?)\[\/color\]/g, "<span style='color:$1'>$2</span>");
 }
 
 function pullMessages(initial) {
@@ -913,9 +964,11 @@ function pullMessages(initial) {
             if (($("#notification_count").length > 0) && ($("#notification_count").text() != result["notifications"])) {
                 $("#notification_count").text(result["notifications"]);
                 if ($(".active").html().indexOf("notification_") >= 0) {
-                    setInterval(function() {
-                        if (!(($(document.activeElement).prop("id") == "chat_message") && ($(document.activeElement).val())))
+                    var interval = setInterval(function() {
+                        if (!(($(document.activeElement).prop("id") == "chat_message") && ($(document.activeElement).val()))) {
+                            clearInterval(interval);
                             reload();
+                        }
                     }, 100);
                 }
             }
@@ -1066,14 +1119,12 @@ function drawLineMomentum() {
             });
 
             if ((result.length == 0) || (isAdmin() && (maxCash == 0))) {
-                $("#line_momentum").hide(100, function() { $("#line_momentum").remove(); });
+                $("#line_momentum").hide(50, function() { $("#line_momentum").remove(); }); // NOTE: animate of empty line-momentum above the list of teams
                 return;
             }
 
             if (maxTime === 0)
                 maxTime = parseInt(Date.now() / 1000);
-            else
-                maxTime = ((parseInt(Date.now() / 1000) - maxTime) < 3600 * 6) ? parseInt(Date.now() / 1000) : Math.min(maxTime + (maxTime - minTime) / 4, parseInt(Date.now() / 1000));  // maximum of inactivity to show (competition could be over)
 
             var timePadding = ((maxTime - minTime) / 15) * 1000;
             var fontFamily = "Arial";
@@ -1125,7 +1176,7 @@ function drawLineMomentum() {
                     }
                 },
                 toolTip: {
-                    shared: true,
+                    shared: false,
                     fontFamily: fontFamily,
                     borderColor: "#dee2e6",
                     borderThickness: 1,

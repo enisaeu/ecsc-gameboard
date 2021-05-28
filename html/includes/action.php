@@ -34,6 +34,22 @@
             die(DEBUG ? $_SESSION["conn_error"] : null);
         }
     }
+    else if (isAdmin() && ($_POST["action"] === "report")) {
+        $success = true;
+
+        require_once("report.php");
+
+        logMessage("Report generation initiated", LogLevel::DEBUG);
+
+        generateReport();
+
+        if ($success)
+            die("OK");
+        else {
+            header("HTTP/1.1 500 Internal Server Error");
+            die(DEBUG ? $_SESSION["conn_error"] : null);
+        }
+    }
     else if (isAdmin() && ($_POST["action"] === "delete")) {
         $success = false;
 
@@ -64,8 +80,24 @@
             die(DEBUG ? $_SESSION["conn_error"] : null);
         }
     }
+    else if (isAdmin() && ($_POST["action"] === "export") && (isset($_POST["contract_id"]))) {
+        $contract = fetchAll("SELECT * FROM contracts WHERE contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]), PDO::FETCH_ASSOC);
+        $tasks = fetchAll("SELECT * FROM tasks WHERE contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]), PDO::FETCH_ASSOC);
+        $constraints = fetchAll("SELECT * FROM constraints WHERE contract_id=:contract_id", array("contract_id" => $_POST["contract_id"]), PDO::FETCH_ASSOC);
+        $options = fetchAll("SELECT * FROM options WHERE task_id IN (SELECT task_id FROM tasks WHERE contract_id=:contract_id)", array("contract_id" => $_POST["contract_id"]), PDO::FETCH_ASSOC);
+        $result = array("contract" => $contract[0], "tasks" => $tasks, "constraints" => $constraints, "options" => $options);
+        $output = json_encode($result, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
+
+        header("Content-Type: application/octet-stream");
+        header("Content-Disposition: attachment; filename=\"" . "contract" . ".json\"");
+        header("Content-Length: " . strlen($output));
+        header("Connection: close");
+
+        logMessage("Contract exported", LogLevel::DEBUG, $contract[0]["title"]);
+        die($output);
+    }
     else if (isAdmin() && ($_POST["action"] === "export")) {
-        $output = shell_exec("mysqldump --user='" . MYSQL_USERNAME . "' --password='" . MYSQL_PASSWORD . "' --host='" . MYSQL_SERVER . "' '" . MYSQL_DATABASE . "' 2>&1 | grep -v 'Using a password on the command line interface can be insecure'");
+        $output = shell_exec("mysqldump --no-tablespaces --user='" . MYSQL_USERNAME . "' --password='" . MYSQL_PASSWORD . "' --host='" . MYSQL_SERVER . "' '" . MYSQL_DATABASE . "' 2>&1 | grep -v 'Using a password on the command line interface can be insecure'");
         $output = isset($output) ? $output : "";
 
         header("Content-Type: application/octet-stream");
@@ -74,6 +106,44 @@
         header("Connection: close");
 
         die($output);
+    }
+    else if (isAdmin() && ($_POST["action"] === "import") && (isset($_POST["contract_id"]))) {
+        $success = true;
+        $contract_id = intval($_POST["contract_id"]);
+
+        if ($contract_id > 0)
+            execute("DELETE FROM contracts WHERE contract_id=:contract_id", array("contract_id" => $contract_id));
+
+        $data = json_decode(file_get_contents($_FILES['import_contract']['tmp_name']), true);
+        $contract = $data["contract"];
+
+        execute("DELETE FROM contracts WHERE title=:title", array("title" => $contract["title"]));
+
+        $success &= execute("INSERT INTO contracts(title, description, categories, hidden) VALUES(:title, :description, :categories, :hidden)", array("title" => $contract["title"], "description" => $contract["description"], "categories" => $contract["categories"], "hidden" => $contract["hidden"]));
+
+        $contract_id = fetchScalar("SELECT contract_id FROM contracts WHERE title=:title", array("title" => $contract["title"]));
+
+        foreach ($data["tasks"] as $task) {
+            $success &= execute("INSERT INTO tasks(contract_id, title, description, answer, cash, awareness) VALUES(:contract_id, :title, :description, :answer, :cash, :awareness)", array("contract_id" => $contract_id, "title" => $task["title"], "description" => $task["description"], "answer" => $task["answer"], "cash" => $task["cash"], "awareness" => $task["awareness"]));
+
+            $last_id = fetchScalar("SELECT LAST_INSERT_ID()");
+            foreach ($data["options"] as $option) {
+                if ($option["task_id"] === $task["task_id"])
+                    $success &= execute("INSERT INTO options(task_id, note, is_regex, ignore_case, ignore_order) VALUES(:task_id, :note, :is_regex, :ignore_case, :ignore_order)", array("task_id" => $last_id, "note" => $option["note"], "is_regex" => $option["is_regex"], "ignore_case" => $option["ignore_case"], "ignore_order" => $option["ignore_order"]));
+            }
+        }
+
+        foreach ($data["constraints"] as $constraints)
+            $success &= execute("INSERT INTO tasks(contract_id, min_cash, min_awareness) VALUES(:contract_id, :min_cash, :min_awareness)", array("contract_id" => $contract_id, "min_cash" => $constraints["min_cash"], "min_awareness" => $constraints["min_awareness"]));
+
+        if ($success) {
+            logMessage("Contract imported", LogLevel::DEBUG, $contract["title"]);
+            die("<html><head><meta http-equiv='refresh' content='1;url='" . PATHDIR . " /></head>OK</html>");
+        }
+        else {
+            header("HTTP/1.1 500 Internal Server Error");
+            die($output);
+        }
     }
     else if (isAdmin() && ($_POST["action"] === "import")) {
         $output = shell_exec("mysql --user='" . MYSQL_USERNAME . "' --password='" . MYSQL_PASSWORD . "' --host='" . MYSQL_SERVER . "' '" . MYSQL_DATABASE . "' 2>&1 < " . $_FILES["import_file"]["tmp_name"] . " | grep -v 'Using a password on the command line interface can be insecure'");
@@ -253,6 +323,46 @@
         }
     }
     else if ($_POST["action"] === "momentum") {
+        if (!isAdmin() && file_exists("momentum.json")) {
+            $result = file_get_contents("momentum.json");
+            echo $result;
+        }
+        else {
+            $done = false;
+            $last_update = fetchScalar("SELECT last_update()");
+            $result = fetchAll("SELECT UNIX_TIMESTAMP(ts) AS ts, value FROM cache WHERE name=:name", array("name" => Cache::MOMENTUM));
+
+            if ($result) {
+                // Reference: https://stackoverflow.com/a/15273676
+                ignore_user_abort(true);
+                set_time_limit(0);
+
+                ob_start();
+                echo $result[0]["value"];
+                header('Connection: close');
+                header('Content-Length: ' . ob_get_length());
+                header("Content-Encoding: none");  // Dirty "patch" for bypassing encoders stall
+                ob_end_flush();
+                ob_flush();
+                flush();
+
+                $done = true;
+            }
+
+            if (!$done || ($result[0]["ts"] != $last_update)) {
+                $result = json_encode(getMomentum());
+                if ($last_update === fetchScalar("SELECT last_update()")) {  // Note: safety check to prevent dirty-write
+                    execute("DELETE FROM cache WHERE name=:name", array("name" => Cache::MOMENTUM));
+                    execute("INSERT INTO cache(name, value, ts) VALUES(:name, :value, FROM_UNIXTIME(:last_update))", array("name" => Cache::MOMENTUM, "value" => $result, "last_update" => $last_update));
+                }
+
+                if (!$done)
+                    echo $result;
+            }
+        }
+    }
+//     else if ($_POST["action"] === "momentum") {
+    else if (false) {
         $last_update = fetchScalar("SELECT last_update()");
         $result = fetchScalar("SELECT value FROM cache WHERE name=:name AND ts=FROM_UNIXTIME(:last_update)", array("name" => Cache::MOMENTUM, "last_update" => $last_update));
 

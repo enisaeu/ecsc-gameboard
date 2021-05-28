@@ -2,9 +2,18 @@
     require_once("includes/common.php");
     require_once("includes/exports.php");
 
+//     require_once("includes/report.php");
+//
+//     generateReport();
+//     die();
 
     if(preg_match("/\/captcha\?\d+$/", $_SERVER["REQUEST_URI"])) {
         include_once("includes/captcha.php");
+        die();
+    }
+
+    if(preg_match("/\/api\/\w+/", $_SERVER["REQUEST_URI"])) {
+        include_once("includes/api.php");
         die();
     }
 
@@ -95,20 +104,24 @@ END;
                     $options = array("note" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
 
                 $answer = $_POST["answer"];
-                $correct = fetchScalar("SELECT answer FROM tasks WHERE task_id=:task_id", array("task_id" => $_POST["task_id"]));
+                $correct = fetchScalar("SELECT answer FROM tasks JOIN contracts ON tasks.contract_id=contracts.contract_id WHERE task_id=:task_id AND contracts.hidden IS NOT TRUE", array("task_id" => $_POST["task_id"]));
                 $task_title = fetchScalar("SELECT title FROM tasks WHERE task_id=:task_id", array("task_id" => $_POST["task_id"]));
 
-                if ($options["ignore_case"]) {
-                    $answer = strtoupper($answer);
-                    $correct = strtoupper($correct);
+                if (!is_null($correct)) {
+                    if ($options["ignore_case"]) {
+                        $answer = strtoupper($answer);
+                        $correct = strtoupper($correct);
+                    }
+
+                    $correct = preg_replace("/\s+/", "", $correct);
+                    $answer = preg_replace("/\s+/", "", $answer);
+
+                    $success = $correct === $answer;
+                    $success |= $options["is_regex"] && preg_match("/" . $correct . "/", $answer);
+                    $success |= $options["ignore_order"] && wordMatch($correct, $answer);
                 }
-
-                $correct = preg_replace("/\s+/", "", $correct);
-                $answer = preg_replace("/\s+/", "", $answer);
-
-                $success = $correct === $answer;
-                $success |= $options["is_regex"] && preg_match("/" . $correct . "/", $answer);
-                $success |= $options["ignore_order"] && wordMatch($correct, $answer);
+                else
+                    $success = false;
 
                 if (!$success) {
                     logMessage("Wrong answer", LogLevel::DEBUG, "'" . $_POST["answer"] . "' => '" . $task_title . "'");
@@ -141,7 +154,7 @@ END;
                     if ($success) {
                         $result = fetchAll("SELECT contracts.title AS contract_title, tasks.title AS task_title FROM contracts, tasks WHERE tasks.task_id=:task_id AND contracts.contract_id=tasks.contract_id", array("task_id" => $_POST["task_id"]));
                         print sprintf('<script>showMessageBox("Success", "Congratulations! You have completed the task \'%s\'", "success");</script>', $result[0]["task_title"]);
-                        logMessage("Task completed", LogLevel::INFO, $result[0]["task_title"]);
+                        logMessage("Task completed", LogLevel::INFO, $result[0]["contract_title"] . ':' . $result[0]["task_title"]);
                         if (count(getFinishedContracts($_SESSION["team_id"])) > count($previous)) {
                             execute("INSERT INTO notifications(team_id, content, category) VALUES(:team_id, :content, :category)", array("team_id" => $_SESSION["team_id"], "content" => "You successfully finished contract '" . $result[0]["contract_title"] . "'", "category" => NotificationCategory::FINISHED_CONTRACT));
                         }
@@ -180,7 +193,7 @@ END;
                     <div class="col-md-9">
                         <div style="overflow: auto;">
                             <h1 class="display-4 float-left" style="font-family: 'Agency FB'; font-size: 64px; letter-spacing: 4px;"><?php echo TITLE . " platform"; ?></h1>
-                            <img id="logo" src="<?php echo joinPaths(PATHDIR, '/resources/logo.jpg');?>" class="ml-3" width="70px"/>
+                            <img id="logo" src="<?php echo joinPaths(PATHDIR, '/resources/logo.jpg');?>" class="ml-3" width="70" height="70"/>
                         </div>
 
                         <!-- BEGIN: navigation bar -->
@@ -239,11 +252,23 @@ END;
                                     <a class="nav-link btn-danger ml-1" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="showResetBox()">Reset</a>
                                 </li>
                                 <li class="nav-item small">
-                                    <a class="nav-link btn-secondary ml-1" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="showDatabaseBox()">Database</a>
+                                    <a class="nav-link btn-warning ml-1" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="showDatabaseBox()">Database</a>
+                                </li>
+                                <li class="nav-item small">
+                                    <a class="nav-link btn-success ml-1" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="getReport()">Report</a>
                                 </li>
 
 END;
         echo sprintf($html, cleanReflectedValue($_SERVER["REQUEST_URI"]));
+    }
+    else {
+        $html = <<<END
+                                <li class="nav-item small">
+                                    <a class="nav-link btn-secondary ml-1" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" href="%s">Rules</a>
+                                </li>
+
+END;
+        echo sprintf($html, OFFICIAL_RULES_URL);
     }
 ?>
                             </ul>
@@ -291,7 +316,7 @@ END;
         $scores = getScores($_SESSION["team_id"]);
         $places = getPlaces($_SESSION["team_id"]);
         $medals = array(1 => "first.jpg", 2 => "second.jpg", 3 => "third.jpg");
-        $active = getActiveContracts($_SESSION["team_id"]);
+        $active = array_diff(getActiveContracts($_SESSION["team_id"]), getHiddenContracts());
         $finished = getFinishedContracts($_SESSION["team_id"]);
         $active_ = $active ? fetchScalar("SELECT GROUP_CONCAT(title ORDER BY title ASC) FROM contracts WHERE contract_id IN (" . implode(",", $active) . ")") : "-";
         $finished_ = $finished ? fetchScalar("SELECT GROUP_CONCAT(title ORDER BY title ASC) FROM contracts WHERE contract_id IN (" . implode(",", $finished) . ")") : "-";

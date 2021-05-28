@@ -27,9 +27,9 @@ fi
 
 result=`apt-cache search --names-only '^php5$'`
 if [ -z "$result" ] ; then
-    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive default-mysql-server default-mysql-client php-mysql php-gd openssh-server unattended-upgrades
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php libapache2-mod-php libapache2-mod-evasive nullmailer default-mysql-server default-mysql-client php-mysql php-tcpdf php-gd php-xml php-simplexml openssh-server unattended-upgrades cron php-curl pwgen apt-utils
 else
-    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive mysql-server mysql-client php5-mysql php5-gd openssh-server unattended-upgrades
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install apache2 php5 libapache2-mod-php5 libapache2-mod-evasive nullmailer mysql-server mysql-client php5-mysql php5-tcpdf php5-gd php5-xml php5-simplexml openssh-server unattended-upgrades cron php5-curl pwgen apt-utils
 fi
 
 sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
@@ -43,9 +43,6 @@ cat > /etc/apt/apt.conf.d/20auto-upgrades << EOF
 APT::Periodic::Update-Package-Lists "1";
 APT::Periodic::Unattended-Upgrade "1";
 EOF
-
-sed -i 's/PermitRootLogin.*/PermitRootLogin without-password/g' /etc/ssh/sshd_config
-dpkg-statoverride --update --add root sudo 4750 /bin/su &>/dev/null
 
 touch /var/log/wtmp
 
@@ -101,23 +98,10 @@ cat > /etc/apache2/mods-enabled/mpm_prefork.conf << EOF
 EOF
 
 git checkout .
-read -s -p "Enter new password for MySQL user 'ecsc' (press <Enter> for default): " NEW_PWD
-echo
-if [[ $NEW_PWD != ${NEW_PWD//[\']/} ]]; then
-    echo "Single-quote (') character is unacceptable"
-    exit 1
-fi
-if [[ -n "$NEW_PWD" ]]; then
-    read -s -p "Confirm new password: " PWD_CONFIRM
-    echo
-    if [ $NEW_PWD == $PWD_CONFIRM ]; then
-        sed -i "s/define.\"MYSQL_PASSWORD\".*/define(\"MYSQL_PASSWORD\", \"$NEW_PWD\");/g" "$DEPLOYMENT_HTML/includes/common.php"
-        sed -i "s/IDENTIFIED BY.*/IDENTIFIED BY '$NEW_PWD';/g" "$DEPLOYMENT_SCHEMA"
-    else
-        echo "Passwords don't match"
-        exit 1
-    fi
-fi
+
+NEW_PWD=$(pwgen -c -n -B -s -1 16)
+sed -i "s/define.\"MYSQL_PASSWORD\".*/define(\"MYSQL_PASSWORD\", \"$NEW_PWD\");/g" "$DEPLOYMENT_HTML/includes/common.php"
+sed -i "s/IDENTIFIED BY.*/IDENTIFIED BY '$NEW_PWD';/g" "$DEPLOYMENT_SCHEMA"
 
 service mysql restart
 mysql < $DEPLOYMENT_SCHEMA
@@ -131,3 +115,10 @@ a2enmod -q evasive
 a2enmod -q reqtimeout
 a2enmod -q rewrite
 service apache2 restart
+
+jobs_file=$(mktemp)
+cat >> $jobs_file << "EOF"
+*/1 * * * * test -f /var/www/.cron && php /var/www/.cron
+EOF
+crontab $jobs_file
+rm $jobs_file

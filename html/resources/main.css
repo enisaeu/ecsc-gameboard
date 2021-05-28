@@ -207,7 +207,7 @@ body::after {
     border-radius: 0;
 }
 
-.modal-login .btn {        
+.modal-login .btn {
     font-size: 16px;
     font-weight: bold;
     background: #007bff;
@@ -374,7 +374,11 @@ td.min {
     white-space: nowrap;
 }
 
-table { 
+.alert {
+    overflow: hidden;
+}
+
+table {
     border: 1px solid #ddd;
     border-collapse: separate;
     border-radius: 4px;
@@ -675,6 +679,7 @@ input[type=search] {
 
 .fa-times {
     opacity: 0.8;
+    cursor: pointer;
 }
 
 .constrained {
@@ -688,4 +693,14 @@ input[type=search] {
 .constrained .badge {
     background-color: #e9ecef;
     color: gray !important;
+}
+
+.fa-upload {
+    cursor: pointer;
+    color: #007bff;
+}
+
+.fa-download {
+    cursor: pointer;
+    color: #007bff;
 }

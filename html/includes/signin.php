@@ -1,4 +1,6 @@
 <?php
+    session_regenerate_id(true);
+
     require_once("common.php");
 
     $error = false;
