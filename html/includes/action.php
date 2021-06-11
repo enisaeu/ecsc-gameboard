@@ -41,10 +41,19 @@
 
         logMessage("Report generation initiated", LogLevel::DEBUG);
 
-        generateReport();
+        $header = array("Foo", "Bar");
+        $content = <<<END
+Austria;13023
+Belgium;30518
+Denmark;5295
+Finland;5147
+END;
 
-        if ($success)
-            die("OK");
+        generateReport($header, $content);
+
+        if ($success) {
+//             die("OK");
+        }
         else {
             header("HTTP/1.1 500 Internal Server Error");
             die(DEBUG ? $_SESSION["conn_error"] : null);

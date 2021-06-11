@@ -433,20 +433,44 @@ function showResetBox(login_name, full_name) {
 }
 
 function getReport() {
-    $.post(window.location.href.split('#')[0], {token: document.token, action: "report"}, function(content) {
+    // Reference: https://stackoverflow.com/a/17682424
+    jQuery.ajax({
+            method: "POST",
+            data: {token: document.token, action: "report"},
+            url:window.location.href.split('#')[0],
+            cache:false,
+            xhr:function(){
+                var xhr = new XMLHttpRequest();
+                xhr.responseType= "blob";
+                return xhr;
+            },
+            success: function(blob) {
+                if (blob.size > 1000) {
+                    var a = document.createElement("a");
+                    a.href = window.URL.createObjectURL(blob);
+                    a.download = "report.pdf";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+                else {
+                    const reader = new FileReader();
 
-//         if (content.indexOf("contract_id") > -1) {
-//             var blob = new Blob([content], { type: "application/octet-stream" });
-//             var a = document.createElement("a");
-//             a.href = window.URL.createObjectURL(blob);
-//             a.download = contract_title + ".json";
-//             document.body.appendChild(a);
-//             a.click();
-//             document.body.removeChild(a);
-//         }
-//         else
-//             alert("Something went wrong ('" + content + "')!");
-    });
+                    reader.addEventListener('loadend', (e) => {
+                        const text = e.srcElement.result;
+                        alert("Something went wrong ('" + text + "')!");
+                    });
+
+                    try {
+                        reader.readAsText(blob);
+                    }
+                    catch (error) {
+                    }
+                }
+            },
+            error:function(){
+            }
+        });
 }
 
 function showDatabaseBox(login_name, full_name) {
