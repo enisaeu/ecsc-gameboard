@@ -3,45 +3,13 @@
     define("_PDF_HEADER_LOGO_WIDTH", "20");
     define("_PDF_HEADER_LOGO_HEIGHT", "20");
     define("_PDF_HEADER_TITLE", "ECSC 2021");
-    define("_PDF_HEADER_STRING", "Status Report");
+    define("_PDF_HEADER_STRING", "Status Report (" . date('Y-m-d H:i:s') . ")");
 
+    require_once("common.php");
     require_once('tcpdf/tcpdf.php');
 
-    class MYPDF extends TCPDF {
-        public function ColoredTable($header, $data) {
-            // Colors, line width and bold font
-            $this->SetFillColor(255, 0, 0);
-            $this->SetTextColor(255);
-            $this->SetDrawColor(128, 0, 0);
-            $this->SetLineWidth(0.3);
-            $this->SetFont('', 'B');
-
-            $w = array(80, 80);
-            $num_headers = count($header);
-            for($i = 0; $i < $num_headers; ++$i) {
-                $this->Cell($w[$i], 7, $header[$i], 1, 0, 'C', 1);
-            }
-            $this->Ln();
-
-            $this->SetFillColor(224, 235, 255);
-            $this->SetTextColor(0);
-            $this->SetFont('');
-
-            $fill = 0;
-            foreach($data as $row) {
-                $this->Cell($w[0], 6, $row[0], 'LR', 0, 'L', $fill);
-                $this->Cell($w[1], 6, $row[1], 'LR', 0, 'L', $fill);
-//                 $this->Cell($w[2], 6, number_format($row[2]), 'LR', 0, 'R', $fill);
-//                 $this->Cell($w[3], 6, number_format($row[3]), 'LR', 0, 'R', $fill);
-                $this->Ln();
-                $fill=!$fill;
-            }
-            $this->Cell(array_sum($w), 0, '', 'T');
-        }
-    }
-
-    function generateReport($header, $content) {
-        $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    function generateReport() {
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         $pdf->SetTitle(_PDF_HEADER_TITLE);
         $pdf->SetSubject(_PDF_HEADER_STRING);
@@ -65,13 +33,38 @@
 
         $pdf->AddPage();
 
-        $lines = explode("\n", $content);
+        $html = '
+        <style>
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+        </style>
+        <h3>Scoreboard:</h3>
+        <table>
+            <tr style="color:white; background-color: red">
+                <th style="width: 10%" align="center">Rank</th>
+                <th style="width: 60%" align="left">Team name</th>
+                <th style="width: 15%" align="right">Cash (€)</th>
+                <th style="width: 15%" align="right">Awareness</th>
+            </tr>
+        ';
 
-        $data = array();
-        foreach($lines as $line) {
-            $data[] = explode(';', chop($line));
+        $counter = 1;
+        $rankings = getRankedTeams(true);
+        foreach ($rankings as $ranking) {
+            $html .= '<tr><td align="center">' . $counter . '</td><td><span style="white-space: nowrap">' . $ranking["full_name"] . '</span></td><td align="right">' . $ranking["cash"] . '</td><td align="right">' . $ranking["awareness"] . '</td></tr>';
+            $counter += 1;
         }
-        $pdf->ColoredTable($header, $data);
+
+        $html .= '
+        </table>';
+
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        $pdf->AddPage();
+
+        $pdf->writeHTML($html, true, false, true, false, '');
 
         header("Content-Type: application/octet-stream");
         $pdf->Output("report.pdf", 'I');

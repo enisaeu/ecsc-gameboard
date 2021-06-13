@@ -41,15 +41,7 @@
 
         logMessage("Report generation initiated", LogLevel::DEBUG);
 
-        $header = array("Foo", "Bar");
-        $content = <<<END
-Austria;13023
-Belgium;30518
-Denmark;5295
-Finland;5147
-END;
-
-        generateReport($header, $content);
+        generateReport();
 
         if ($success) {
 //             die("OK");

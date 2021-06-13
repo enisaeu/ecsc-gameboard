@@ -324,7 +324,7 @@
         return max(0, $original - $total_penalty);
     }
 
-    function getRankedTeams() {
+    function getRankedTeams($details=false) {
         $result = array();
         $teams = array();
 
@@ -360,8 +360,12 @@
                 return 0;
         });
 
-        foreach ($rankings as $ranking)
-            array_push($result, $ranking["team_id"]);
+        if ($details)
+            $result = $rankings;
+        else {
+            foreach ($rankings as $ranking)
+                array_push($result, $ranking["team_id"]);
+        }
 
         return $result;
     }
