@@ -704,3 +704,7 @@ input[type=search] {
     cursor: pointer;
     color: #007bff;
 }
+
+.nav-link {
+    padding: .5rem .5rem;
+}

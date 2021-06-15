@@ -242,7 +242,7 @@ END;
         echo sprintf($html, (PAGE === "logs" ? " active" : ""), joinPaths(PATHDIR, '/logs/'), fetchScalar("SELECT COUNT(*) FROM logs"), (PAGE === "stats" ? " active" : ""), joinPaths(PATHDIR, '/stats/'));
     }
 ?>
-                                <li class="nav-item small ml-3">
+                                <li class="nav-item small ml-1">
                                     <a class="nav-link btn-info" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="signOut()">Sign out</a>
                                 </li>
 <?php

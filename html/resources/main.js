@@ -1143,6 +1143,7 @@ function drawLineMomentum() {
             });
 
             if ((result.length == 0) || (isAdmin() && (maxCash == 0))) {
+                $("#tab_line_momentum").remove();
                 $("#line_momentum").hide(50, function() { $("#line_momentum").remove(); }); // NOTE: animate of empty line-momentum above the list of teams
                 return;
             }

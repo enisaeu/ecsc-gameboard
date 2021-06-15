@@ -17,6 +17,7 @@ CREATE TABLE teams (
     country_code CHAR(2),
     email VARCHAR(1024) NOT NULL,
     password_hash VARCHAR(1024) NOT NULL,
+    guest BOOLEAN NOT NULL DEFAULT 0,
     ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -43,7 +44,7 @@ CREATE TABLE privates (
 
 CREATE TABLE contracts (
     contract_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(1024) NOT NULL UNIQUE,
+    title VARCHAR(256) NOT NULL UNIQUE,
     description TEXT NOT NULL,
     categories VARCHAR(1024) NOT NULL,
     hidden BOOLEAN NOT NULL DEFAULT FALSE,

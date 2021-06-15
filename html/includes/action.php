@@ -308,9 +308,9 @@
             }
             else {
                 if (isset($team["password"]) && ($team["password"] != ""))
-                    $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email, password_hash=:password_hash WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT)));
+                    $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email, guest=:guest, password_hash=:password_hash WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT), "guest" => intval($team["guest"])));
                 else
-                    $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"]));
+                    $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email, guest=:guest WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "guest" => intval($team["guest"])));
             }
 
             if ($success) {

@@ -10,7 +10,7 @@
             $team = array("team_id" => "-1", "login_name" => "", "full_name" => "", "country_code" => "", "email" => "");
 
         $template = file_get_contents("templates/team.html");
-        $html = format($template, array("action" => $existing ? "Update" : "Create", "team_id" => $team["team_id"], "login_name" => $team["login_name"], "full_name" => $team["full_name"], "email" => $team["email"]));
+        $html = format($template, array("action" => $existing ? "Update" : "Create", "team_id" => $team["team_id"], "login_name" => $team["login_name"], "full_name" => $team["full_name"], "email" => $team["email"], "guest_checked" => ($team["guest"] ? " checked" : "")));
 
         if (!$existing)
             $html = preg_replace('/placeholder="[^"]+" /', "", $html);
@@ -81,6 +81,7 @@
                             team["country_code"] = $("#team_editor label:contains('Country')").prev().val();
                             team["email"] = $("#team_editor label:contains('Email')").prev().val();
                             team["password"] = $("#team_editor label:contains('Password')").prev().val();
+                            team["guest"] = $("#team_editor label:contains('Guest')").prev().prop("checked");
 
                             $.post(window.location.href.split('#')[0], {token: document.token, action: "update", team: JSON.stringify(team)}, function(content) {
                                 if (content !== "OK")
@@ -118,7 +119,7 @@ END;
                                         foreach ($teams as $team_id) {
                                             $counter += 1;
 
-                                            $row = fetchAll("SELECT login_name, full_name, country_code FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
+                                            $row = fetchAll("SELECT login_name, full_name, country_code, guest FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
                                             $scores = getScores($team_id);
 
                                             if ($scores["cash"] !== $previous) {
@@ -129,7 +130,7 @@ END;
                                             else
                                                 $_ = "=";
 
-                                            $html = "<tr" . ($_SESSION["full_name"] == $row["full_name"] ? " class='current-team'" : "") . "><td value='" . $counter . "' class='min'><span>" . $_ . "</span></td><td class='full_name'>" . cleanReflectedValue($row["full_name"]) . " <sup>(" . cleanReflectedValue($row["login_name"]) . ")</sup></td><td class='min'><span class='flag-icon flag-icon-" . cleanReflectedValue(strtolower($row["country_code"])) . " ml-1' data-toggle='tooltip' title='" . cleanReflectedValue(strtoupper($row["country_code"])) . "'></span></td><td>" . number_format($scores["cash"]) . "</td><td>". number_format($scores["awareness"]) . "</td><td class='min actions'>" . ($_SESSION["full_name"] == $row["full_name"] ? ("<i class='fas fa-key ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Change password'></i>")  . "<i class='far fa-life-ring ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Send message to support'></i><i class='fas fa-sign-out-alt ml-1' data-toggle='tooltip' title='Sign out' onclick='signOut()'></i>" : "<i class='far fa-envelope ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Send private message'></i>" . (isAdmin() ? "<i class='fas fa-hand-holding-usd ml-1' data-toggle='tooltip' title='Award/penalize cash'></i>" : "<i class='fas fa-money-bill-wave ml-1' data-toggle='tooltip' title='Send cash'></i>") . (isAdmin() ? "<i class='far fa-edit ml-1' data-toggle='tooltip' title='Edit team'></i>" : "") . (isAdmin() ? "<i class='far fa-trash-alt ml-1' data-toggle='tooltip' title='Delete team'></i>" : "")). "</td></tr>";
+                                            $html = "<tr" . ($_SESSION["full_name"] == $row["full_name"] ? " class='current-team'" : "") . "><td value='" . $counter . "' class='min'><span>" . $_ . "</span></td><td class='full_name'>" . cleanReflectedValue($row["full_name"]) . " <sup>(" . cleanReflectedValue($row["login_name"]) . ")</sup>" . ($row["guest"] ? "<i class='fas fa-couch ml-2' data-toggle='tooltip' title='Guest team'></i>" : "") . "</td><td class='min'><span class='flag-icon flag-icon-" . cleanReflectedValue(strtolower($row["country_code"])) . " ml-1' data-toggle='tooltip' title='" . cleanReflectedValue(strtoupper($row["country_code"])) . "'></span></td><td>" . number_format($scores["cash"]) . "</td><td>". number_format($scores["awareness"]) . "</td><td class='min actions'>" . ($_SESSION["full_name"] == $row["full_name"] ? ("<i class='fas fa-key ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Change password'></i>")  . "<i class='far fa-life-ring ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Send message to support'></i><i class='fas fa-sign-out-alt ml-1' data-toggle='tooltip' title='Sign out' onclick='signOut()'></i>" : "<i class='far fa-envelope ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Send private message'></i>" . (isAdmin() ? "<i class='fas fa-hand-holding-usd ml-1' data-toggle='tooltip' title='Award/penalize cash'></i>" : "<i class='fas fa-money-bill-wave ml-1' data-toggle='tooltip' title='Send cash'></i>") . (isAdmin() ? "<i class='far fa-edit ml-1' data-toggle='tooltip' title='Edit team'></i>" : "") . (isAdmin() ? "<i class='far fa-trash-alt ml-1' data-toggle='tooltip' title='Delete team'></i>" : "")). "</td></tr>";
 
                                             if (!isAdmin()) {
                                                 if (getSetting(Setting::CASH_TRANSFERS) === "false")
