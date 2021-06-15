@@ -1,12 +1,4 @@
-# mysql -t -u root -p < main.sql
-
-DROP DATABASE IF EXISTS ecsc;
-
-CREATE DATABASE ecsc CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; -- Reference: https://dba.stackexchange.com/a/76789
-CREATE USER IF NOT EXISTS ecsc@localhost IDENTIFIED BY 'changeme!';
-GRANT ALL ON ecsc.* TO ecsc@localhost;
-
-USE ecsc;
+USE scoreboard;
 
 ###
 
@@ -43,7 +35,7 @@ CREATE TABLE privates (
 
 CREATE TABLE contracts (
     contract_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(1024) NOT NULL UNIQUE,
+    title VARCHAR(1024) NOT NULL,
     description TEXT NOT NULL,
     categories VARCHAR(1024) NOT NULL,
     hidden BOOLEAN NOT NULL DEFAULT FALSE,

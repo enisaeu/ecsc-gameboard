@@ -1,4 +1,4 @@
-USE ecsc;
+USE scoreboard;
 
 INSERT INTO notifications(content, category) VALUES("Competition has officially started. Good luck and have fun!", "light");
 INSERT INTO contracts(title, description, categories) VALUES("Secret messages", "A mysterious message has appeared in your inbox. Can you decode it?", "Crypto");
