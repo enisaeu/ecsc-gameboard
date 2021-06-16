@@ -35,6 +35,7 @@
     define("PRIVATE_TRUNCATE_LENGTH", 256);             // Note: maximum private message length for non-admin
     define("OFFICIAL_RULES_URL", "https://ecsc.eu/about/ecscrules.pdf/download");
     define("TOKEN_LIFE", 4 * 24 * 3600);
+    define("SAME_CASH_SAME_RANK", false);
 
     if (isset($_SERVER['REMOTE_ADDR']))
         // Reference: https://stackoverflow.com/a/2886224
