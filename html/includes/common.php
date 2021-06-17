@@ -158,9 +158,9 @@
 
     function generateValuesHtml($cash, $awareness, $dynamic=null) {
         if (is_numeric($cash))
-            $result = format('<span class="badge {appearance} border mr-2">&euro; {cash}</span>', array("cash" => number_format($cash), "appearance" => ($cash > 0 ? "badge-success" : ($cash < 0 ? "badge-danger" : "badge-light"))));
+            $result = format('<span class="badge {appearance} border mr-2"><i class="currency"></i> {cash}</span>', array("cash" => number_format($cash), "appearance" => ($cash > 0 ? "badge-success" : ($cash < 0 ? "badge-danger" : "badge-light"))));
         else
-            $result = format('<span class="badge {appearance} border mr-2">&euro; {cash}</span>', array("cash" => $cash, "appearance" => "badge-light"));
+            $result = format('<span class="badge {appearance} border mr-2"><i class="currency"></i> {cash}</span>', array("cash" => $cash, "appearance" => "badge-light"));
 
         if (!is_null($dynamic) && ($dynamic != $cash))
             $result = str_replace('</span>', '/' . $dynamic . '</span>', $result);

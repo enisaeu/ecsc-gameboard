@@ -708,3 +708,10 @@ input[type=search] {
 .nav-link {
     padding: .5rem .5rem;
 }
+
+.currency::after {
+    content: "\20AC";
+/*     content: "\00A5"; */
+/*     content: "\0024"; */
+    font-style: normal;
+}

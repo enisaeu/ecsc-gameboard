@@ -293,7 +293,7 @@ END;
                         $note .= "<p class=\"smaller border rounded border-danger\" style=\"border-style: dashed !important; border-width: 2px !important; padding: 5px\">Note: To take this contract team needs: ";
 
                         if (!is_null($constraint["min_cash"]))
-                            $note .= sprintf("<b>&euro; %s</b> ", number_format($constraint["min_cash"]));
+                            $note .= sprintf("<b><i class='currency'></i> %s</b> ", number_format($constraint["min_cash"]));
                         if (!is_null($constraint["min_awareness"]))
                             $note .= sprintf('<b><i class="fas fa-eye"></i> %s</b> ', number_format($constraint["min_awareness"]));
                         $note .= "</p>";
