@@ -39,6 +39,7 @@
                 border: 1px solid black;
                 border-collapse: collapse;
             }
+            {awareness}
         </style>
         <h3>Scoreboard:</h3>
         <table>
@@ -46,14 +47,16 @@
                 <th style="width: 10%" align="center">Rank</th>
                 <th style="width: 60%" align="left">Team name</th>
                 <th style="width: 15%" align="right">Cash (€)</th>
-                <th style="width: 15%" align="right">Awareness</th>
+                <th style="width: 15%" align="right" class="awareness">Awareness</th>
             </tr>
         ';
+
+        $html = format($html, array("awareness" => (HIDE_AWARENESS ? ".awareness {display: none}": "")));
 
         $counter = 1;
         $rankings = getRankedTeams(true);
         foreach ($rankings as $ranking) {
-            $html .= '<tr><td align="center">' . $counter . '</td><td><span style="white-space: nowrap">' . $ranking["full_name"] . '</span></td><td align="right">' . $ranking["cash"] . '</td><td align="right">' . $ranking["awareness"] . '</td></tr>';
+            $html .= '<tr><td align="center">' . $counter . '</td><td><span style="white-space: nowrap">' . $ranking["full_name"] . '</span></td><td align="right">' . $ranking["cash"] . '</td><td align="right" class="awareness">' . $ranking["awareness"] . '</td></tr>';
             $counter += 1;
         }
 

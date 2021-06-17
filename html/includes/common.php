@@ -36,6 +36,7 @@
     define("OFFICIAL_RULES_URL", "https://ecsc.eu/about/ecscrules.pdf/download");
     define("TOKEN_LIFE", 4 * 24 * 3600);
     define("SAME_CASH_SAME_RANK", false);
+    define("HIDE_AWARENESS", false);
 
     if (isset($_SERVER['REMOTE_ADDR']))
         // Reference: https://stackoverflow.com/a/2886224
@@ -165,9 +166,9 @@
             $result = str_replace('</span>', '/' . $dynamic . '</span>', $result);
 
         if (is_numeric($awareness))
-            $result .= format('<span class="badge {appearance} border mr-2">{awareness} <i class="fas fa-eye"></i></span>', array("awareness" => number_format($awareness), "appearance" => ($awareness > 0 ? "badge-success" : ($awareness < 0 ? "badge-danger" : "badge-light"))));
+            $result .= format('<span class="badge {appearance} border mr-2 awareness">{awareness} <i class="fas fa-eye"></i></span>', array("awareness" => number_format($awareness), "appearance" => ($awareness > 0 ? "badge-success" : ($awareness < 0 ? "badge-danger" : "badge-light"))));
         else
-            $result .= format('<span class="badge {appearance} border mr-2">{awareness} <i class="fas fa-eye"></i></span>', array("awareness" => $awareness, "appearance" => "badge-light"));
+            $result .= format('<span class="badge {appearance} border mr-2 awareness">{awareness} <i class="fas fa-eye"></i></span>', array("awareness" => $awareness, "appearance" => "badge-light"));
         return $result;
     }
 

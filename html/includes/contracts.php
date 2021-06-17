@@ -105,7 +105,7 @@
                 $template = file_get_contents("templates/task.html");
                 $title = "<input name='title' value='" . cleanReflectedValue($row["title"]) . "' class='form-control' style='display: block'><label class='info-label'>Task title</label>";
                 $description = "<textarea name='description' class='form-control' style='display: block'>" . cleanReflectedValue($row["description"]) . "</textarea><label class='info-label'>Task description</label>";
-                $values = sprintf("</div><div><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Task cash</label><input type='number' value='%s' class='form-control' style='width: initial'><label class='info-label'>Task awareness</label>", $row["cash"], $row["awareness"]);
+                $values = sprintf("</div><div><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Task cash</label><input type='number' value='%s' class='form-control awareness' style='width: initial'><label class='info-label awareness'>Task awareness</label>", $row["cash"], $row["awareness"]);
                 $task = format($template, array("title" => $title, "values" => $values, "description" => $description, "task_id" => $row["task_id"]));
                 $task = preg_replace("/.*<input name=\"token.+/", "", $task);
                 $task = preg_replace("/\s*<button.+<\/button>\s*/", "", $task);
@@ -185,7 +185,7 @@ END;
 
                                             $("#constraints_checkbox").change(function() {
                                                 if ($(this).prop("checked")) {
-                                                    var constraints_inputs = $("<div id='constraints_inputs'><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum cash</label><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum awareness</label></div>");
+                                                    var constraints_inputs = $("<div id='constraints_inputs'><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum cash</label><input type='number' min='0' value='%s' class='form-control awareness' style='width: initial'><label class='info-label awareness'>Minimum awareness</label></div>");
                                                     $(this).closest(".custom-control").before(constraints_inputs);
                             //                         setupValidation($("#constraints_inputs"));  // disabled because constraints can be unset individually
                                                 }

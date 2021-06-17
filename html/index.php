@@ -303,7 +303,7 @@ END;
                             <div class="card-body" style="font-size: 12px">
                                 <table id="info_table">
                                     <tr><td>Cash: </td><td><b>%s</b> &euro; (%s%s)</td></tr>
-                                    <tr><td>Awareness: </td><td><b>%s</b> (%s%s)</td></tr>
+                                    <tr class="awareness"><td>Awareness: </td><td><b>%s</b> (%s%s)</td></tr>
                                     <tr><td>Last progress: </td><td><b>%s</b></td></tr>
                                     <tr><td>Active contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
                                     <tr><td>Finished contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>

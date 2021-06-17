@@ -43,3 +43,7 @@
                 }
             </style>
         </noscript>
+<?php
+        if (HIDE_AWARENESS)
+            echo "<style>.awareness {display: none}</style>";
+?>
