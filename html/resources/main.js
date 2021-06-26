@@ -178,7 +178,7 @@ $(document).ready(function() {
     $("#settings_table input[type=checkbox]").click(function() {
         var name = $(this).prop("id");
         var value = $(this).is(":checked");
-        pushSetting(name, value, name == "dynamic_scoring" ? reload : null);
+        pushSetting(name, value, ["dynamic_scoring", "use_awareness"].includes(name) ? reload : null);
     });
 
     $("#settings_table input[type=text]").change(function() {

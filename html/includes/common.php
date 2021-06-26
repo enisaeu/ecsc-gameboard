@@ -36,7 +36,6 @@
     define("OFFICIAL_RULES_URL", "https://ecsc.eu/about/ecscrules.pdf/download");
     define("TOKEN_LIFE", 4 * 24 * 3600);
     define("SAME_CASH_SAME_RANK", false);
-    define("HIDE_AWARENESS", false);
 
     if (isset($_SERVER['REMOTE_ADDR']))
         // Reference: https://stackoverflow.com/a/2886224
@@ -74,6 +73,7 @@
         const CASH_TRANSFERS = "cash_transfers";
         const PRIVATE_MESSAGES = "private_messages";
         const SUPPORT_MESSAGES = "support_messages";
+        const USE_AWARENESS = "use_awareness";
     }
 
     abstract class Cache {

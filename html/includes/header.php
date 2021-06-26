@@ -44,6 +44,6 @@
             </style>
         </noscript>
 <?php
-        if (HIDE_AWARENESS)
+        if (!parseBool(getSetting(Setting::USE_AWARENESS)))
             echo "<style>.awareness {display: none}</style>";
 ?>

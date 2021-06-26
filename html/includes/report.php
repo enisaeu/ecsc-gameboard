@@ -51,7 +51,7 @@
             </tr>
         ';
 
-        $html = format($html, array("awareness" => (HIDE_AWARENESS ? ".awareness {display: none}": "")));
+        $html = format($html, array("awareness" => (parseBool(getSetting(Setting::USE_AWARENESS)) ? "": ".awareness {display: none}")));
 
         $counter = 1;
         $rankings = getRankedTeams(true);
