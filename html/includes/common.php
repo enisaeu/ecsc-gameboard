@@ -199,7 +199,7 @@
 
             foreach ($solved as $task_id) {
                 $task = $tasks[$task_id];
-                $result["cash"] += (getSetting(Setting::DYNAMIC_SCORING) == "true") ? getDynamicScore($task_id, null, true) : floatval($task["cash"]);
+                $result["cash"] += (parseBool(getSetting(Setting::DYNAMIC_SCORING)) ? getDynamicScore($task_id, null, true) : floatval($task["cash"]));
                 $result["awareness"] += floatval($task["awareness"]);
             }
         }
@@ -306,7 +306,7 @@
             $task_ids = fetchAll("SELECT task_id FROM tasks WHERE contract_id=:contract_id", array("contract_id" => $contract_id), PDO::FETCH_COLUMN);
         }
 
-        if (getSetting(Setting::DYNAMIC_SCORING) == "true") {
+        if (parseBool(getSetting(Setting::DYNAMIC_SCORING))) {
             foreach ($task_ids as $task_id) {
                 $task_cash = fetchScalar("SELECT cash FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id));
                 $task_penalty = 0;
@@ -663,5 +663,18 @@
             $result = $string;
 
         return $result;
+    }
+
+    function parseBool($value) {
+        $retval = false;
+
+        if (is_bool($value))
+            $retval = $value;
+        elseif (is_numeric($value) && ($value > 0))
+            $retval = true;
+        elseif (is_string($value) && (strtolower($value) == "true"))
+            $retval = true;
+
+        return $retval;
     }
 ?>

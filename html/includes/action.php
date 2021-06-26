@@ -394,18 +394,18 @@
         $message = NULL;
 
         if ($_POST["to"] === ADMIN_LOGIN_NAME) {
-            if (getSetting(Setting::SUPPORT_MESSAGES) === "false" || !isset($_POST["message"]))
+            if (!parseBool(getSetting(Setting::SUPPORT_MESSAGES)) || !isset($_POST["message"]))
                 die();
             else
                 $message = $_POST["message"];
         }
         else
-            $message = ((isAdmin() || (getSetting(Setting::PRIVATE_MESSAGES) !== "false")) && isset($_POST["message"])) ? $_POST["message"] : NULL;
+            $message = ((isAdmin() || parseBool(getSetting(Setting::PRIVATE_MESSAGES))) && isset($_POST["message"])) ? $_POST["message"] : NULL;
 
         if (!is_null($message))
             $message = isAdmin() ? $message : truncate($message, PRIVATE_TRUNCATE_LENGTH);
 
-        if ((!is_null($cash)) && ((getSetting(Setting::CASH_TRANSFERS) === "false") || ($cash < 0)) && (!isAdmin()))
+        if ((!is_null($cash)) && (!parseBool(getSetting(Setting::CASH_TRANSFERS)) || ($cash < 0)) && (!isAdmin()))
             $success = false;
         else if (!is_null($to_id) && ($_SESSION["team_id"] !== $to_id) && (isAdmin() || !(!is_null($cash) && ($cash > $max)) && !((is_null($cash) || $cash === 0) && (is_null($message) || $message === "")))) {
             $leader = getRankedTeams()[0];

@@ -143,11 +143,11 @@ END;
                                             $html = "<tr" . ($_SESSION["full_name"] == $row["full_name"] ? " class='current-team'" : "") . "><td value='" . $counter . "' class='min'><span>" . $_ . "</span></td><td class='full_name'>" . cleanReflectedValue($row["full_name"]) . " <sup>(" . cleanReflectedValue($row["login_name"]) . ")</sup>" . ($row["guest"] ? "<i class='fas fa-couch ml-2' data-toggle='tooltip' title='Guest team'></i>" : "") . "</td><td class='min'><span class='flag-icon flag-icon-" . cleanReflectedValue(strtolower($row["country_code"])) . " ml-1' data-toggle='tooltip' title='" . cleanReflectedValue(strtoupper($row["country_code"])) . "'></span></td><td>" . number_format($scores["cash"]) . "</td><td class='awareness'>". number_format($scores["awareness"]) . "</td><td class='min actions'>" . ($_SESSION["full_name"] == $row["full_name"] ? ("<i class='fas fa-key ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Change password'></i>")  . "<i class='far fa-life-ring ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Send message to support'></i><i class='fas fa-sign-out-alt ml-1' data-toggle='tooltip' title='Sign out' onclick='signOut()'></i>" : "<i class='far fa-envelope ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Send private message'></i>" . (isAdmin() ? "<i class='fas fa-hand-holding-usd ml-1' data-toggle='tooltip' title='Award/penalize cash'></i>" : "<i class='fas fa-money-bill-wave ml-1' data-toggle='tooltip' title='Send cash'></i>") . (isAdmin() ? "<i class='far fa-edit ml-1' data-toggle='tooltip' title='Edit team'></i>" : "") . (isAdmin() ? "<i class='far fa-trash-alt ml-1' data-toggle='tooltip' title='Delete team'></i>" : "")). "</td></tr>";
 
                                             if (!isAdmin()) {
-                                                if (getSetting(Setting::CASH_TRANSFERS) === "false")
+                                                if (!parseBool(getSetting(Setting::CASH_TRANSFERS)))
                                                     $html = preg_replace("/<i[^>]+fa-money-bill-wave[^>]+><\/i>/", "", $html);
-                                                if (getSetting(Setting::PRIVATE_MESSAGES) === "false")
+                                                if (!parseBool(getSetting(Setting::PRIVATE_MESSAGES)))
                                                     $html = preg_replace("/<i[^>]+fa-envelope[^>]+><\/i>/", "", $html);
-                                                if (getSetting(Setting::SUPPORT_MESSAGES) === "false")
+                                                if (!parseBool(getSetting(Setting::SUPPORT_MESSAGES)))
                                                     $html = preg_replace("/<i[^>]+fa-life-ring[^>]+><\/i>/", "", $html);
                                             }
 
