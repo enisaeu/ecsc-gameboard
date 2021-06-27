@@ -178,7 +178,7 @@ $(document).ready(function() {
     $("#settings_table input[type=checkbox]").click(function() {
         var name = $(this).prop("id");
         var value = $(this).is(":checked");
-        pushSetting(name, value, name == "dynamic_scoring" ? reload : null);
+        pushSetting(name, value, ["dynamic_scoring", "use_awareness"].includes(name) ? reload : null);
     });
 
     $("#settings_table input[type=text]").change(function() {
@@ -433,20 +433,44 @@ function showResetBox(login_name, full_name) {
 }
 
 function getReport() {
-    $.post(window.location.href.split('#')[0], {token: document.token, action: "report"}, function(content) {
+    // Reference: https://stackoverflow.com/a/17682424
+    jQuery.ajax({
+            method: "POST",
+            data: {token: document.token, action: "report"},
+            url:window.location.href.split('#')[0],
+            cache:false,
+            xhr:function(){
+                var xhr = new XMLHttpRequest();
+                xhr.responseType= "blob";
+                return xhr;
+            },
+            success: function(blob) {
+                if (blob.size > 1000) {
+                    var a = document.createElement("a");
+                    a.href = window.URL.createObjectURL(blob);
+                    a.download = "report.pdf";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+                else {
+                    const reader = new FileReader();
 
-//         if (content.indexOf("contract_id") > -1) {
-//             var blob = new Blob([content], { type: "application/octet-stream" });
-//             var a = document.createElement("a");
-//             a.href = window.URL.createObjectURL(blob);
-//             a.download = contract_title + ".json";
-//             document.body.appendChild(a);
-//             a.click();
-//             document.body.removeChild(a);
-//         }
-//         else
-//             alert("Something went wrong ('" + content + "')!");
-    });
+                    reader.addEventListener('loadend', (e) => {
+                        const text = e.srcElement.result;
+                        alert("Something went wrong ('" + text + "')!");
+                    });
+
+                    try {
+                        reader.readAsText(blob);
+                    }
+                    catch (error) {
+                    }
+                }
+            },
+            error:function(){
+            }
+        });
 }
 
 function showDatabaseBox(login_name, full_name) {
@@ -962,6 +986,8 @@ function pullMessages(initial) {
             }
 
             if (($("#notification_count").length > 0) && ($("#notification_count").text() != result["notifications"])) {
+                if ($("#notification_count").text() < result["notifications"])
+                    $("#notification_count").closest(".nav-link").addClass("highlight");
                 $("#notification_count").text(result["notifications"]);
                 if ($(".active").html().indexOf("notification_") >= 0) {
                     var interval = setInterval(function() {
@@ -1119,6 +1145,7 @@ function drawLineMomentum() {
             });
 
             if ((result.length == 0) || (isAdmin() && (maxCash == 0))) {
+                $("#tab_line_momentum").remove();
                 $("#line_momentum").hide(50, function() { $("#line_momentum").remove(); }); // NOTE: animate of empty line-momentum above the list of teams
                 return;
             }

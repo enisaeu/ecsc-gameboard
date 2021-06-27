@@ -22,12 +22,13 @@
             }
 
             if (!$error) {
-                $rows = fetchAll("SELECT team_id, full_name, password_hash FROM teams WHERE login_name=:login", array("login" => $_POST["login"]));
+                $rows = fetchAll("SELECT team_id, full_name, password_hash, guest FROM teams WHERE login_name=:login", array("login" => $_POST["login"]));
                 if (count($rows) === 1)
                     if (password_verify($_POST["password"], $rows[0]["password_hash"])) {
                         $_SESSION["login_name"] = $_POST["login"];
                         $_SESSION["full_name"] = $rows[0]["full_name"];
                         $_SESSION["team_id"] = $rows[0]["team_id"];
+                        $_SESSION["guest"] = $rows[0]["guest"];
                         logMessage("Login success", LogLevel::DEBUG);
                         header("Location: " . PATHDIR);
                         die();

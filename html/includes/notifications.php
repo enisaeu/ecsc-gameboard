@@ -21,7 +21,7 @@
         }
 
     if (isAdmin())
-        echo '<div class="ml-4 mb-3"><button class="btn btn-info" onclick="showSendNotificationBox()">New notification</button></div>';
+        echo '<div class="ml-4 mb-3"><button class="btn btn-info" '. (count($visible) > 0 ? "" : "style='margin-top: 25px' ") .'onclick="showSendNotificationBox()">New notification</button></div>';
     else if (NOTIFICATIONS_HIDE_ENABLED)
         echo '<div class="ml-4 mb-3"><button class="btn btn-info" onclick="hideNotification(-1)">Unhide hidden</button></div>';
 ?>

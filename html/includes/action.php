@@ -43,8 +43,9 @@
 
         generateReport();
 
-        if ($success)
-            die("OK");
+        if ($success) {
+//             die("OK");
+        }
         else {
             header("HTTP/1.1 500 Internal Server Error");
             die(DEBUG ? $_SESSION["conn_error"] : null);
@@ -307,9 +308,9 @@
             }
             else {
                 if (isset($team["password"]) && ($team["password"] != ""))
-                    $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email, password_hash=:password_hash WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT)));
+                    $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email, guest=:guest, password_hash=:password_hash WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT), "guest" => intval($team["guest"])));
                 else
-                    $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"]));
+                    $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email, guest=:guest WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "guest" => intval($team["guest"])));
             }
 
             if ($success) {
@@ -393,18 +394,18 @@
         $message = NULL;
 
         if ($_POST["to"] === ADMIN_LOGIN_NAME) {
-            if (getSetting(Setting::SUPPORT_MESSAGES) === "false" || !isset($_POST["message"]))
+            if (!parseBool(getSetting(Setting::SUPPORT_MESSAGES)) || !isset($_POST["message"]))
                 die();
             else
                 $message = $_POST["message"];
         }
         else
-            $message = ((isAdmin() || (getSetting(Setting::PRIVATE_MESSAGES) !== "false")) && isset($_POST["message"])) ? $_POST["message"] : NULL;
+            $message = ((isAdmin() || parseBool(getSetting(Setting::PRIVATE_MESSAGES))) && isset($_POST["message"])) ? $_POST["message"] : NULL;
 
         if (!is_null($message))
             $message = isAdmin() ? $message : truncate($message, PRIVATE_TRUNCATE_LENGTH);
 
-        if ((!is_null($cash)) && ((getSetting(Setting::CASH_TRANSFERS) === "false") || ($cash < 0)) && (!isAdmin()))
+        if ((!is_null($cash)) && (!parseBool(getSetting(Setting::CASH_TRANSFERS)) || ($cash < 0)) && (!isAdmin()))
             $success = false;
         else if (!is_null($to_id) && ($_SESSION["team_id"] !== $to_id) && (isAdmin() || !(!is_null($cash) && ($cash > $max)) && !((is_null($cash) || $cash === 0) && (is_null($message) || $message === "")))) {
             $leader = getRankedTeams()[0];

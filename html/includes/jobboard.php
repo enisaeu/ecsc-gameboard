@@ -30,7 +30,7 @@
         $description .= "<p class=\"smaller\"><u>Note:</u> To take this contract you'll need: ";
 
         if (!is_null($constraint["min_cash"]))
-            $description .= sprintf("<b>&euro; %s</b> ", number_format($constraint["min_cash"]));
+            $description .= sprintf("<b><i class='currency'></i> %s</b> ", number_format($constraint["min_cash"]));
         if (!is_null($constraint["min_awareness"]))
             $description .= sprintf('<b><i class="fas fa-eye"></i> %s</b> ', number_format($constraint["min_awareness"]));
 

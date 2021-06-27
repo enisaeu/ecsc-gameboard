@@ -35,6 +35,7 @@
     define("PRIVATE_TRUNCATE_LENGTH", 256);             // Note: maximum private message length for non-admin
     define("OFFICIAL_RULES_URL", "https://ecsc.eu/about/ecscrules.pdf/download");
     define("TOKEN_LIFE", 4 * 24 * 3600);
+    define("SAME_CASH_SAME_RANK", false);
 
     if (isset($_SERVER['REMOTE_ADDR']))
         // Reference: https://stackoverflow.com/a/2886224
@@ -72,6 +73,7 @@
         const CASH_TRANSFERS = "cash_transfers";
         const PRIVATE_MESSAGES = "private_messages";
         const SUPPORT_MESSAGES = "support_messages";
+        const USE_AWARENESS = "use_awareness";
     }
 
     abstract class Cache {
@@ -156,17 +158,17 @@
 
     function generateValuesHtml($cash, $awareness, $dynamic=null) {
         if (is_numeric($cash))
-            $result = format('<span class="badge {appearance} border mr-2">&euro; {cash}</span>', array("cash" => number_format($cash), "appearance" => ($cash > 0 ? "badge-success" : ($cash < 0 ? "badge-danger" : "badge-light"))));
+            $result = format('<span class="badge {appearance} border mr-2"><i class="currency"></i> {cash}</span>', array("cash" => number_format($cash), "appearance" => ($cash > 0 ? "badge-success" : ($cash < 0 ? "badge-danger" : "badge-light"))));
         else
-            $result = format('<span class="badge {appearance} border mr-2">&euro; {cash}</span>', array("cash" => $cash, "appearance" => "badge-light"));
+            $result = format('<span class="badge {appearance} border mr-2"><i class="currency"></i> {cash}</span>', array("cash" => $cash, "appearance" => "badge-light"));
 
         if (!is_null($dynamic) && ($dynamic != $cash))
             $result = str_replace('</span>', '/' . $dynamic . '</span>', $result);
 
         if (is_numeric($awareness))
-            $result .= format('<span class="badge {appearance} border mr-2">{awareness} <i class="fas fa-eye"></i></span>', array("awareness" => number_format($awareness), "appearance" => ($awareness > 0 ? "badge-success" : ($awareness < 0 ? "badge-danger" : "badge-light"))));
+            $result .= format('<span class="badge {appearance} border mr-2 awareness">{awareness} <i class="fas fa-eye"></i></span>', array("awareness" => number_format($awareness), "appearance" => ($awareness > 0 ? "badge-success" : ($awareness < 0 ? "badge-danger" : "badge-light"))));
         else
-            $result .= format('<span class="badge {appearance} border mr-2">{awareness} <i class="fas fa-eye"></i></span>', array("awareness" => $awareness, "appearance" => "badge-light"));
+            $result .= format('<span class="badge {appearance} border mr-2 awareness">{awareness} <i class="fas fa-eye"></i></span>', array("awareness" => $awareness, "appearance" => "badge-light"));
         return $result;
     }
 
@@ -197,7 +199,7 @@
 
             foreach ($solved as $task_id) {
                 $task = $tasks[$task_id];
-                $result["cash"] += (getSetting(Setting::DYNAMIC_SCORING) == "true") ? getDynamicScore($task_id, null, true) : floatval($task["cash"]);
+                $result["cash"] += (parseBool(getSetting(Setting::DYNAMIC_SCORING)) ? getDynamicScore($task_id, null, true) : floatval($task["cash"]));
                 $result["awareness"] += floatval($task["awareness"]);
             }
         }
@@ -304,7 +306,7 @@
             $task_ids = fetchAll("SELECT task_id FROM tasks WHERE contract_id=:contract_id", array("contract_id" => $contract_id), PDO::FETCH_COLUMN);
         }
 
-        if (getSetting(Setting::DYNAMIC_SCORING) == "true") {
+        if (parseBool(getSetting(Setting::DYNAMIC_SCORING))) {
             foreach ($task_ids as $task_id) {
                 $task_cash = fetchScalar("SELECT cash FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id));
                 $task_penalty = 0;
@@ -324,7 +326,7 @@
         return max(0, $original - $total_penalty);
     }
 
-    function getRankedTeams() {
+    function getRankedTeams($details=false) {
         $result = array();
         $teams = array();
 
@@ -360,8 +362,12 @@
                 return 0;
         });
 
-        foreach ($rankings as $ranking)
-            array_push($result, $ranking["team_id"]);
+        if ($details)
+            $result = $rankings;
+        else {
+            foreach ($rankings as $ranking)
+                array_push($result, $ranking["team_id"]);
+        }
 
         return $result;
     }
@@ -657,5 +663,18 @@
             $result = $string;
 
         return $result;
+    }
+
+    function parseBool($value) {
+        $retval = false;
+
+        if (is_bool($value))
+            $retval = $value;
+        elseif (is_numeric($value) && ($value > 0))
+            $retval = true;
+        elseif (is_string($value) && (strtolower($value) == "true"))
+            $retval = true;
+
+        return $retval;
     }
 ?>

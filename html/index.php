@@ -242,7 +242,7 @@ END;
         echo sprintf($html, (PAGE === "logs" ? " active" : ""), joinPaths(PATHDIR, '/logs/'), fetchScalar("SELECT COUNT(*) FROM logs"), (PAGE === "stats" ? " active" : ""), joinPaths(PATHDIR, '/stats/'));
     }
 ?>
-                                <li class="nav-item small ml-3">
+                                <li class="nav-item small ml-1">
                                     <a class="nav-link btn-info" style="color: white; cursor: pointer; text-shadow: 1px 1px 1px #555" onclick="signOut()">Sign out</a>
                                 </li>
 <?php
@@ -302,8 +302,8 @@ END;
                             </div>
                             <div class="card-body" style="font-size: 12px">
                                 <table id="info_table">
-                                    <tr><td>Cash: </td><td><b>%s</b> &euro; (%s%s)</td></tr>
-                                    <tr><td>Awareness: </td><td><b>%s</b> (%s%s)</td></tr>
+                                    <tr><td>Cash: </td><td><b>%s</b> <i class="currency"></i> (%s%s)</td></tr>
+                                    <tr class="awareness"><td>Awareness: </td><td><b>%s</b> (%s%s)</td></tr>
                                     <tr><td>Last progress: </td><td><b>%s</b></td></tr>
                                     <tr><td>Active contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
                                     <tr><td>Finished contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
@@ -338,10 +338,11 @@ END;
 
 END;
         $settings = "";
-        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable cash transfers between teams">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Cash transfers", "cash_transfers", getSetting(Setting::CASH_TRANSFERS) !== "false" ? " checked" : "");
-        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable dynamic scoring (Note: linear task cash value decrease (&alpha;=%s) based on number of solvers)">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', DYNAMIC_DECAY_PER_SOLVE, "Dynamic scoring", "dynamic_scoring", getSetting(Setting::DYNAMIC_SCORING) == "true" ? " checked" : "");
-        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable private messages between teams">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Private messages", "private_messages", getSetting(Setting::PRIVATE_MESSAGES) !== "false" ? " checked" : "");
-        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="(optional) Enable/disable sending of support (i.e. private) messages to Administrator">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Support messages", "support_messages", getSetting(Setting::SUPPORT_MESSAGES) !== "false" ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable awareness scoring (along with cash)">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Show awareness", "use_awareness", parseBool(getSetting(Setting::USE_AWARENESS)) ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable cash transfers between teams">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Cash transfers", "cash_transfers", parseBool(getSetting(Setting::CASH_TRANSFERS)) ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable dynamic scoring (Note: linear task cash value decrease (&alpha;=%s) based on number of solvers)">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', DYNAMIC_DECAY_PER_SOLVE, "Dynamic scoring", "dynamic_scoring", parseBool(getSetting(Setting::DYNAMIC_SCORING)) ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable private messages between teams">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Private messages", "private_messages", parseBool(getSetting(Setting::PRIVATE_MESSAGES)) ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable sending of support (i.e. private) messages to Administrator">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Support messages", "support_messages", parseBool(getSetting(Setting::SUPPORT_MESSAGES)) ? " checked" : "");
         $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="(optional) Number of seconds for a deliberate delay between potential task guessing attempts">Guess attempt penalty (secs): </td><td><input id="guess_delay" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_DELAY)) ? getSetting(Setting::GUESS_DELAY) : "0");
         $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="(optional) Number of wrong potential (sequential) task guessing attempts before an abrupt logout">Guess logout after attempts: </td><td><input id="guess_logout" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_LOGOUT)) ? getSetting(Setting::GUESS_LOGOUT) : "");
         $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="(optional) Starting datetime of the competition">Start time (optional): </td><td><input id="datetime_start" type="text" value="%s" size="18"></td></tr>', getSetting(Setting::DATETIME_START));
