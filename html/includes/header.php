@@ -46,4 +46,6 @@
 <?php
         if (!parseBool(getSetting(Setting::USE_AWARENESS)))
             echo "<style>.awareness {display: none}</style>";
+        if (getSetting(Setting::CTF_STYLE) === "ad")
+            echo "<style>.jeopardy {display: none}</style>";
 ?>

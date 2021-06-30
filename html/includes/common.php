@@ -74,6 +74,7 @@
         const PRIVATE_MESSAGES = "private_messages";
         const SUPPORT_MESSAGES = "support_messages";
         const USE_AWARENESS = "use_awareness";
+        const CTF_STYLE = "ctf_style";
     }
 
     abstract class Cache {
@@ -528,7 +529,14 @@
     }
 
     function getSetting($name, $default=null) {
-        $result = fetchScalar("SELECT value FROM settings WHERE name=:name", array("name" => $name));
+        static $memo = array();
+
+        if (array_key_exists($name, $memo))
+            $result = $memo[$name];
+        else {
+            $result = fetchScalar("SELECT value FROM settings WHERE name=:name", array("name" => $name));
+            $memo[$name] = $result;
+        }
 
         if (!is_null($default) && is_null($result))
             $result = $default;

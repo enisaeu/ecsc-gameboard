@@ -8,6 +8,7 @@ var SCOREBOARD_PAGE_RELOAD = 30000;
 var alerts = {};
 var lastPullUpdate = new Date();
 var chart = null;
+var attackDefense = null;
 
 // Reference: https://stackoverflow.com/a/37544400
 if (!String.prototype.endsWith) {
@@ -23,6 +24,8 @@ if (!String.prototype.endsWith) {
 }
 
 $(document).ready(function() {
+    attackDefense = $("#settings_table select").val() === "ad";
+
     $(document).ajaxError(function(event, jqXHR, options, status) {
         if (status === "Unauthorized")
             reload();
@@ -181,10 +184,10 @@ $(document).ready(function() {
         pushSetting(name, value, ["dynamic_scoring", "use_awareness"].includes(name) ? reload : null);
     });
 
-    $("#settings_table input[type=text]").change(function() {
+    $("#settings_table select").change(function() {
         var name = $(this).prop("id");
         var value = $(this).val();
-        pushSetting(name, value);
+        pushSetting(name, value, reload);
     });
 
     $("#settings_table input[type=number]").change(function() {

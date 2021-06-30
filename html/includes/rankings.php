@@ -104,12 +104,30 @@ END;
     }
 
 ?>
-                                <div id="tab_line_momentum" align="right">
-                                    <i class="fas fa-external-link-alt" data-toggle="tooltip" title="Open in new tab" onclick="openInNewTab('<?php echo joinPaths(PATHDIR, '/scoreboard');?>')"></i>
+
+<?php
+    if (getSetting(Setting::CTF_STYLE) !== "ad") {
+        echo <<<END
+                                <div id="tab_line_momentum jeopardy" align="right">
+                                    <i class="fas fa-external-link-alt jeopardy" data-toggle="tooltip" title="Open in new tab" onclick="openInNewTab('<?php echo joinPaths(PATHDIR, '/scoreboard');?>')"></i>
                                 </div>
-                                <div id="line_momentum" style="height: 370px; width: 100%;"></div>
+                                <div id="line_momentum" style="width: 100%; height: 370px"></div>
+END;
+    }
+?>
                                 <table id="scoreboard" class="table table-hover table-condensed small mt-4">
+<?php
+    if (getSetting(Setting::CTF_STYLE) !== "ad")
+        $html = <<<END
                                     <thead><tr><th>#</th><th>Team name</th><th>Country</th><th style="white-space:nowrap">Cash (<i class="currency"></i>)</th><th class="awareness">Awareness</th><th>Actions</th></tr></thead>
+END;
+    else
+        $html = <<<END
+                                    <thead><tr><th>#</th><th>Team name</th><th>Country</th><th style="white-space:nowrap">Flags</th><th>SLA</th><th>Actions</th></tr></thead>
+END;
+        echo $html;
+?>
+
                                     <?php
                                         $previous = -1;
                                         $place = 0;
@@ -140,22 +158,29 @@ END;
                                                 $_ = $place;
                                             }
 
-                                            $html = "<tr" . ($_SESSION["full_name"] == $row["full_name"] ? " class='current-team'" : "") . "><td value='" . $counter . "' class='min'><span>" . $_ . "</span></td><td class='full_name'>" . cleanReflectedValue($row["full_name"]) . " <sup>(" . cleanReflectedValue($row["login_name"]) . ")</sup>" . ($row["guest"] ? "<i class='fas fa-couch ml-2' data-toggle='tooltip' title='Guest team'></i>" : "") . "</td><td class='min'><span class='flag-icon flag-icon-" . cleanReflectedValue(strtolower($row["country_code"])) . " ml-1' data-toggle='tooltip' title='" . cleanReflectedValue(strtoupper($row["country_code"])) . "'></span></td><td>" . number_format($scores["cash"]) . "</td><td class='awareness'>". number_format($scores["awareness"]) . "</td><td class='min actions'>" . ($_SESSION["full_name"] == $row["full_name"] ? ("<i class='fas fa-key ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Change password'></i>")  . "<i class='far fa-life-ring ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Send message to support'></i><i class='fas fa-sign-out-alt ml-1' data-toggle='tooltip' title='Sign out' onclick='signOut()'></i>" : "<i class='far fa-envelope ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Send private message'></i>" . (isAdmin() ? "<i class='fas fa-hand-holding-usd ml-1' data-toggle='tooltip' title='Award/penalize cash'></i>" : "<i class='fas fa-money-bill-wave ml-1' data-toggle='tooltip' title='Send cash'></i>") . (isAdmin() ? "<i class='far fa-edit ml-1' data-toggle='tooltip' title='Edit team'></i>" : "") . (isAdmin() ? "<i class='far fa-trash-alt ml-1' data-toggle='tooltip' title='Delete team'></i>" : "")). "</td></tr>";
+                                            $html = "<tr" . ($_SESSION["full_name"] == $row["full_name"] ? " class='current-team'" : "") . "><td value='" . $counter . "' class='min'><span>" . $_ . "</span></td><td class='full_name'>" . cleanReflectedValue($row["full_name"]) . " <sup>(" . cleanReflectedValue($row["login_name"]) . ")</sup>" . ($row["guest"] ? "<i class='fas fa-couch ml-2' data-toggle='tooltip' title='Guest team'></i>" : "") . "</td><td class='min'><span class='flag-icon flag-icon-" . cleanReflectedValue(strtolower($row["country_code"])) . " ml-1' data-toggle='tooltip' title='" . cleanReflectedValue(strtoupper($row["country_code"])) . "'></span></td><td class='cash'>" . number_format($scores["cash"]) . "</td><td class='awareness'>". number_format($scores["awareness"]) . "</td><td class='min actions'>" . ($_SESSION["full_name"] == $row["full_name"] ? ("<i class='fas fa-key ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Change password'></i>")  . "<i class='far fa-life-ring ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Send message to support'></i><i class='fas fa-sign-out-alt ml-1' data-toggle='tooltip' title='Sign out' onclick='signOut()'></i>" : "<i class='far fa-envelope ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Send private message'></i>" . (isAdmin() ? "<i class='fas fa-hand-holding-usd ml-1' data-toggle='tooltip' title='Award/penalize cash'></i>" : "<i class='fas fa-money-bill-wave ml-1' data-toggle='tooltip' title='Send cash'></i>") . (isAdmin() ? "<i class='far fa-edit ml-1' data-toggle='tooltip' title='Edit team'></i>" : "") . (isAdmin() ? "<i class='far fa-trash-alt ml-1' data-toggle='tooltip' title='Delete team'></i>" : "")). "</td></tr>";
 
-                                            if (!isAdmin()) {
-                                                if (!parseBool(getSetting(Setting::CASH_TRANSFERS)))
-                                                    $html = preg_replace("/<i[^>]+fa-money-bill-wave[^>]+><\/i>/", "", $html);
-                                                if (!parseBool(getSetting(Setting::PRIVATE_MESSAGES)))
-                                                    $html = preg_replace("/<i[^>]+fa-envelope[^>]+><\/i>/", "", $html);
-                                                if (!parseBool(getSetting(Setting::SUPPORT_MESSAGES)))
-                                                    $html = preg_replace("/<i[^>]+fa-life-ring[^>]+><\/i>/", "", $html);
+                                            if (getSetting(Setting::CTF_STYLE) === "ad") {
+                                                $flags = 0;
+                                                $sla = 0;
+                                                $html = preg_replace('/<td[^>]+class=.cash[^>]+>[^<]*<\/td>/', "<td>" . $flags . "</td>", $html);
+                                                $html = preg_replace('/<td[^>]+class=.awareness[^>]+>[^<]*<\/td>/', "<td>" . $sla . "</td>", $html);
                                             }
+
+                                            if (!isAdmin() && !parseBool(getSetting(Setting::CASH_TRANSFERS)) || getSetting(Setting::CTF_STYLE) === "ad")
+                                                $html = preg_replace("/<i[^>]+fa-money-bill-wave[^>]+><\/i>/", "", $html);
+                                            if (!isAdmin() && !parseBool(getSetting(Setting::PRIVATE_MESSAGES)) || getSetting(Setting::CTF_STYLE) === "ad")
+                                                $html = preg_replace("/<i[^>]+fa-envelope[^>]+><\/i>/", "", $html);
+                                            if (!isAdmin() && !parseBool(getSetting(Setting::SUPPORT_MESSAGES)) || getSetting(Setting::CTF_STYLE) === "ad")
+                                                $html = preg_replace("/<i[^>]+fa-life-ring[^>]+><\/i>/", "", $html);
+                                            if (getSetting(Setting::CTF_STYLE) === "ad")
+                                                $html = preg_replace("/<i[^>]+fa-hand-holding[^>]+><\/i>/", "", $html);
 
                                             echo $html;
                                         }
 
                                         if (isAdmin())
-                                            echo "<tr><td value='" . ($counter + 1) . "' class='min'><span>?</span></td><td class='full_name'>??? <sup>(???)</sup></td><td class='min'><span class='flag-icon ml-1' data-toggle='tooltip' title='?'></span></td><td>?</td><td>?</td><td class='min actions'><i class='far fa-file' data-toggle='tooltip' title='New team'></i></td></tr>";
+                                            echo "<tr><td value='" . ($counter + 1) . "' class='min'><span>?</span></td><td class='full_name'>??? <sup>(???)</sup></td><td class='min'><span class='flag-icon ml-1' data-toggle='tooltip' title='?'></span></td><td>?</td><td" . (getSetting(Setting::CTF_STYLE) !== "ad" ? " class='awareness'" : "") . ">?</td><td class='min actions'><i class='far fa-file' data-toggle='tooltip' title='New team'></i></td></tr>";
                                     ?>
 
                                 </table>
