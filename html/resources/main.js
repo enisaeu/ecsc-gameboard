@@ -324,6 +324,17 @@ $(document).ready(function() {
 
     // Note: just in case
     repositionSidebar();
+
+    $(document).keyup(function(e){
+        var key = e.which || e.keyCode;
+
+        if (key === 37) {        // left
+            $("#logs_table_previous").click();
+        }
+        else if (key === 39) {    // right
+            $("#logs_table_next").click();
+        }
+    });
 });
 
 // Reference: https://stackoverflow.com/a/570027
