@@ -133,6 +133,7 @@ END;
                                         $place = 0;
                                         $teams = getRankedTeams();
                                         $counter = 0;
+                                        $initial_sla = is_null(getSetting(Setting::INITIAL_SLA)) ? DEFAULT_INITIAL_SLA: getSetting(Setting::INITIAL_SLA);
 
                                         foreach ($teams as $team_id) {
                                             $counter += 1;
@@ -161,8 +162,16 @@ END;
                                             $html = "<tr" . ($_SESSION["full_name"] == $row["full_name"] ? " class='current-team'" : "") . "><td value='" . $counter . "' class='min'><span>" . $_ . "</span></td><td class='full_name'>" . cleanReflectedValue($row["full_name"]) . " <sup>(" . cleanReflectedValue($row["login_name"]) . ")</sup>" . ($row["guest"] ? "<i class='fas fa-couch ml-2' data-toggle='tooltip' title='Guest team'></i>" : "") . "</td><td class='min'><span class='flag-icon flag-icon-" . cleanReflectedValue(strtolower($row["country_code"])) . " ml-1' data-toggle='tooltip' title='" . cleanReflectedValue(strtoupper($row["country_code"])) . "'></span></td><td class='cash'>" . number_format($scores["cash"]) . "</td><td class='awareness'>". number_format($scores["awareness"]) . "</td><td class='min actions'>" . ($_SESSION["full_name"] == $row["full_name"] ? ("<i class='fas fa-key ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Change password'></i>")  . "<i class='far fa-life-ring ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Send message to support'></i><i class='fas fa-sign-out-alt ml-1' data-toggle='tooltip' title='Sign out' onclick='signOut()'></i>" : "<i class='far fa-envelope ml-1' data-toggle='tooltip' style='vertical-align: middle' title='Send private message'></i>" . (isAdmin() ? "<i class='fas fa-hand-holding-usd ml-1' data-toggle='tooltip' title='Award/penalize cash'></i>" : "<i class='fas fa-money-bill-wave ml-1' data-toggle='tooltip' title='Send cash'></i>") . (isAdmin() ? "<i class='far fa-edit ml-1' data-toggle='tooltip' title='Edit team'></i>" : "") . (isAdmin() ? "<i class='far fa-trash-alt ml-1' data-toggle='tooltip' title='Delete team'></i>" : "")). "</td></tr>";
 
                                             if (getSetting(Setting::CTF_STYLE) === "ad") {
-                                                $flags = 0;
-                                                $sla = 0;
+                                                $_ = fetchAll("SELECT flag_score, availability_score FROM attack_defense WHERE team_id=:team_id", array("team_id" => $team_id));
+                                                if (count($_) == 1) {
+                                                    $_ = $_[0];
+                                                    $flags = is_null($_["flag_score"]) ? 0 : $_["flag_score"];
+                                                    $sla = is_null($_["availability_score"]) ? $initial_sla : $_["availability_score"];
+                                                }
+                                                else {
+                                                    $flags = 0;
+                                                    $sla = $initial_sla;
+                                                }
                                                 $html = preg_replace('/<td[^>]+class=.cash[^>]+>[^<]*<\/td>/', "<td>" . $flags . "</td>", $html);
                                                 $html = preg_replace('/<td[^>]+class=.awareness[^>]+>[^<]*<\/td>/', "<td>" . $sla . "</td>", $html);
                                             }

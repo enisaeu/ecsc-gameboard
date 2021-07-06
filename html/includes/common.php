@@ -36,6 +36,7 @@
     define("OFFICIAL_RULES_URL", "https://ecsc.eu/about/ecscrules.pdf/download");
     define("TOKEN_LIFE", 4 * 24 * 3600);
     define("SAME_CASH_SAME_RANK", false);
+    define("DEFAULT_INITIAL_SLA", 100000);
 
     if (isset($_SERVER['REMOTE_ADDR']))
         // Reference: https://stackoverflow.com/a/2886224
@@ -75,6 +76,7 @@
         const SUPPORT_MESSAGES = "support_messages";
         const USE_AWARENESS = "use_awareness";
         const CTF_STYLE = "ctf_style";
+        const INITIAL_SLA = "initial_sla";
     }
 
     abstract class Cache {

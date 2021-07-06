@@ -196,6 +196,12 @@ $(document).ready(function() {
         pushSetting(name, value);
     });
 
+    $("#settings_table input[class=numeric]").change(function() {
+        var name = $(this).prop("id");
+        var value = $(this).val();
+        pushSetting(name, value, reload);
+    });
+
     $("#chat_room").change(function() {
         localStorage.setItem("chat_room", $("#chat_room").prop("value"));
         $("#chat_messages").find("div").remove();

@@ -48,4 +48,6 @@
             echo "<style>.awareness {display: none}</style>";
         if (getSetting(Setting::CTF_STYLE) === "ad")
             echo "<style>.jeopardy {display: none}</style>";
+        else
+            echo "<style>.ad {display: none}</style>";
 ?>
