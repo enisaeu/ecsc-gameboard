@@ -205,10 +205,10 @@ END;
                                 <li class="nav-item small">
                                     <a class="nav-link%s" href="%s">Rankings</a>
                                 </li>
-                                <li class="nav-item small">
+                                <li class="nav-item small jeopardy">
                                     <a class="nav-link%s" href="%s">Job board <span class="badge badge-light border counter" id="available_count">%d</span></a>
                                 </li>
-                                <li class="nav-item small">
+                                <li class="nav-item small jeopardy">
                                     <a class="nav-link%s" href="%s">Contracts <span class="badge badge-light border counter" id="active_count">%d</span></a>
                                 </li>
 END;
