@@ -172,8 +172,8 @@ END;
                                                     $flags = 0;
                                                     $sla = $initial_sla;
                                                 }
-                                                $html = preg_replace('/<td[^>]+class=.cash[^>]+>[^<]*<\/td>/', "<td>" . $flags . "</td>", $html);
-                                                $html = preg_replace('/<td[^>]+class=.awareness[^>]+>[^<]*<\/td>/', "<td>" . $sla . "</td>", $html);
+                                                $html = preg_replace('/<td[^>]+class=.cash[^>]+>[^<]*<\/td>/', "<td>" . number_format($flags) . "</td>", $html);
+                                                $html = preg_replace('/<td[^>]+class=.awareness[^>]+>[^<]*<\/td>/', "<td>" . number_format($sla) . "</td>", $html);
                                                 $html = preg_replace('/<td[^>]+class=.min actions[^>]+>.*?<\/td>/', "", $html);
                                             }
 

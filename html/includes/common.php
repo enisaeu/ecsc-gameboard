@@ -215,6 +215,18 @@
 
         $result["cash"] = max($result["cash"], MIN_CASH_VALUE);
 
+        $_ = fetchAll("SELECT flag_score, availability_score FROM attack_defense WHERE team_id=:team_id", array("team_id" => $team_id), PDO::FETCH_ASSOC);
+        $initial_sla = is_null(getSetting(Setting::INITIAL_SLA)) ? DEFAULT_INITIAL_SLA: getSetting(Setting::INITIAL_SLA);
+        if (count($_) == 1) {
+            $_ = $_[0];
+            $result["flags"] = is_null($_["flag_score"]) ? 0 : $_["flag_score"];
+            $result["sla"] = is_null($_["availability_score"]) ? $initial_sla : $_["availability_score"];
+        }
+        else {
+            $result["flags"] = 0;
+            $result["sla"] = $initial_sla;
+        }
+
         return $result;
     }
 
@@ -332,38 +344,64 @@
     function getRankedTeams($details=false) {
         $result = array();
         $teams = array();
-
-        $rows = fetchAll("SELECT teams.team_id,teams.full_name,UNIX_TIMESTAMP(x.ts) AS ts FROM teams LEFT JOIN (SELECT team_id,MAX(ts) AS ts FROM solved GROUP BY team_id)x ON teams.team_id=x.team_id WHERE teams.login_name!=:admin_login_name ORDER BY x.ts DESC", array("admin_login_name" => ADMIN_LOGIN_NAME));
-        foreach ($rows as $row)
-            $teams[$row["team_id"]] = array("full_name" => $row["full_name"], "ts" => $row["ts"]);
-
         $rankings = array();
-        foreach ($teams as $team_id => $team) {
-            $scores = getScores($team_id);
-            $ranking = array("team_id" => $team_id, "full_name" => $team["full_name"], "cash" => $scores["cash"], "awareness" => $scores["awareness"], "ts" => $team["ts"]);
-            array_push($rankings, $ranking);
-        }
 
-        usort($rankings, function ($team1, $team2) {
-            if ($team1["cash"] < $team2["cash"])
-                return 1;
-            else if ($team1["cash"] > $team2["cash"])
-                return -1;
-            else if ($team1["awareness"] < $team2["awareness"])
-                return 1;
-            else if ($team1["awareness"] > $team2["awareness"])
-                return -1;
-            else if ($team1["ts"] > $team2["ts"])
-                return 1;
-            else if ($team1["ts"] < $team2["ts"])
-                return -1;
-            else if ($team1["full_name"] < $team2["full_name"])
-                return -1;
-            else if ($team1["full_name"] > $team2["full_name"])
-                return 1;
-            else
-                return 0;
-        });
+        if (getSetting(Setting::CTF_STYLE) === "ad") {
+            $rows = fetchAll("SELECT teams.team_id,teams.full_name FROM teams WHERE teams.login_name!=:admin_login_name", array("admin_login_name" => ADMIN_LOGIN_NAME));
+            foreach ($rows as $row)
+                $teams[$row["team_id"]] = array("full_name" => $row["full_name"]);
+
+            foreach ($teams as $team_id => $team) {
+                $scores = getScores($team_id);
+                $ranking = array("team_id" => $team_id, "full_name" => $team["full_name"], "flags" => $scores["flags"], "sla" => $scores["sla"]);
+                array_push($rankings, $ranking);
+            }
+
+            usort($rankings, function ($team1, $team2) {
+                if ($team1["flags"] + $team1["sla"] < $team2["flags"] + $team2["sla"])
+                    return 1;
+                else if ($team1["flags"] + $team1["sla"] > $team2["flags"] + $team2["sla"])
+                    return -1;
+                else if ($team1["full_name"] < $team2["full_name"])
+                    return -1;
+                else if ($team1["full_name"] > $team2["full_name"])
+                    return 1;
+                else
+                    return 0;
+            });
+        }
+        else {
+            $rows = fetchAll("SELECT teams.team_id,teams.full_name,UNIX_TIMESTAMP(x.ts) AS ts FROM teams LEFT JOIN (SELECT team_id,MAX(ts) AS ts FROM solved GROUP BY team_id)x ON teams.team_id=x.team_id WHERE teams.login_name!=:admin_login_name ORDER BY x.ts DESC", array("admin_login_name" => ADMIN_LOGIN_NAME));
+            foreach ($rows as $row)
+                $teams[$row["team_id"]] = array("full_name" => $row["full_name"], "ts" => $row["ts"]);
+
+            foreach ($teams as $team_id => $team) {
+                $scores = getScores($team_id);
+                $ranking = array("team_id" => $team_id, "full_name" => $team["full_name"], "cash" => $scores["cash"], "awareness" => $scores["awareness"], "ts" => $team["ts"]);
+                array_push($rankings, $ranking);
+            }
+
+            usort($rankings, function ($team1, $team2) {
+                if ($team1["cash"] < $team2["cash"])
+                    return 1;
+                else if ($team1["cash"] > $team2["cash"])
+                    return -1;
+                else if ($team1["awareness"] < $team2["awareness"])
+                    return 1;
+                else if ($team1["awareness"] > $team2["awareness"])
+                    return -1;
+                else if ($team1["ts"] > $team2["ts"])
+                    return 1;
+                else if ($team1["ts"] < $team2["ts"])
+                    return -1;
+                else if ($team1["full_name"] < $team2["full_name"])
+                    return -1;
+                else if ($team1["full_name"] > $team2["full_name"])
+                    return 1;
+                else
+                    return 0;
+            });
+        }
 
         if ($details)
             $result = $rankings;

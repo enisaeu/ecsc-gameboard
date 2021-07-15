@@ -302,11 +302,11 @@ END;
                             </div>
                             <div class="card-body" style="font-size: 12px">
                                 <table id="info_table">
-                                    <tr><td>Cash: </td><td><b>%s</b> <i class="currency"></i> (%s%s)</td></tr>
-                                    <tr class="awareness"><td>Awareness: </td><td><b>%s</b> (%s%s)</td></tr>
-                                    <tr><td>Last progress: </td><td><b>%s</b></td></tr>
-                                    <tr><td>Active contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
-                                    <tr><td>Finished contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
+                                    <tr><td>Cash: </td><td><b>%s</b> <i class="currency jeopardy"></i> (%s%s)</td></tr>
+                                    <tr class="awareness jeopardy"><td>Awareness: </td><td><b>%s</b> (%s%s)</td></tr>
+                                    <tr class="jeopardy"><td>Last progress: </td><td><b>%s</b></td></tr>
+                                    <tr class="jeopardy"><td>Active contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
+                                    <tr class="jeopardy"><td>Finished contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
                                 </table>
                             </div>
                         </div>
@@ -314,14 +314,20 @@ END;
 
 END;
         $scores = getScores($_SESSION["team_id"]);
-        $places = getPlaces($_SESSION["team_id"]);
+        $places = getPlaces($_SESSION["team_id"]);      // TODO: AD version
         $medals = array(1 => "first.jpg", 2 => "second.jpg", 3 => "third.jpg");
         $active = array_diff(getActiveContracts($_SESSION["team_id"]), getHiddenContracts());
         $finished = getFinishedContracts($_SESSION["team_id"]);
         $active_ = $active ? fetchScalar("SELECT GROUP_CONCAT(title ORDER BY title ASC) FROM contracts WHERE contract_id IN (" . implode(",", $active) . ")") : "-";
         $finished_ = $finished ? fetchScalar("SELECT GROUP_CONCAT(title ORDER BY title ASC) FROM contracts WHERE contract_id IN (" . implode(",", $finished) . ")") : "-";
         $last = fetchScalar("SELECT MAX(ts) FROM (SELECT UNIX_TIMESTAMP(ts) AS ts FROM solved WHERE team_id=:team_id UNION ALL SELECT UNIX_TIMESTAMP(ts) AS ts FROM privates WHERE cash IS NOT NULL AND (from_id=:team_id OR to_id=:team_id)) AS result", array("team_id" => $_SESSION["team_id"]));
-        echo sprintf($html, number_format($scores["cash"]), ordinal($places["cash"]), $places["cash"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["cash"]]) . '" height="16">' : "", number_format($scores["awareness"]), ordinal($places["awareness"]), $places["awareness"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["awareness"]]) . '" height="16">' : "", $last ? sprintf("<span ts='%d'></span>", $last) : "-", str_replace(",", ", ", $active_), count($active), str_replace(",", ", ", $finished_), count($finished));
+        $html = sprintf($html, number_format($scores["cash"]), ordinal($places["cash"]), $places["cash"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["cash"]]) . '" height="16">' : "", number_format($scores["awareness"]), ordinal($places["awareness"]), $places["awareness"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["awareness"]]) . '" height="16">' : "", $last ? sprintf("<span ts='%d'></span>", $last) : "-", str_replace(",", ", ", $active_), count($active), str_replace(",", ", ", $finished_), count($finished));
+
+        if (getSetting(Setting::CTF_STYLE) === "ad") {
+            $html = preg_replace('/<tr[^\n]+Cash[^\n]+<\/tr>/', "<tr><td>Score: </td><td><b>" . number_format($scores["flags"] + $scores["sla"]) . "</b></td></tr>", $html);
+        }
+
+        echo $html;
     }
     else {
         $html = <<<END
