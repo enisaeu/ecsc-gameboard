@@ -25,6 +25,9 @@
             $success &= execute("DELETE FROM hide");
             $success &= execute("DELETE FROM settings");
             $success &= execute("DELETE FROM logs");
+            $success &= execute("DELETE FROM cache");
+            $success &= execute("DELETE FROM tokens");
+            $success &= execute("DELETE FROM attack_defense");
         }
 
         if ($success)
