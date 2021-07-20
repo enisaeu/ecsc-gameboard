@@ -14,7 +14,16 @@
             continue;   // contracts without tasks should not be displayed to the user
         else
             $row = $row[0];
-        echo format($template, array("title" => $row["title"], "values" => generateValuesHtml(getDynamicScore(null, $contract_id), $row["awareness"]), "description" => $row["description"], "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
+        $html = format($template, array("title" => $row["title"], "values" => generateValuesHtml(getDynamicScore(null, $contract_id), $row["awareness"]), "description" => $row["description"], "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
+
+        if (!checkStartEndTime()) {
+            $html = str_replace(" type=\"submit\"", " disabled=\"disabled\" style=\"pointer-events: none\"", $html);
+            $html = str_replace("success", "", $html);
+            $html = preg_replace('/style="[^"]+"/', "", $html);
+        }
+
+        echo $html;
+
         $success = true;
         $counter += 1;
         if ($counter % 3 === 0)
@@ -40,7 +49,9 @@
         $html = str_replace('class="card ', 'class="card text-white bg-secondary constrained ', $html);
         $html = preg_replace("/<form.+form>\n?/s", "", $html);
         $html = preg_replace("/style=\"[^\"]+background-color:[^\"]+\"/s", "", $html);
+
         echo $html;
+
         $success = true;
 
         $counter += 1;

@@ -48,6 +48,14 @@
                             $task = str_replace("Task answer", cleanReflectedValue($options["note"]), $task);
                     }
 
+                    if (!checkStartEndTime()) {
+                        $task = str_replace(" autocomplete", " disabled=\"disabled\" autocomplete", $task);
+                        $task = str_replace(" type=\"submit\"", " disabled=\"disabled\" style=\"pointer-events: none\"", $task);
+                        $task = str_replace("class=\"form-control\"", "class=\"form-control disabled\"", $task);
+                        $task = str_replace("success", "", $task);
+                        $accepted = preg_replace('/style="[^"]+"/', "", $accepted);
+                    }
+
                     $total += $cash;
                     $tasks = $tasks . ($tasks ? "\n" : "") . $task;
                 }

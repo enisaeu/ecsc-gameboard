@@ -44,10 +44,17 @@
             </style>
         </noscript>
 <?php
+        $style = "";
+
         if (!parseBool(getSetting(Setting::USE_AWARENESS)))
-            echo "<style>.awareness {display: none}</style>";
+            $style .= "            .awareness {display: none}\n";
         if (getSetting(Setting::CTF_STYLE) === "ad")
-            echo "<style>.jeopardy {display: none}</style>";
+            $style .= "            .jeopardy {display: none}\n";
         else
-            echo "<style>.ad {display: none}</style>";
+            $style .= "            .ad {display: none}\n";
+        if (!checkStartEndTime())
+            $style .= "            .ad {display: none}\n";
+
+        if ($style)
+            echo "        <style>\n" . $style . "        </style>";
 ?>

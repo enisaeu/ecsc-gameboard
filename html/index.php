@@ -327,7 +327,7 @@ END;
             $html = preg_replace('/<tr[^\n]+Cash[^\n]+<\/tr>/', "<tr><td>Score: </td><td><b>" . number_format($scores["flags"] + $scores["availability"]) . "</b> (" . ordinal($places["awareness"]) . ($places["awareness"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["awareness"]]) . '" height="16">' : "") . ")</td></tr>", $html);
         }
 
-        $html = preg_replace('/(<td>\w+:[^\n]+<b>0<\/b>[^\n]+) \([^)]+\)/', "$1", $html);
+        $html = preg_replace('/(<td>\w+:[^\n]+<b>0<\/b>[^\n]*) \([^)]+\)/', "$1", $html);
 
         echo $html;
     }
