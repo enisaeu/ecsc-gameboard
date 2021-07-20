@@ -314,7 +314,7 @@ END;
 
 END;
         $scores = getScores($_SESSION["team_id"]);
-        $places = getPlaces($_SESSION["team_id"]);      // TODO: AD version
+        $places = getPlaces($_SESSION["team_id"]);
         $medals = array(1 => "first.jpg", 2 => "second.jpg", 3 => "third.jpg");
         $active = array_diff(getActiveContracts($_SESSION["team_id"]), getHiddenContracts());
         $finished = getFinishedContracts($_SESSION["team_id"]);
@@ -324,7 +324,7 @@ END;
         $html = sprintf($html, number_format($scores["cash"]), ordinal($places["cash"]), $places["cash"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["cash"]]) . '" height="16">' : "", number_format($scores["awareness"]), ordinal($places["awareness"]), $places["awareness"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["awareness"]]) . '" height="16">' : "", $last ? sprintf("<span ts='%d'></span>", $last) : "-", str_replace(",", ", ", $active_), count($active), str_replace(",", ", ", $finished_), count($finished));
 
         if (getSetting(Setting::CTF_STYLE) === "ad") {
-            $html = preg_replace('/<tr[^\n]+Cash[^\n]+<\/tr>/', "<tr><td>Score: </td><td><b>" . number_format($scores["flags"] + $scores["sla"]) . "</b></td></tr>", $html);
+            $html = preg_replace('/<tr[^\n]+Cash[^\n]+<\/tr>/', "<tr><td>Score: </td><td><b>" . number_format($scores["flags"] + $scores["availability"]) . "</b> (" . ordinal($places["awareness"]) . ($places["awareness"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["awareness"]]) . '" height="16">' : "") . ")</td></tr>", $html);
         }
 
         echo $html;
@@ -352,7 +352,7 @@ END;
         $settings .= "\n" . sprintf('                                    <tr class="jeopardy"><td data-toggle="tooltip" title="Enable/disable sending of support (i.e. private) messages to Administrator">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Support messages", "support_messages", parseBool(getSetting(Setting::SUPPORT_MESSAGES)) ? " checked" : "");
         $settings .= "\n" . sprintf('                                    <tr class="jeopardy"><td data-toggle="tooltip" title="(optional) Number of seconds for a deliberate delay between potential task guessing attempts">Guess attempt penalty (secs): </td><td><input id="guess_delay" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_DELAY)) ? getSetting(Setting::GUESS_DELAY) : "0");
         $settings .= "\n" . sprintf('                                    <tr class="jeopardy"><td data-toggle="tooltip" title="(optional) Number of wrong potential (sequential) task guessing attempts before an abrupt logout">Guess logout after attempts: </td><td><input id="guess_logout" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_LOGOUT)) ? getSetting(Setting::GUESS_LOGOUT) : "");
-        $settings .= "\n" . sprintf('                                    <tr class="ad mt-2"><td data-toggle="tooltip" title="(optional) Initial availability score">Initial SLA: </td><td><input id="initial_sla" class="numeric" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="%s" size="18"></td></tr>', is_null(getSetting(Setting::INITIAL_SLA)) ? DEFAULT_INITIAL_SLA: getSetting(Setting::INITIAL_SLA));
+        $settings .= "\n" . sprintf('                                    <tr class="ad mt-2"><td data-toggle="tooltip" title="(optional) Initial availability score">Initial availability: </td><td><input id="initial_availability" class="numeric" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="%s" size="18"></td></tr>', is_null(getSetting(Setting::INITIAL_AVAILABILITY)) ? DEFAULT_INITIAL_AVAILABILITY: getSetting(Setting::INITIAL_AVAILABILITY));
         $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="(optional) Starting datetime of the competition">Start time (optional): </td><td><input id="datetime_start" type="text" value="%s" size="18"></td></tr>', getSetting(Setting::DATETIME_START));
         $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="(optional) Ending datetime of the competition">End time (optional): </td><td><input id="datetime_end" type="text" value="%s" size="18"></td></tr>', getSetting(Setting::DATETIME_END));
 

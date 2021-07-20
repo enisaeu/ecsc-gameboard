@@ -123,7 +123,7 @@ END;
 END;
     else
         $html = <<<END
-                                    <thead><tr><th>#</th><th>Team name</th><th>Country</th><th style="white-space:nowrap">Flags</th><th>SLA</th></tr></thead>
+                                    <thead><tr><th>#</th><th>Team name</th><th>Country</th><th style="white-space:nowrap">Flags</th><th>Availability</th></tr></thead>
 END;
         echo $html;
 ?>
@@ -133,7 +133,7 @@ END;
                                         $place = 0;
                                         $teams = getRankedTeams();
                                         $counter = 0;
-                                        $initial_sla = is_null(getSetting(Setting::INITIAL_SLA)) ? DEFAULT_INITIAL_SLA: getSetting(Setting::INITIAL_SLA);
+                                        $initial_availability = is_null(getSetting(Setting::INITIAL_AVAILABILITY)) ? DEFAULT_INITIAL_AVAILABILITY: getSetting(Setting::INITIAL_AVAILABILITY);
 
                                         foreach ($teams as $team_id) {
                                             $counter += 1;
@@ -166,14 +166,14 @@ END;
                                                 if (count($_) == 1) {
                                                     $_ = $_[0];
                                                     $flags = is_null($_["flag_score"]) ? 0 : $_["flag_score"];
-                                                    $sla = is_null($_["availability_score"]) ? $initial_sla : $_["availability_score"];
+                                                    $availability = is_null($_["availability_score"]) ? $initial_availability : $_["availability_score"];
                                                 }
                                                 else {
                                                     $flags = 0;
-                                                    $sla = $initial_sla;
+                                                    $availability = $initial_availability;
                                                 }
                                                 $html = preg_replace('/<td[^>]+class=.cash[^>]+>[^<]*<\/td>/', "<td>" . number_format($flags) . "</td>", $html);
-                                                $html = preg_replace('/<td[^>]+class=.awareness[^>]+>[^<]*<\/td>/', "<td>" . number_format($sla) . "</td>", $html);
+                                                $html = preg_replace('/<td[^>]+class=.awareness[^>]+>[^<]*<\/td>/', "<td>" . number_format($availability) . "</td>", $html);
                                                 $html = preg_replace('/<td[^>]+class=.min actions[^>]+>.*?<\/td>/', "", $html);
                                             }
 

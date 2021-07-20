@@ -36,7 +36,7 @@
     define("OFFICIAL_RULES_URL", "https://ecsc.eu/about/ecscrules.pdf/download");
     define("TOKEN_LIFE", 4 * 24 * 3600);
     define("SAME_CASH_SAME_RANK", false);
-    define("DEFAULT_INITIAL_SLA", 100000);
+    define("DEFAULT_INITIAL_AVAILABILITY", 100000);
 
     if (isset($_SERVER['REMOTE_ADDR']))
         // Reference: https://stackoverflow.com/a/2886224
@@ -76,7 +76,7 @@
         const SUPPORT_MESSAGES = "support_messages";
         const USE_AWARENESS = "use_awareness";
         const CTF_STYLE = "ctf_style";
-        const INITIAL_SLA = "initial_sla";
+        const INITIAL_AVAILABILITY = "initial_availability";
     }
 
     abstract class Cache {
@@ -216,15 +216,15 @@
         $result["cash"] = max($result["cash"], MIN_CASH_VALUE);
 
         $_ = fetchAll("SELECT flag_score, availability_score FROM attack_defense WHERE team_id=:team_id", array("team_id" => $team_id), PDO::FETCH_ASSOC);
-        $initial_sla = is_null(getSetting(Setting::INITIAL_SLA)) ? DEFAULT_INITIAL_SLA: getSetting(Setting::INITIAL_SLA);
+        $initial_availability = is_null(getSetting(Setting::INITIAL_AVAILABILITY)) ? DEFAULT_INITIAL_AVAILABILITY: getSetting(Setting::INITIAL_AVAILABILITY);
         if (count($_) == 1) {
             $_ = $_[0];
             $result["flags"] = is_null($_["flag_score"]) ? 0 : $_["flag_score"];
-            $result["sla"] = is_null($_["availability_score"]) ? $initial_sla : $_["availability_score"];
+            $result["availability"] = is_null($_["availability_score"]) ? $initial_availability : $_["availability_score"];
         }
         else {
             $result["flags"] = 0;
-            $result["sla"] = $initial_sla;
+            $result["availability"] = $initial_availability;
         }
 
         return $result;
@@ -353,14 +353,14 @@
 
             foreach ($teams as $team_id => $team) {
                 $scores = getScores($team_id);
-                $ranking = array("team_id" => $team_id, "full_name" => $team["full_name"], "flags" => $scores["flags"], "sla" => $scores["sla"]);
+                $ranking = array("team_id" => $team_id, "full_name" => $team["full_name"], "flags" => $scores["flags"], "availability" => $scores["availability"]);
                 array_push($rankings, $ranking);
             }
 
             usort($rankings, function ($team1, $team2) {
-                if ($team1["flags"] + $team1["sla"] < $team2["flags"] + $team2["sla"])
+                if ($team1["flags"] + $team1["availability"] < $team2["flags"] + $team2["availability"])
                     return 1;
-                else if ($team1["flags"] + $team1["sla"] > $team2["flags"] + $team2["sla"])
+                else if ($team1["flags"] + $team1["availability"] > $team2["flags"] + $team2["availability"])
                     return -1;
                 else if ($team1["full_name"] < $team2["full_name"])
                     return -1;
@@ -416,15 +416,33 @@
     function getPlaces($team_id) {
         $result = array();
         $teams = getTeams();
-        $all = array("cash" => array(), "awareness" => array());
 
-        foreach ($teams as $_) {
-            $current = getScores($_);
-            array_push($all["cash"], $current["cash"]);
-            array_push($all["awareness"], $current["awareness"]);
+        if (getSetting(Setting::CTF_STYLE) === "ad") {
+            $all = array("score" => array());
+
+            foreach ($teams as $_) {
+                $current = getScores($_);
+                array_push($all["score"], $current["flags"] + $current["availability"]);
+            }
+
+            $current = getScores($team_id);
+            $current["score"] = $current["flags"] + $current["availability"];
+
+            $result["cash"] = 1;
+            $result["awareness"] = 1;
+        }
+        else {
+            $all = array("cash" => array(), "awareness" => array());
+
+            foreach ($teams as $_) {
+                $current = getScores($_);
+                array_push($all["cash"], $current["cash"]);
+                array_push($all["awareness"], $current["awareness"]);
+            }
+
+            $current = getScores($team_id);
         }
 
-        $current = getScores($team_id);
         foreach ($all as $key => $_) {
             $previous = -1;
             $place = 0;
