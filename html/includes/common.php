@@ -77,6 +77,7 @@
         const USE_AWARENESS = "use_awareness";
         const CTF_STYLE = "ctf_style";
         const INITIAL_AVAILABILITY = "initial_availability";
+        const EXPLICIT_START_STOP = "explicit_start_stop";
     }
 
     abstract class Cache {
@@ -636,22 +637,28 @@
     }
 
     function checkStartEndTime() {
-        $valid = true;
+        $running = false;
+        $timed = false;
 
         if (strtotime(getSetting(Setting::DATETIME_START)) !== false) {
-            if (strtotime(getSetting(Setting::DATETIME_START)) > time()) {
-                $valid = false;
+            if (strtotime(getSetting(Setting::DATETIME_START)) <= time()) {
+                $running = true;
+                $timed = true;
             }
         }
 
         if (strtotime(getSetting(Setting::DATETIME_END)) !== false) {
             if (strtotime(getSetting(Setting::DATETIME_END)) <= time()) {
-                $valid = false;
+                $running = false;
+                $timed = true;
             }
         }
 
-        return $valid;
+        if (!$timed)
+            if (!is_null(getSetting(Setting::EXPLICIT_START_STOP)))
+                $running = parseBool(getSetting(Setting::EXPLICIT_START_STOP));
 
+        return $running;
     }
 
     function wordMatch($a, $b) {

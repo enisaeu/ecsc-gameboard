@@ -218,6 +218,9 @@
         else if (isAdmin() && isset($_POST["setting"])) {
             $value = $_POST["value"];
 
+            if ($_POST["setting"] === Setting::EXPLICIT_START_STOP)
+                execute("DELETE FROM settings WHERE name LIKE 'datetime%'");
+
             if ((strpos($_POST["setting"], "datetime_") === 0) && !preg_match("/[0-9]/", $value)) {
                 $value = null;
                 $success = execute("DELETE FROM settings WHERE name=:name", array("name" => $_POST["setting"]));

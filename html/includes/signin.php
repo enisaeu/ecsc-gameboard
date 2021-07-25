@@ -58,7 +58,7 @@
     if ($time_out) {
         echo <<<END
         <script>
-            alert("Out-of-time");
+            alert("Competition is stopped");
         </script>
 
 END;

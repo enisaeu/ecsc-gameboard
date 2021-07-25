@@ -340,6 +340,7 @@ END;
                             <div class="card-body" style="font-size: 12px">
                                 <table id="settings_table">%s
                                 </table>
+                                %s
                             </div>
                         </div>
 
@@ -357,8 +358,23 @@ END;
         $settings .= "\n" . sprintf('                                    <tr class="ad mt-2"><td data-toggle="tooltip" title="(optional) Initial availability score">Initial availability: </td><td><input id="initial_availability" class="numeric" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="%s" size="18"></td></tr>', is_null(getSetting(Setting::INITIAL_AVAILABILITY)) ? DEFAULT_INITIAL_AVAILABILITY: getSetting(Setting::INITIAL_AVAILABILITY));
         $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="(optional) Starting datetime of the competition">Start time (optional): </td><td><input id="datetime_start" type="text" value="%s" size="18"></td></tr>', getSetting(Setting::DATETIME_START));
         $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="(optional) Ending datetime of the competition">End time (optional): </td><td><input id="datetime_end" type="text" value="%s" size="18"></td></tr>', getSetting(Setting::DATETIME_END));
+        $buttons = "\n" . sprintf('                                    <br><div style="text-align: center"><span><button type="button" class="btn btn-primary btn-sm"><i class="fas fa-play mr-1"></i>Start</button></span><span class="ml-1"><button type="button" class="btn btn-danger btn-sm"><i class="fas fa-stop mr-1"></i>Stop</button></span></div>');
 
-        echo sprintf($html, $settings);
+//         if (!is_null(getSetting(Setting::EXPLICIT_START_STOP))) {
+//             if (parseBool(getSetting(Setting::EXPLICIT_START_STOP)) === true) {
+//                 $buttons = str_replace('btn-primary btn-sm"', 'btn-secondary btn-sm" disabled', $buttons);
+//             }
+//             else {
+//                 $buttons = str_replace('btn-danger btn-sm"', 'btn-secondary btn-sm" disabled', $buttons);
+//             }
+//         }
+
+        if (checkStartEndTime())
+            $buttons = str_replace('btn-primary btn-sm"', 'btn-secondary btn-sm" disabled', $buttons);
+        else
+            $buttons = str_replace('btn-danger btn-sm"', 'btn-secondary btn-sm" disabled', $buttons);
+
+        echo sprintf($html, $settings, $buttons);
     }
 ?>
                         <div class="card mt-3 jeopardy">

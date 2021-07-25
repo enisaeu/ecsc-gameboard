@@ -196,10 +196,24 @@ $(document).ready(function() {
         pushSetting(name, value);
     });
 
+    $("#settings_table input[type=text]").change(function() {
+        var name = $(this).prop("id");
+        var value = $(this).val();
+        pushSetting(name, value);
+    });
+
     $("#settings_table input[class=numeric]").change(function() {
         var name = $(this).prop("id");
         var value = $(this).val();
         pushSetting(name, value, reload);
+    });
+
+    $(".fa-play").closest("button").click(function() {
+        pushSetting("explicit_start_stop", true, reload);
+    });
+
+    $(".fa-stop").closest("button").click(function() {
+        pushSetting("explicit_start_stop", false, reload);
     });
 
     $("#chat_room").change(function() {
