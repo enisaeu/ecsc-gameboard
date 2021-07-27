@@ -7,7 +7,7 @@
 
                                 <table id="stats_table" class="table table-hover table-condensed small mt-4 hidden">
                                     <thead>
-                                        <tr><th>Task</th><th>Contract</th><th>Cash value (<i class="currency"></i>)</th><th>Teams solved</th><th>Heartbeat</th><th>Avg. solve time</th></tr>
+                                        <tr><th>Task</th><th>Contract</th><th>Cash value (<i class="currency"></i>)</th><th>Teams solved</th><th>Timeline</th><th>Avg. solve time</th></tr>
                                     </thead>
                                     <tbody>
 <?php
