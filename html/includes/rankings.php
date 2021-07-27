@@ -123,7 +123,7 @@ END;
 END;
     else
         $html = <<<END
-                                    <thead><tr><th>#</th><th>Team name</th><th>Country</th><th style="white-space:nowrap">Flags</th><th>Availability</th></tr></thead>
+                                    <thead><tr><th>#</th><th>Team name</th><th>Country</th><th style="white-space:nowrap">Flags</th><th>Availability</th><th>Actions</th></tr></thead>
 END;
         echo $html;
 ?>
@@ -174,7 +174,7 @@ END;
                                                 }
                                                 $html = preg_replace('/<td[^>]+class=.cash[^>]+>[^<]*<\/td>/', "<td>" . number_format($flags) . "</td>", $html);
                                                 $html = preg_replace('/<td[^>]+class=.awareness[^>]+>[^<]*<\/td>/', "<td>" . number_format($availability) . "</td>", $html);
-                                                $html = preg_replace('/<td[^>]+class=.min actions[^>]+>.*?<\/td>/', "", $html);
+//                                                 $html = preg_replace('/<td[^>]+class=.min actions[^>]+>.*?<\/td>/', "", $html);
                                             }
 
                                             if (!isAdmin() && !parseBool(getSetting(Setting::CASH_TRANSFERS)) || getSetting(Setting::CTF_STYLE) === "ad")
