@@ -238,8 +238,8 @@
         $teams = is_null($team_id) ? getRankedTeams() : array($team_id);
 
         foreach ($teams as $team_id) {
-            $team_name = fetchScalar("SELECT full_name FROM teams WHERE team_id=:team_id", array("team_id" => $team_id));
-            $team = array("name" => $team_name, "cash" => array(), "awareness" => array());
+            $_ = fetchAll("SELECT full_name, guest FROM teams WHERE team_id=:team_id", array("team_id" => $team_id));
+            $team = array("name" => $_[0]["full_name"], "guest" => $_[0]["guest"], "cash" => array(), "awareness" => array());
 
             $show = false;
             $first = true;

@@ -9,6 +9,7 @@ var alerts = {};
 var lastPullUpdate = new Date();
 var chart = null;
 var attackDefense = null;
+var guest = false;
 
 // Reference: https://stackoverflow.com/a/37544400
 if (!String.prototype.endsWith) {
@@ -25,6 +26,7 @@ if (!String.prototype.endsWith) {
 
 $(document).ready(function() {
     attackDefense = $("#settings_table select").val() === "ad";
+    guest = $("title").text().includes("guest");
 
     $(document).ajaxError(function(event, jqXHR, options, status) {
         if (status === "Unauthorized")
@@ -1134,6 +1136,10 @@ function drawLineMomentum() {
                 return;
             }
 
+            result = $.grep(result, function( n, i ) {
+                return n.guest == guest;
+            });
+
             var MAX_TOP_TEAMS = 10;
             var DEFAULT_FONT_SIZE = 12;
             var datasets = [];
@@ -1145,7 +1151,6 @@ function drawLineMomentum() {
             $(result).each(function() {
                 totalPoints += $(this).prop("cash").length;
             });
-
 
             var lineThickness = Math.max(1, 3 - Math.floor(totalPoints / 1000));
 
@@ -1205,7 +1210,7 @@ function drawLineMomentum() {
 
             chart = new CanvasJS.Chart("line_momentum", {
                 title: {
-                    text: "Top " + MAX_TOP_TEAMS + " Teams",
+                    text: "Top " + MAX_TOP_TEAMS + " Teams" + (guest ? " (guests)": ""),
                     fontSize: Math.floor(1.20 * DEFAULT_FONT_SIZE),
                     fontFamily: "Arial"
                 },

@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title><?php echo TITLE; ?></title>
+        <title><?php echo TITLE . (isset($_SESSION["guest"]) && $_SESSION["guest"] ? " (guest)" : ""); ?></title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"/>
