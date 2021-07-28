@@ -107,12 +107,14 @@ END;
 
 <?php
     if (getSetting(Setting::CTF_STYLE) !== "ad") {
-        echo <<<END
+        $html = <<<END
                                 <div id="tab_line_momentum jeopardy" align="right">
-                                    <i class="fas fa-external-link-alt jeopardy" data-toggle="tooltip" title="Open in new tab" onclick="openInNewTab('<?php echo joinPaths(PATHDIR, '/scoreboard');?>')"></i>
+                                    <i class="fas fa-external-link-alt jeopardy" data-toggle="tooltip" title="Open in new tab" onclick="openInNewTab('%s')"></i>
                                 </div>
-                                <div id="line_momentum" style="width: 100%; height: 370px"></div>
+                                <div id="line_momentum" style="width: 100%%; height: 370px"></div>
 END;
+        $html = sprintf($html, joinPaths(PATHDIR, '/scoreboard'));
+        echo $html;
     }
 ?>
                                 <table id="scoreboard" class="table table-hover table-condensed small mt-4">

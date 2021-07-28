@@ -26,7 +26,11 @@ if (!String.prototype.endsWith) {
 
 $(document).ready(function() {
     attackDefense = $("#settings_table select").val() === "ad";
-    guest = $("title").text().includes("guest");
+
+    if (isAdmin() || window.location.href.includes("/scoreboard?all="))
+        guest = null;
+    else
+        guest = $("title").text().includes("guest");
 
     $(document).ajaxError(function(event, jqXHR, options, status) {
         if (status === "Unauthorized")
@@ -1136,7 +1140,7 @@ function drawLineMomentum() {
                 return;
             }
 
-            if (!isAdmin()) {
+            if (guest !== null) {
                 result = $.grep(result, function( n, i ) {
                     return n.guest == guest;
                 });
