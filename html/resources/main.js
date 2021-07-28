@@ -1136,9 +1136,11 @@ function drawLineMomentum() {
                 return;
             }
 
-            result = $.grep(result, function( n, i ) {
-                return n.guest == guest;
-            });
+            if (!isAdmin()) {
+                result = $.grep(result, function( n, i ) {
+                    return n.guest == guest;
+                });
+            }
 
             var MAX_TOP_TEAMS = 10;
             var DEFAULT_FONT_SIZE = 12;
