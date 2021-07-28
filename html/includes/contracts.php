@@ -193,7 +193,7 @@ END;
 
                                             $("#constraints_checkbox").change(function() {
                                                 if ($(this).prop("checked")) {
-                                                    var constraints_inputs = $("<div id='constraints_inputs'><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum cash</label><input type='number' min='0' value='%s' class='form-control awareness' style='width: initial'><label class='info-label awareness'>Minimum awareness</label></div>");
+                                                    var constraints_inputs = $("<div id='constraints_inputs'><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum cash (for acceptance)</label><input type='number' min='0' value='%s' class='form-control awareness' style='width: initial'><label class='info-label awareness'>Minimum awareness</label></div>");
                                                     $(this).closest(".custom-control").before(constraints_inputs);
                             //                         setupValidation($("#constraints_inputs"));  // disabled because constraints can be unset individually
                                                 }
