@@ -529,6 +529,18 @@ h1, h4 {
     width: 49%;
 }
 
+#settings_table {
+    border-collapse: collapse !important;
+}
+
+#settings_table tr {
+    border-bottom: 1px solid #eeeeee;
+}
+
+#settings_table tr:last-child {
+    border-bottom: none;
+}
+
 .border-red {
     border: 1px solid red !important;
 }
