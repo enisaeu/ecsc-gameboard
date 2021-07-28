@@ -19,8 +19,6 @@
     define("MIN_CASH_VALUE", 0);
     define("ADMIN_LOGIN_NAME", "admin");
     define("TITLE", "ECSC " . date("Y"));
-    define("DYNAMIC_DECAY_PER_SOLVE", 0.04);            // Decaying per-solve ratio (0 <= _ <= 1) used for calculating penalty from initial (task) score (e.g. if initial score 100, after 4 solves with decay ratio 0.1 penalty will become 40 -> effective score 60)
-    define("DYNAMIC_DECAY_MAX_PENALTY", 0.8);           // Decaying max-penalty ratio (0 <= _ <= 1) used for calculating maximum penalty from initial (task) score (e.g. if initial score 100, with max-penalty ratio 0.20 maximum penalty will become 20 -> effective score 80)
     define("DEFAULT_ROOM", "general");
     define("PRIVATE_ROOM", "team");
     define("FLAG_REGEX", "/ECSC\{[^\}]+\}?/i");
@@ -37,6 +35,8 @@
     define("TOKEN_LIFE", 4 * 24 * 3600);
     define("SAME_CASH_SAME_RANK", false);
     define("DEFAULT_INITIAL_AVAILABILITY", 100000);
+    define("DEFAULT_DYNAMIC_SOLVE_THRESHOLD", 20);
+    define("DEFAULT_DYNAMIC_MAXIMUM_DECAY", 50);
 
     if (isset($_SERVER['REMOTE_ADDR']))
         // Reference: https://stackoverflow.com/a/2886224
@@ -78,6 +78,8 @@
         const CTF_STYLE = "ctf_style";
         const INITIAL_AVAILABILITY = "initial_availability";
         const EXPLICIT_START_STOP = "explicit_start_stop";
+        const DYNAMIC_SOLVE_THRESHOLD = "dynamic_solve_threshold";
+        const DYNAMIC_MAXIMUM_DECAY = "dynamic_maximum_decay";
     }
 
     abstract class Cache {
@@ -327,13 +329,29 @@
                 $task_cash = fetchScalar("SELECT cash FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id));
                 $task_penalty = 0;
 
-                if (DYNAMIC_DECAY_PER_SOLVE > 0) {
+                // Reference: https://github.com/CTFd/DynamicValueChallenge
+                if (parseBool(getSetting(Setting::DYNAMIC_SCORING))) {
                     $solves = fetchScalar("SELECT COUNT(*) FROM solved WHERE task_id=:task_id", array("task_id" => $task_id));
                     if (($solves > 0) && $solver)
                         $solves -= 1;
-                    $task_penalty += intval($task_cash * (DYNAMIC_DECAY_PER_SOLVE * $solves));
-                    $task_penalty = min($task_penalty, DYNAMIC_DECAY_MAX_PENALTY * $task_cash);
+                    $threshold = is_numeric(getSetting(Setting::DYNAMIC_SOLVE_THRESHOLD)) ? getSetting(Setting::DYNAMIC_SOLVE_THRESHOLD) : DEFAULT_DYNAMIC_SOLVE_THRESHOLD;
+                    $min_percentage = 100.0 - (is_numeric(getSetting(Setting::DYNAMIC_MAXIMUM_DECAY)) ? getSetting(Setting::DYNAMIC_MAXIMUM_DECAY) : DEFAULT_DYNAMIC_MAXIMUM_DECAY);
+                    $max_task_penalty = intval(((100.0 - $min_percentage) / 100.0) * $task_cash);
+                    $task_penalty = intval(1.0 * $max_task_penalty * ($solves ** 2) / ($threshold ** 2));
+                    $task_penalty = min($task_penalty, $max_task_penalty);
                 }
+
+// NOTE: old formula stuff
+//                     define("DYNAMIC_DECAY_PER_SOLVE", 0.04);            // Decaying per-solve ratio (0 <= _ <= 1) used for calculating penalty from initial (task) score (e.g. if initial score 100, after 4 solves with decay ratio 0.1 penalty will become 40 -> effective score 60)
+//                     define("DYNAMIC_DECAY_MAX_PENALTY", 0.8);           // Decaying max-penalty ratio (0 <= _ <= 1) used for calculating maximum penalty from initial (task) score (e.g. if initial score 100, with max-penalty ratio 0.20 maximum penalty will become 20 -> effective score 80)
+//
+//                 if (DYNAMIC_DECAY_PER_SOLVE > 0) {
+//                     $solves = fetchScalar("SELECT COUNT(*) FROM solved WHERE task_id=:task_id", array("task_id" => $task_id));
+//                     if (($solves > 0) && $solver)
+//                         $solves -= 1;
+//                     $task_penalty += intval($task_cash * (DYNAMIC_DECAY_PER_SOLVE * $solves));
+//                     $task_penalty = min($task_penalty, DYNAMIC_DECAY_MAX_PENALTY * $task_cash);
+//                 }
 
                 $total_penalty += $task_penalty;
             }
