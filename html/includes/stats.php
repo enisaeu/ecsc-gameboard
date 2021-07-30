@@ -7,7 +7,7 @@
 
                                 <table id="stats_table" class="table table-hover table-condensed small mt-4 hidden">
                                     <thead>
-                                        <tr><th>Task</th><th>Contract</th><th>Cash value (<i class="currency"></i>)</th><th>Teams solved</th><th>Timeline</th><th>Avg. solve time</th></tr>
+                                        <tr><th>Task</th><th>Contract</th><th>Cash value (<i class="currency"></i>)</th><th>Solved by</th><th>Timeline</th><th>Avg. solve time</th></tr>
                                     </thead>
                                     <tbody>
 <?php
@@ -48,7 +48,7 @@
             $heartbeats[$task_id] = array_pad($heartbeats[$task_id], HEARTBEAT_POINTS, 0);
         }
 
-        echo format("                                        <tr><td>{task}</td><td>{contract}</td><td>{cash}</td><td data-order={solved_count}>{solved_more}</td><td class='heartbeat'>{heartbeat}</td><td data-order={average_seconds}>{average_time}</td></tr>\n", array("task" => $row["task_title"], "contract" => $row["contract_title"], "cash" => $row["task_cash"], "solved_count" => $row["solved_count"], "solved_more" => ($row["solved_count"] > 0 ? $row["solved_by"] : '-'), "heartbeat" => implode(',', $heartbeats[$row["task_id"]]), "average_seconds" => isset($average[$row["task_id"]]) ? intval($average[$row["task_id"]]) : 0, "average_time" => isset($average[$row["task_id"]]) ? secondsToTime($average[$row["task_id"]]) : '-'));
+        echo format("                                        <tr><td>{task}</td><td>{contract}</td><td>{cash}</td><td data-order={solved_count}>{solved_count} <i class='far fa-comment-dots {solved_comment}' title='{solved_more}'></i></td><td class='heartbeat'>{heartbeat}</td><td data-order={average_seconds}>{average_time}</td></tr>\n", array("task" => $row["task_title"], "contract" => $row["contract_title"], "cash" => $row["task_cash"], "solved_count" => $row["solved_count"], "solved_more" => ($row["solved_count"] > 0 ? $row["solved_by"] : '-'), "solved_comment" => ($row["solved_count"] > 0 ? "" : "hidden"), "heartbeat" => implode(',', $heartbeats[$row["task_id"]]), "average_seconds" => isset($average[$row["task_id"]]) ? intval($average[$row["task_id"]]) : 0, "average_time" => isset($average[$row["task_id"]]) ? secondsToTime($average[$row["task_id"]]) : '-'));
     }
 ?>
                                     </tbody>
