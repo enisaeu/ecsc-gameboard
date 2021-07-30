@@ -26,10 +26,10 @@
                     if ($result)
                         $options = $result[0];
                     else
-                        $options = array("note" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
+                        $options = array("note" => "", "hint" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
 
                     $template = file_get_contents("templates/task.html");
-                    $task = format($template, array("title" => $row["title"], "description" => $row["description"], "task_id" => $row["task_id"]));
+                    $task = format($template, array("title" => $row["title"] . ($options["hint"] ? ' <i class="fas fa-medkit" title="Show hint" data-toggle="tooltip"></i>' : ""), "description" => $row["description"], "task_id" => $row["task_id"]));
 
                     if (in_array($row["task_id"], $solved)) {
                         $cash = getDynamicScore($row["task_id"], null, true);
@@ -108,7 +108,7 @@
                 if ($result)
                     $options = $result[0];
                 else
-                    $options = array("note" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
+                    $options = array("note" => "", "hint" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
 
                 $template = file_get_contents("templates/task.html");
                 $title = "<input name='title' value='" . cleanReflectedValue($row["title"]) . "' class='form-control' style='display: block'><label class='info-label'>Task title</label>";
@@ -122,6 +122,8 @@
                 $additional = <<<END
                                                                     <input name='note' value='{note}' class='form-control' style='display: block'>
                                                                     <label class='info-label'>Task note (optional)</label>
+                                                                    <input name='hint' value='{hint}' class='form-control' style='display: block'>
+                                                                    <label class='info-label'>Task hint (optional)</label>
                                                                     <div style='margin-top: 5px; border: 1px solid rgba(0,0,0,.125); width: 100%; padding: 5px'>
                                                                         <div class='custom-control custom-checkbox'>
                                                                             <input type='checkbox' class='custom-control-input options-checkbox checkbox-success' id='regex{task_id}_checkbox'{regex_checked}><label class='custom-control-label' for='regex{task_id}_checkbox'>Regular expression</label>
@@ -137,7 +139,7 @@
 
 END;
 
-                $additional = format($additional, array("task_id" => $row["task_id"], "note" => cleanReflectedValue($options["note"]), "regex_checked" => ($options["is_regex"] ? " checked": ""), "ignorecase_checked" => ($options["ignore_case"] ? " checked": ""), "ignoreorder_checked" => ($options["ignore_order"] ? " checked": "")));
+                $additional = format($additional, array("task_id" => $row["task_id"], "note" => cleanReflectedValue($options["note"]), "hint" => cleanReflectedValue($options["hint"]), "regex_checked" => ($options["is_regex"] ? " checked": ""), "ignorecase_checked" => ($options["ignore_case"] ? " checked": ""), "ignoreorder_checked" => ($options["ignore_order"] ? " checked": "")));
                 $task = preg_replace("/Task answer<\/label>/", "\\0" . $additional, $task);
                 $task = str_replace("input-group", "", $task);
 
@@ -247,6 +249,7 @@ END;
                                                         task["description"] = $(this).find("label:contains('Task description')").prev().val();
                                                         task["answer"] = $(this).find("label:contains('Task answer')").prev().val();
                                                         task["note"] = $(this).find("label:contains('Task note')").prev().val();
+                                                        task["hint"] = $(this).find("label:contains('Task hint')").prev().val();
                                                         task["is_regex"] = $(this).find("label:contains('Regular expression')").prev().prop("checked");
                                                         task["ignore_case"] = $(this).find("label:contains('Ignore character case')").prev().prop("checked");
                                                         task["ignore_order"] = $(this).find("label:contains('Ignore word order')").prev().prop("checked");

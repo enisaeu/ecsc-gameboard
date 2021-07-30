@@ -353,6 +353,11 @@ td {
     font-size: 10px;
 }
 
+.fa-medkit {
+    opacity: 0.8;
+    cursor: pointer;
+}
+
 th {
     cursor: pointer;
     white-space: nowrap;

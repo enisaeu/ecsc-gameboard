@@ -133,7 +133,7 @@
             $last_id = fetchScalar("SELECT LAST_INSERT_ID()");
             foreach ($data["options"] as $option) {
                 if ($option["task_id"] === $task["task_id"])
-                    $success &= execute("INSERT INTO options(task_id, note, is_regex, ignore_case, ignore_order) VALUES(:task_id, :note, :is_regex, :ignore_case, :ignore_order)", array("task_id" => $last_id, "note" => $option["note"], "is_regex" => $option["is_regex"], "ignore_case" => $option["ignore_case"], "ignore_order" => $option["ignore_order"]));
+                    $success &= execute("INSERT INTO options(task_id, note, hint, is_regex, ignore_case, ignore_order) VALUES(:task_id, :note, :hint, :is_regex, :ignore_case, :ignore_order)", array("task_id" => $last_id, "note" => $option["note"], "hint" => $option["hint"], "is_regex" => $option["is_regex"], "ignore_case" => $option["ignore_case"], "ignore_order" => $option["ignore_order"]));
             }
         }
 
@@ -187,9 +187,15 @@
             die(DEBUG ? $_SESSION["conn_error"] : null);
         }
     }
+    else if ($_POST["action"] === "hint") {
+        if (isset($_POST["task_id"])) {
+            $hint = fetchScalar("SELECT hint FROM options WHERE task_id=:task_id", array("task_id" => $_POST["task_id"]));
+
+            die("Hint: " . $hint);
+        }
+    }
     else if ($_POST["action"] === "update") {
         if (isset($_POST["password"])) {
-
             if (isAdmin()) {
                 $rows = fetchAll("SELECT password_hash FROM teams WHERE team_id=:team_id", array("team_id" => $_SESSION["team_id"]));
 
@@ -275,7 +281,7 @@
                 }
 
                 execute("DELETE FROM options WHERE task_id=:task_id", array("task_id" => $task_id));
-                $success &= execute("INSERT INTO options(task_id, note, is_regex, ignore_case, ignore_order) VALUES(:task_id, :note, :is_regex, :ignore_case, :ignore_order)", array("task_id" => $task_id, "note" => $task["note"], "is_regex" => intval($task["is_regex"]), "ignore_case" => intval($task["ignore_case"]), "ignore_order" => intval($task["ignore_order"])));
+                $success &= execute("INSERT INTO options(task_id, note, hint, is_regex, ignore_case, ignore_order) VALUES(:task_id, :note, :hint, :is_regex, :ignore_case, :ignore_order)", array("task_id" => $task_id, "note" => $task["note"], "hint" => $task["hint"], "is_regex" => intval($task["is_regex"]), "ignore_case" => intval($task["ignore_case"]), "ignore_order" => intval($task["ignore_order"])));
             }
 
             execute("DELETE FROM constraints WHERE contract_id=:contract_id", array("contract_id" => $contract["contract_id"]));

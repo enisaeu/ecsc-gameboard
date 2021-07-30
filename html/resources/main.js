@@ -184,6 +184,20 @@ $(document).ready(function() {
         showAwardCashBox(login_name, full_name);
     });
 
+    $(".fa-medkit").click(function(event) {
+        var task_id = $(event.target).closest(".task").find("input[name=task_id]").attr("value");
+        var task_name = $(event.target).closest(".task").find(".task-title").text().trim();
+        debugger;
+
+        $.post(window.location.href.split('#')[0], {token: document.token, action: "hint", task_id: task_id}, function(content) {
+            if (content.indexOf("Hint:") > -1) {
+                showMessageBox(task_name, content, "primary");
+            }
+            else
+                alert("Something went wrong ('" + content + "')!");
+        });
+    });
+
     $("#settings_table input[type=checkbox]").click(function() {
         var name = $(this).prop("id");
         var value = $(this).is(":checked");

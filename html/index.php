@@ -101,7 +101,7 @@ END;
                 if ($result)
                     $options = $result[0];
                 else
-                    $options = array("note" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
+                    $options = array("note" => "", "hint" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
 
                 $answer = $_POST["answer"];
                 $correct = fetchScalar("SELECT answer FROM tasks JOIN contracts ON tasks.contract_id=contracts.contract_id WHERE task_id=:task_id AND contracts.hidden IS NOT TRUE", array("task_id" => $_POST["task_id"]));
