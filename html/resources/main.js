@@ -27,7 +27,7 @@ if (!String.prototype.endsWith) {
 $(document).ready(function() {
     attackDefense = $("#settings_table select").val() === "ad";
 
-    if (isAdmin() || window.location.href.includes("/scoreboard?all="))
+    if (isAdmin() || window.location.href.includes("/scoreboard#all"))
         guest = null;
     else
         guest = $("title").text().includes("guest");
