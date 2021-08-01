@@ -8,6 +8,8 @@ var SCOREBOARD_PAGE_RELOAD = 30000;
 var alerts = {};
 var lastPullUpdate = new Date();
 var chart = null;
+var attackDefense = null;
+var guest = false;
 
 // Reference: https://stackoverflow.com/a/37544400
 if (!String.prototype.endsWith) {
@@ -23,6 +25,13 @@ if (!String.prototype.endsWith) {
 }
 
 $(document).ready(function() {
+    attackDefense = $("#settings_table select").val() === "ad";
+
+    if (isAdmin() || window.location.href.includes("/scoreboard#all"))
+        guest = null;
+    else
+        guest = $("title").text().includes("guest");
+
     $(document).ajaxError(function(event, jqXHR, options, status) {
         if (status === "Unauthorized")
             reload();
@@ -175,10 +184,36 @@ $(document).ready(function() {
         showAwardCashBox(login_name, full_name);
     });
 
+    $(".fa-medkit").click(function(event) {
+        var task_id = $(event.target).closest(".task").find("input[name=task_id]").attr("value");
+        var task_name = $(event.target).closest(".task").find(".task-title").text().trim();
+        debugger;
+
+        $.post(window.location.href.split('#')[0], {token: document.token, action: "hint", task_id: task_id}, function(content) {
+            if (content.indexOf("Hint:") > -1) {
+                showMessageBox(task_name, content, "primary");
+            }
+            else
+                alert("Something went wrong ('" + content + "')!");
+        });
+    });
+
     $("#settings_table input[type=checkbox]").click(function() {
         var name = $(this).prop("id");
         var value = $(this).is(":checked");
         pushSetting(name, value, ["dynamic_scoring", "use_awareness"].includes(name) ? reload : null);
+    });
+
+    $("#settings_table select").change(function() {
+        var name = $(this).prop("id");
+        var value = $(this).val();
+        pushSetting(name, value, reload);
+    });
+
+    $("#settings_table input[type=number]").change(function() {
+        var name = $(this).prop("id");
+        var value = $(this).val();
+        pushSetting(name, value);
     });
 
     $("#settings_table input[type=text]").change(function() {
@@ -187,10 +222,18 @@ $(document).ready(function() {
         pushSetting(name, value);
     });
 
-    $("#settings_table input[type=number]").change(function() {
+    $("#settings_table input[class=numeric]").change(function() {
         var name = $(this).prop("id");
         var value = $(this).val();
-        pushSetting(name, value);
+        pushSetting(name, value, reload);
+    });
+
+    $(".fa-play").closest("button").click(function() {
+        pushSetting("explicit_start_stop", true, reload);
+    });
+
+    $(".fa-stop").closest("button").click(function() {
+        pushSetting("explicit_start_stop", false, reload);
     });
 
     $("#chat_room").change(function() {
@@ -321,6 +364,17 @@ $(document).ready(function() {
 
     // Note: just in case
     repositionSidebar();
+
+    $(document).keyup(function(e){
+        var key = e.which || e.keyCode;
+
+        if (key === 37) {        // left
+            $("#logs_table_previous").click();
+        }
+        else if (key === 39) {    // right
+            $("#logs_table_next").click();
+        }
+    });
 });
 
 // Reference: https://stackoverflow.com/a/570027
@@ -407,7 +461,7 @@ function showResetBox(login_name, full_name) {
     dialog.find(".modal-body").append($('<div class="custom-control custom-checkbox"><input class="custom-control-input" id="delete_contracts" type="checkbox"><label class="custom-control-label" for="delete_contracts">Delete contracts</label></div>'));
     dialog.find(".modal-body").append($('<div class="custom-control custom-checkbox"><input class="custom-control-input" id="delete_chat" type="checkbox" checked><label class="custom-control-label" for="delete_chat">Delete chat messages</label></div>'));
     dialog.find(".modal-body").append($('<div class="custom-control custom-checkbox"><input class="custom-control-input" id="delete_privates" type="checkbox" checked><label class="custom-control-label" for="delete_privates">Delete privates (i.e. private messages and cash sends)</label></div>'));
-    dialog.find(".modal-body").append($('<div class="custom-control custom-checkbox"><input class="custom-control-input" id="delete_auxiliary" type="checkbox" checked><label class="custom-control-label" for="delete_auxiliary">Delete auxiliary (i.e. accepted contracts, solved tasks, notifications, settings and logs)</label></div>'));
+    dialog.find(".modal-body").append($('<div class="custom-control custom-checkbox"><input class="custom-control-input" id="delete_auxiliary" type="checkbox" checked><label class="custom-control-label" for="delete_auxiliary">Delete auxiliary (i.e. accepted contracts, solved tasks, notifications, settings, logs, cache and tokens)</label></div>'));
     //localStorage.clear()
 
     // Reference: https://stackoverflow.com/a/31909778
@@ -1100,6 +1154,12 @@ function drawLineMomentum() {
                 return;
             }
 
+            if (guest !== null) {
+                result = $.grep(result, function( n, i ) {
+                    return n.guest == guest;
+                });
+            }
+
             var MAX_TOP_TEAMS = 10;
             var DEFAULT_FONT_SIZE = 12;
             var datasets = [];
@@ -1111,7 +1171,6 @@ function drawLineMomentum() {
             $(result).each(function() {
                 totalPoints += $(this).prop("cash").length;
             });
-
 
             var lineThickness = Math.max(1, 3 - Math.floor(totalPoints / 1000));
 
@@ -1171,7 +1230,7 @@ function drawLineMomentum() {
 
             chart = new CanvasJS.Chart("line_momentum", {
                 title: {
-                    text: "Top " + MAX_TOP_TEAMS + " Teams",
+                    text: "Top " + MAX_TOP_TEAMS + " Teams" + (guest ? " (guests)": ""),
                     fontSize: Math.floor(1.20 * DEFAULT_FONT_SIZE),
                     fontFamily: "Arial"
                 },

@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title><?php echo TITLE; ?></title>
+        <title><?php echo TITLE . (isset($_SESSION["guest"]) && $_SESSION["guest"] ? " (guest)" : ""); ?></title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"/>
@@ -18,7 +18,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" integrity="sha512-Cv93isQdFwaKBV+Z4X8kaVBYWHST58Xb/jVOcV9aRsGSArZsgAnFIhMpDoMDcFNoUtday1hdjn0nGp3+KZyyFw==" crossorigin="anonymous" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous"/>
-        <link rel="stylesheet" href="<?php echo joinPaths(PATHDIR, '/resources/main.css?v4');?>">
+        <link rel="stylesheet" href="<?php echo joinPaths(PATHDIR, '/resources/main.css?v7');?>">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js" integrity="sha256-CIc5A981wu9+q+hmFYYySmOvsA3IsoX+apaYlL0j6fg=" crossorigin="anonymous"></script>
@@ -44,6 +44,17 @@
             </style>
         </noscript>
 <?php
+        $style = "";
+
         if (!parseBool(getSetting(Setting::USE_AWARENESS)))
-            echo "<style>.awareness {display: none}</style>";
+            $style .= "            .awareness {display: none}\n";
+        if (getSetting(Setting::CTF_STYLE) === "ad")
+            $style .= "            .jeopardy {display: none}\n";
+        else
+            $style .= "            .ad {display: none}\n";
+        if (!checkStartEndTime())
+            $style .= "            .ad {display: none}\n";
+
+        if ($style)
+            echo "        <style>\n" . $style . "        </style>";
 ?>

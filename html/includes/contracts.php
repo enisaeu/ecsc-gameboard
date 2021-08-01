@@ -26,10 +26,10 @@
                     if ($result)
                         $options = $result[0];
                     else
-                        $options = array("note" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
+                        $options = array("note" => "", "hint" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
 
                     $template = file_get_contents("templates/task.html");
-                    $task = format($template, array("title" => $row["title"], "description" => $row["description"], "task_id" => $row["task_id"]));
+                    $task = format($template, array("title" => $row["title"] . ($options["hint"] ? ' <i class="fas fa-medkit" title="Show hint" data-toggle="tooltip"></i>' : ""), "description" => $row["description"], "task_id" => $row["task_id"]));
 
                     if (in_array($row["task_id"], $solved)) {
                         $cash = getDynamicScore($row["task_id"], null, true);
@@ -46,6 +46,14 @@
 
                         if ($options["note"])
                             $task = str_replace("Task answer", cleanReflectedValue($options["note"]), $task);
+                    }
+
+                    if (!checkStartEndTime()) {
+                        $task = str_replace(" autocomplete", " disabled=\"disabled\" autocomplete", $task);
+                        $task = str_replace(" type=\"submit\"", " disabled=\"disabled\" style=\"pointer-events: none\"", $task);
+                        $task = str_replace("class=\"form-control\"", "class=\"form-control disabled\"", $task);
+                        $task = str_replace("success", "", $task);
+                        $accepted = preg_replace('/style="[^"]+"/', "", $accepted);
                     }
 
                     $total += $cash;
@@ -100,7 +108,7 @@
                 if ($result)
                     $options = $result[0];
                 else
-                    $options = array("note" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
+                    $options = array("note" => "", "hint" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
 
                 $template = file_get_contents("templates/task.html");
                 $title = "<input name='title' value='" . cleanReflectedValue($row["title"]) . "' class='form-control' style='display: block'><label class='info-label'>Task title</label>";
@@ -114,6 +122,8 @@
                 $additional = <<<END
                                                                     <input name='note' value='{note}' class='form-control' style='display: block'>
                                                                     <label class='info-label'>Task note (optional)</label>
+                                                                    <input name='hint' value='{hint}' class='form-control' style='display: block'>
+                                                                    <label class='info-label'>Task hint (optional)</label>
                                                                     <div style='margin-top: 5px; border: 1px solid rgba(0,0,0,.125); width: 100%; padding: 5px'>
                                                                         <div class='custom-control custom-checkbox'>
                                                                             <input type='checkbox' class='custom-control-input options-checkbox checkbox-success' id='regex{task_id}_checkbox'{regex_checked}><label class='custom-control-label' for='regex{task_id}_checkbox'>Regular expression</label>
@@ -129,7 +139,7 @@
 
 END;
 
-                $additional = format($additional, array("task_id" => $row["task_id"], "note" => cleanReflectedValue($options["note"]), "regex_checked" => ($options["is_regex"] ? " checked": ""), "ignorecase_checked" => ($options["ignore_case"] ? " checked": ""), "ignoreorder_checked" => ($options["ignore_order"] ? " checked": "")));
+                $additional = format($additional, array("task_id" => $row["task_id"], "note" => cleanReflectedValue($options["note"]), "hint" => cleanReflectedValue($options["hint"]), "regex_checked" => ($options["is_regex"] ? " checked": ""), "ignorecase_checked" => ($options["ignore_case"] ? " checked": ""), "ignoreorder_checked" => ($options["ignore_order"] ? " checked": "")));
                 $task = preg_replace("/Task answer<\/label>/", "\\0" . $additional, $task);
                 $task = str_replace("input-group", "", $task);
 
@@ -185,7 +195,7 @@ END;
 
                                             $("#constraints_checkbox").change(function() {
                                                 if ($(this).prop("checked")) {
-                                                    var constraints_inputs = $("<div id='constraints_inputs'><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum cash</label><input type='number' min='0' value='%s' class='form-control awareness' style='width: initial'><label class='info-label awareness'>Minimum awareness</label></div>");
+                                                    var constraints_inputs = $("<div id='constraints_inputs'><input type='number' min='0' value='%s' class='form-control' style='width: initial'><label class='info-label'>Minimum cash (for acceptance)</label><input type='number' min='0' value='%s' class='form-control awareness' style='width: initial'><label class='info-label awareness'>Minimum awareness</label></div>");
                                                     $(this).closest(".custom-control").before(constraints_inputs);
                             //                         setupValidation($("#constraints_inputs"));  // disabled because constraints can be unset individually
                                                 }
@@ -239,6 +249,7 @@ END;
                                                         task["description"] = $(this).find("label:contains('Task description')").prev().val();
                                                         task["answer"] = $(this).find("label:contains('Task answer')").prev().val();
                                                         task["note"] = $(this).find("label:contains('Task note')").prev().val();
+                                                        task["hint"] = $(this).find("label:contains('Task hint')").prev().val();
                                                         task["is_regex"] = $(this).find("label:contains('Regular expression')").prev().prop("checked");
                                                         task["ignore_case"] = $(this).find("label:contains('Ignore character case')").prev().prop("checked");
                                                         task["ignore_order"] = $(this).find("label:contains('Ignore word order')").prev().prop("checked");
@@ -276,7 +287,7 @@ END;
 
             foreach ($_ as $contract_id) {
                 if ($contract_id === -1) {
-                    $html = format($template, array("title" => "???", "values" => generateValuesHtml("?", "?") . "<span style='float:right'><i class='fas fa-upload' title='Import' data-toggle='tooltip'></i></span>", "description" => "", "categories" => "", "contract_id" => $contract_id));
+                    $html = format($template, array("title" => "???", "values" => generateValuesHtml("?", "?") . "<span style='float:right'><i class='fas fa-upload' title='Import (JSON)' data-toggle='tooltip'></i></span>", "description" => "", "categories" => "", "contract_id" => $contract_id));
                     $html = preg_replace("/Take contract/s", "New contract", $html);
                     $html = preg_replace("/btn-success/s", "btn-warning", $html);
                 }
@@ -299,7 +310,7 @@ END;
                         $note .= "</p>";
                     }
                     $html = str_replace("</b>", '</b><button class="close" data-dismiss="modal" aria-label="Delete contract" title="Delete contract" data-toggle="tooltip"><span aria-hidden="true">×</span></button>', $template);
-                    $html = format($html, array("title" => $row["title"]. ($row["hidden"] ? '<i class="far fa-eye-slash ml-2" title="Hidden" data-toggle="tooltip"></i>' : ""), "values" => generateValuesHtml($row["cash"], $row["awareness"], $dynamic) . "<span style='float: right; font-size: 95%'><i class='fas fa-download' title='Export' data-toggle='tooltip'></i></span>", "description" => $row["description"] . $note, "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
+                    $html = format($html, array("title" => $row["title"]. ($row["hidden"] ? '<i class="far fa-eye-slash ml-2" title="Hidden" data-toggle="tooltip"></i>' : ""), "values" => generateValuesHtml($row["cash"], $row["awareness"], $dynamic) . "<span style='float: right; font-size: 95%'><i class='fas fa-download' title='Export (JSON)' data-toggle='tooltip'></i></span>", "description" => $row["description"] . $note, "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
                     $html = preg_replace("/Take contract/s", "Edit contract", $html);
                     $html = preg_replace("/btn-success/s", "btn-primary", $html);
                     if ($row["hidden"]) {

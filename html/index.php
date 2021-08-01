@@ -101,7 +101,7 @@ END;
                 if ($result)
                     $options = $result[0];
                 else
-                    $options = array("note" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
+                    $options = array("note" => "", "hint" => "", "is_regex" => false, "ignore_case" => false, "ignore_order" => false);
 
                 $answer = $_POST["answer"];
                 $correct = fetchScalar("SELECT answer FROM tasks JOIN contracts ON tasks.contract_id=contracts.contract_id WHERE task_id=:task_id AND contracts.hidden IS NOT TRUE", array("task_id" => $_POST["task_id"]));
@@ -205,10 +205,10 @@ END;
                                 <li class="nav-item small">
                                     <a class="nav-link%s" href="%s">Rankings</a>
                                 </li>
-                                <li class="nav-item small">
+                                <li class="nav-item small jeopardy">
                                     <a class="nav-link%s" href="%s">Job board <span class="badge badge-light border counter" id="available_count">%d</span></a>
                                 </li>
-                                <li class="nav-item small">
+                                <li class="nav-item small jeopardy">
                                     <a class="nav-link%s" href="%s">Contracts <span class="badge badge-light border counter" id="active_count">%d</span></a>
                                 </li>
 END;
@@ -219,7 +219,7 @@ END;
                                 <li class="nav-item small">
                                     <a class="nav-link%s" href="%s">Teams</a>
                                 </li>
-                                <li class="nav-item small">
+                                <li class="nav-item small jeopardy">
                                     <a class="nav-link%s" href="%s">Contracts <span class="badge badge-light border counter" id="contracts_count">%d</span></a>
                                 </li>
 END;
@@ -236,7 +236,7 @@ END;
                                     <a class="nav-link%s" href="%s">Logs <span class="badge badge-light border counter" id="log_count">%d</span></a>
                                 </li>
                                 <li class="nav-item small">
-                                    <a class="nav-link%s" href="%s">Stats</a>
+                                    <a class="nav-link%s jeopardy" href="%s">Stats</a>
                                 </li>
 END;
         echo sprintf($html, (PAGE === "logs" ? " active" : ""), joinPaths(PATHDIR, '/logs/'), fetchScalar("SELECT COUNT(*) FROM logs"), (PAGE === "stats" ? " active" : ""), joinPaths(PATHDIR, '/stats/'));
@@ -302,11 +302,11 @@ END;
                             </div>
                             <div class="card-body" style="font-size: 12px">
                                 <table id="info_table">
-                                    <tr><td>Cash: </td><td><b>%s</b> <i class="currency"></i> (%s%s)</td></tr>
-                                    <tr class="awareness"><td>Awareness: </td><td><b>%s</b> (%s%s)</td></tr>
-                                    <tr><td>Last progress: </td><td><b>%s</b></td></tr>
-                                    <tr><td>Active contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
-                                    <tr><td>Finished contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
+                                    <tr><td>Cash: </td><td><b>%s</b> <i class="currency jeopardy"></i> (%s%s)</td></tr>
+                                    <tr class="awareness jeopardy"><td>Awareness: </td><td><b>%s</b> (%s%s)</td></tr>
+                                    <tr class="jeopardy"><td>Last progress: </td><td><b>%s</b></td></tr>
+                                    <tr class="jeopardy"><td>Active contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
+                                    <tr class="jeopardy"><td>Finished contracts: </td><td><abbr title="%s"><b>%d</b></abbr></td></tr>
                                 </table>
                             </div>
                         </div>
@@ -321,7 +321,15 @@ END;
         $active_ = $active ? fetchScalar("SELECT GROUP_CONCAT(title ORDER BY title ASC) FROM contracts WHERE contract_id IN (" . implode(",", $active) . ")") : "-";
         $finished_ = $finished ? fetchScalar("SELECT GROUP_CONCAT(title ORDER BY title ASC) FROM contracts WHERE contract_id IN (" . implode(",", $finished) . ")") : "-";
         $last = fetchScalar("SELECT MAX(ts) FROM (SELECT UNIX_TIMESTAMP(ts) AS ts FROM solved WHERE team_id=:team_id UNION ALL SELECT UNIX_TIMESTAMP(ts) AS ts FROM privates WHERE cash IS NOT NULL AND (from_id=:team_id OR to_id=:team_id)) AS result", array("team_id" => $_SESSION["team_id"]));
-        echo sprintf($html, number_format($scores["cash"]), ordinal($places["cash"]), $places["cash"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["cash"]]) . '" height="16">' : "", number_format($scores["awareness"]), ordinal($places["awareness"]), $places["awareness"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["awareness"]]) . '" height="16">' : "", $last ? sprintf("<span ts='%d'></span>", $last) : "-", str_replace(",", ", ", $active_), count($active), str_replace(",", ", ", $finished_), count($finished));
+        $html = sprintf($html, number_format($scores["cash"]), ordinal($places["cash"]), $places["cash"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["cash"]]) . '" height="16">' : "", number_format($scores["awareness"]), ordinal($places["awareness"]), $places["awareness"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["awareness"]]) . '" height="16">' : "", $last ? sprintf("<span ts='%d'></span>", $last) : "-", str_replace(",", ", ", $active_), count($active), str_replace(",", ", ", $finished_), count($finished));
+
+        if (getSetting(Setting::CTF_STYLE) === "ad") {
+            $html = preg_replace('/<tr[^\n]+Cash[^\n]+<\/tr>/', "<tr><td>Score: </td><td><b>" . number_format($scores["flags"] + $scores["availability"]) . "</b> (" . ordinal($places["awareness"]) . ($places["awareness"] <= 3 ? ' <img src="' . joinPaths(PATHDIR, '/resources/' . $medals[$places["awareness"]]) . '" height="16">' : "") . ")</td></tr>", $html);
+        }
+
+        $html = preg_replace('/(<td>\w+:[^\n]+<b>0<\/b>[^\n]*) \([^)]+\)/', "$1", $html);
+
+        echo $html;
     }
     else {
         $html = <<<END
@@ -332,26 +340,48 @@ END;
                             <div class="card-body" style="font-size: 12px">
                                 <table id="settings_table">%s
                                 </table>
+                                %s
                             </div>
                         </div>
 
 
 END;
         $settings = "";
-        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable awareness scoring (along with cash)">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Show awareness", "use_awareness", parseBool(getSetting(Setting::USE_AWARENESS)) ? " checked" : "");
-        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable cash transfers between teams">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Cash transfers", "cash_transfers", parseBool(getSetting(Setting::CASH_TRANSFERS)) ? " checked" : "");
-        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable dynamic scoring (Note: linear task cash value decrease (&alpha;=%s) based on number of solvers)">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', DYNAMIC_DECAY_PER_SOLVE, "Dynamic scoring", "dynamic_scoring", parseBool(getSetting(Setting::DYNAMIC_SCORING)) ? " checked" : "");
-        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable private messages between teams">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Private messages", "private_messages", parseBool(getSetting(Setting::PRIVATE_MESSAGES)) ? " checked" : "");
-        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="Enable/disable sending of support (i.e. private) messages to Administrator">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Support messages", "support_messages", parseBool(getSetting(Setting::SUPPORT_MESSAGES)) ? " checked" : "");
-        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="(optional) Number of seconds for a deliberate delay between potential task guessing attempts">Guess attempt penalty (secs): </td><td><input id="guess_delay" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_DELAY)) ? getSetting(Setting::GUESS_DELAY) : "0");
-        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="(optional) Number of wrong potential (sequential) task guessing attempts before an abrupt logout">Guess logout after attempts: </td><td><input id="guess_logout" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_LOGOUT)) ? getSetting(Setting::GUESS_LOGOUT) : "");
+        $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="CTF style" style="padding-bottom: 5px">%s: </td><td style="padding-bottom: 5px"><select name="style" id="%s"><option value="jeopardy"%s>Jeopardy</option><option value="ad"%s>Attack/Defense</option></select></td></tr>', "CTF style", "ctf_style", getSetting(Setting::CTF_STYLE) !== "ad" ? " selected" : "", getSetting(Setting::CTF_STYLE) === "ad" ? " selected" : "");
+        $settings .= "\n" . sprintf('                                    <tr class="jeopardy"><td data-toggle="tooltip" title="Enable/disable awareness scoring (along with cash)">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Show awareness", "use_awareness", parseBool(getSetting(Setting::USE_AWARENESS)) ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr class="jeopardy"><td data-toggle="tooltip" title="Enable/disable cash transfers between teams">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Cash transfers", "cash_transfers", parseBool(getSetting(Setting::CASH_TRANSFERS)) ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr class="jeopardy"><td data-toggle="tooltip" title="Enable/disable dynamic scoring (Note: CTFd decay formula for task cash value decrease based on number of solvers)">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Dynamic scoring", "dynamic_scoring", parseBool(getSetting(Setting::DYNAMIC_SCORING)) ? " checked" : "");
+        if (parseBool(getSetting(Setting::DYNAMIC_SCORING))) {
+            $settings .= "\n" . sprintf('                                    <tr class="jeopardy"><td data-toggle="tooltip" title="Dynamic scoring formula will stop decaying after the threshold number of solves">Dynamic solve threshold: </td><td><input id="dynamic_solve_threshold" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::DYNAMIC_SOLVE_THRESHOLD)) ? getSetting(Setting::DYNAMIC_SOLVE_THRESHOLD) : DEFAULT_DYNAMIC_SOLVE_THRESHOLD);
+            $settings .= "\n" . sprintf('                                    <tr class="jeopardy"><td data-toggle="tooltip" title="Maximum decay for dynamic scoring formula">Dynamic maximum decay (%%): </td><td><input id="dynamic_maximum_decay" type="number" min="0" max="100" value="%s"></td></tr>', is_numeric(getSetting(Setting::DYNAMIC_MAXIMUM_DECAY)) ? getSetting(Setting::DYNAMIC_MAXIMUM_DECAY) : DEFAULT_DYNAMIC_MAXIMUM_DECAY);
+        }
+        $settings .= "\n" . sprintf('                                    <tr class="jeopardy"><td data-toggle="tooltip" title="Enable/disable private messages between teams">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Private messages", "private_messages", parseBool(getSetting(Setting::PRIVATE_MESSAGES)) ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr class="jeopardy"><td data-toggle="tooltip" title="Enable/disable sending of support (i.e. private) messages to Administrator">%s: </td><td><input id="%s" type="checkbox"%s></td></tr>', "Support messages", "support_messages", parseBool(getSetting(Setting::SUPPORT_MESSAGES)) ? " checked" : "");
+        $settings .= "\n" . sprintf('                                    <tr class="jeopardy"><td data-toggle="tooltip" title="(optional) Number of seconds for a deliberate delay between potential task guessing attempts">Guess attempt penalty (secs): </td><td><input id="guess_delay" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_DELAY)) ? getSetting(Setting::GUESS_DELAY) : "0");
+        $settings .= "\n" . sprintf('                                    <tr class="jeopardy"><td data-toggle="tooltip" title="(optional) Number of wrong potential (sequential) task guessing attempts before an abrupt logout">Guess logout after attempts: </td><td><input id="guess_logout" type="number" min="0" value="%s"></td></tr>', is_numeric(getSetting(Setting::GUESS_LOGOUT)) ? getSetting(Setting::GUESS_LOGOUT) : "");
+        $settings .= "\n" . sprintf('                                    <tr class="ad mt-2"><td data-toggle="tooltip" title="(optional) Initial availability score">Initial availability: </td><td><input id="initial_availability" class="numeric" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="%s" size="18"></td></tr>', is_null(getSetting(Setting::INITIAL_AVAILABILITY)) ? DEFAULT_INITIAL_AVAILABILITY: getSetting(Setting::INITIAL_AVAILABILITY));
         $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="(optional) Starting datetime of the competition">Start time (optional): </td><td><input id="datetime_start" type="text" value="%s" size="18"></td></tr>', getSetting(Setting::DATETIME_START));
         $settings .= "\n" . sprintf('                                    <tr><td data-toggle="tooltip" title="(optional) Ending datetime of the competition">End time (optional): </td><td><input id="datetime_end" type="text" value="%s" size="18"></td></tr>', getSetting(Setting::DATETIME_END));
+        $buttons = "\n" . sprintf('                                    <br><div style="text-align: center"><span><button type="button" class="btn btn-primary btn-sm"><i class="fas fa-play mr-1"></i>Start</button></span><span class="ml-1"><button type="button" class="btn btn-danger btn-sm"><i class="fas fa-stop mr-1"></i>Stop</button></span></div>');
 
-        echo sprintf($html, $settings);
+//         if (!is_null(getSetting(Setting::EXPLICIT_START_STOP))) {
+//             if (parseBool(getSetting(Setting::EXPLICIT_START_STOP)) === true) {
+//                 $buttons = str_replace('btn-primary btn-sm"', 'btn-secondary btn-sm" disabled', $buttons);
+//             }
+//             else {
+//                 $buttons = str_replace('btn-danger btn-sm"', 'btn-secondary btn-sm" disabled', $buttons);
+//             }
+//         }
+
+        if (checkStartEndTime())
+            $buttons = str_replace('btn-primary btn-sm"', 'btn-secondary btn-sm" disabled', $buttons);
+        else
+            $buttons = str_replace('btn-danger btn-sm"', 'btn-secondary btn-sm" disabled', $buttons);
+
+        echo sprintf($html, $settings, $buttons);
     }
 ?>
-                        <div class="card mt-3">
+                        <div class="card mt-3 jeopardy">
                             <div class="card-header">
                                 <i class="fas fa-comments"></i> <select id="chat_room" class="badge" data-toggle="tooltip" title="Current chat room (Note: room #<?php echo PRIVATE_ROOM;?> is visible only to the same team members)"><option value="general">#general</option><option value="news">#news</option><option value="random">#random</option><option value="team">#team &#x1F512;</option></select> <span class="badge badge-light" style="float:right; line-height: 1.5; color: gray">(chat)</span> <i class="fas fa-external-link-alt" style="position: absolute; right: 7px; top: 8px" data-toggle="tooltip" title="Open in new tab" onclick="openInNewTab('<?php echo joinPaths(PATHDIR, '/chat');?>')"></i>
                             </div>

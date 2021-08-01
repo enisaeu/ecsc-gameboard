@@ -19,8 +19,6 @@
     define("MIN_CASH_VALUE", 0);
     define("ADMIN_LOGIN_NAME", "admin");
     define("TITLE", "ECSC " . date("Y"));
-    define("DYNAMIC_DECAY_PER_SOLVE", 0.04);            // Decaying per-solve ratio (0 <= _ <= 1) used for calculating penalty from initial (task) score (e.g. if initial score 100, after 4 solves with decay ratio 0.1 penalty will become 40 -> effective score 60)
-    define("DYNAMIC_DECAY_MAX_PENALTY", 0.8);           // Decaying max-penalty ratio (0 <= _ <= 1) used for calculating maximum penalty from initial (task) score (e.g. if initial score 100, with max-penalty ratio 0.20 maximum penalty will become 20 -> effective score 80)
     define("DEFAULT_ROOM", "general");
     define("PRIVATE_ROOM", "team");
     define("FLAG_REGEX", "/ECSC\{[^\}]+\}?/i");
@@ -36,6 +34,9 @@
     define("OFFICIAL_RULES_URL", "https://ecsc.eu/about/ecscrules.pdf/download");
     define("TOKEN_LIFE", 4 * 24 * 3600);
     define("SAME_CASH_SAME_RANK", false);
+    define("DEFAULT_INITIAL_AVAILABILITY", 100000);
+    define("DEFAULT_DYNAMIC_SOLVE_THRESHOLD", 20);
+    define("DEFAULT_DYNAMIC_MAXIMUM_DECAY", 50);
 
     if (isset($_SERVER['REMOTE_ADDR']))
         // Reference: https://stackoverflow.com/a/2886224
@@ -74,6 +75,11 @@
         const PRIVATE_MESSAGES = "private_messages";
         const SUPPORT_MESSAGES = "support_messages";
         const USE_AWARENESS = "use_awareness";
+        const CTF_STYLE = "ctf_style";
+        const INITIAL_AVAILABILITY = "initial_availability";
+        const EXPLICIT_START_STOP = "explicit_start_stop";
+        const DYNAMIC_SOLVE_THRESHOLD = "dynamic_solve_threshold";
+        const DYNAMIC_MAXIMUM_DECAY = "dynamic_maximum_decay";
     }
 
     abstract class Cache {
@@ -212,6 +218,18 @@
 
         $result["cash"] = max($result["cash"], MIN_CASH_VALUE);
 
+        $_ = fetchAll("SELECT flag_score, availability_score FROM attack_defense WHERE team_id=:team_id", array("team_id" => $team_id), PDO::FETCH_ASSOC);
+        $initial_availability = is_null(getSetting(Setting::INITIAL_AVAILABILITY)) ? DEFAULT_INITIAL_AVAILABILITY: getSetting(Setting::INITIAL_AVAILABILITY);
+        if (count($_) == 1) {
+            $_ = $_[0];
+            $result["flags"] = is_null($_["flag_score"]) ? 0 : $_["flag_score"];
+            $result["availability"] = is_null($_["availability_score"]) ? $initial_availability : $_["availability_score"];
+        }
+        else {
+            $result["flags"] = 0;
+            $result["availability"] = $initial_availability;
+        }
+
         return $result;
     }
 
@@ -220,8 +238,8 @@
         $teams = is_null($team_id) ? getRankedTeams() : array($team_id);
 
         foreach ($teams as $team_id) {
-            $team_name = fetchScalar("SELECT full_name FROM teams WHERE team_id=:team_id", array("team_id" => $team_id));
-            $team = array("name" => $team_name, "cash" => array(), "awareness" => array());
+            $_ = fetchAll("SELECT full_name, guest FROM teams WHERE team_id=:team_id", array("team_id" => $team_id));
+            $team = array("name" => $_[0]["full_name"], "guest" => $_[0]["guest"], "cash" => array(), "awareness" => array());
 
             $show = false;
             $first = true;
@@ -311,13 +329,29 @@
                 $task_cash = fetchScalar("SELECT cash FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id));
                 $task_penalty = 0;
 
-                if (DYNAMIC_DECAY_PER_SOLVE > 0) {
+                // Reference: https://github.com/CTFd/DynamicValueChallenge
+                if (parseBool(getSetting(Setting::DYNAMIC_SCORING))) {
                     $solves = fetchScalar("SELECT COUNT(*) FROM solved WHERE task_id=:task_id", array("task_id" => $task_id));
                     if (($solves > 0) && $solver)
                         $solves -= 1;
-                    $task_penalty += intval($task_cash * (DYNAMIC_DECAY_PER_SOLVE * $solves));
-                    $task_penalty = min($task_penalty, DYNAMIC_DECAY_MAX_PENALTY * $task_cash);
+                    $threshold = is_numeric(getSetting(Setting::DYNAMIC_SOLVE_THRESHOLD)) ? getSetting(Setting::DYNAMIC_SOLVE_THRESHOLD) : DEFAULT_DYNAMIC_SOLVE_THRESHOLD;
+                    $min_percentage = 100.0 - (is_numeric(getSetting(Setting::DYNAMIC_MAXIMUM_DECAY)) ? getSetting(Setting::DYNAMIC_MAXIMUM_DECAY) : DEFAULT_DYNAMIC_MAXIMUM_DECAY);
+                    $max_task_penalty = intval(((100.0 - $min_percentage) / 100.0) * $task_cash);
+                    $task_penalty = intval(1.0 * $max_task_penalty * ($solves ** 2) / ($threshold ** 2));
+                    $task_penalty = min($task_penalty, $max_task_penalty);
                 }
+
+// NOTE: old formula stuff
+//                     define("DYNAMIC_DECAY_PER_SOLVE", 0.04);            // Decaying per-solve ratio (0 <= _ <= 1) used for calculating penalty from initial (task) score (e.g. if initial score 100, after 4 solves with decay ratio 0.1 penalty will become 40 -> effective score 60)
+//                     define("DYNAMIC_DECAY_MAX_PENALTY", 0.8);           // Decaying max-penalty ratio (0 <= _ <= 1) used for calculating maximum penalty from initial (task) score (e.g. if initial score 100, with max-penalty ratio 0.20 maximum penalty will become 20 -> effective score 80)
+//
+//                 if (DYNAMIC_DECAY_PER_SOLVE > 0) {
+//                     $solves = fetchScalar("SELECT COUNT(*) FROM solved WHERE task_id=:task_id", array("task_id" => $task_id));
+//                     if (($solves > 0) && $solver)
+//                         $solves -= 1;
+//                     $task_penalty += intval($task_cash * (DYNAMIC_DECAY_PER_SOLVE * $solves));
+//                     $task_penalty = min($task_penalty, DYNAMIC_DECAY_MAX_PENALTY * $task_cash);
+//                 }
 
                 $total_penalty += $task_penalty;
             }
@@ -329,38 +363,64 @@
     function getRankedTeams($details=false) {
         $result = array();
         $teams = array();
-
-        $rows = fetchAll("SELECT teams.team_id,teams.full_name,UNIX_TIMESTAMP(x.ts) AS ts FROM teams LEFT JOIN (SELECT team_id,MAX(ts) AS ts FROM solved GROUP BY team_id)x ON teams.team_id=x.team_id WHERE teams.login_name!=:admin_login_name ORDER BY x.ts DESC", array("admin_login_name" => ADMIN_LOGIN_NAME));
-        foreach ($rows as $row)
-            $teams[$row["team_id"]] = array("full_name" => $row["full_name"], "ts" => $row["ts"]);
-
         $rankings = array();
-        foreach ($teams as $team_id => $team) {
-            $scores = getScores($team_id);
-            $ranking = array("team_id" => $team_id, "full_name" => $team["full_name"], "cash" => $scores["cash"], "awareness" => $scores["awareness"], "ts" => $team["ts"]);
-            array_push($rankings, $ranking);
-        }
 
-        usort($rankings, function ($team1, $team2) {
-            if ($team1["cash"] < $team2["cash"])
-                return 1;
-            else if ($team1["cash"] > $team2["cash"])
-                return -1;
-            else if ($team1["awareness"] < $team2["awareness"])
-                return 1;
-            else if ($team1["awareness"] > $team2["awareness"])
-                return -1;
-            else if ($team1["ts"] > $team2["ts"])
-                return 1;
-            else if ($team1["ts"] < $team2["ts"])
-                return -1;
-            else if ($team1["full_name"] < $team2["full_name"])
-                return -1;
-            else if ($team1["full_name"] > $team2["full_name"])
-                return 1;
-            else
-                return 0;
-        });
+        if (getSetting(Setting::CTF_STYLE) === "ad") {
+            $rows = fetchAll("SELECT teams.team_id,teams.full_name FROM teams WHERE teams.login_name!=:admin_login_name", array("admin_login_name" => ADMIN_LOGIN_NAME));
+            foreach ($rows as $row)
+                $teams[$row["team_id"]] = array("full_name" => $row["full_name"]);
+
+            foreach ($teams as $team_id => $team) {
+                $scores = getScores($team_id);
+                $ranking = array("team_id" => $team_id, "full_name" => $team["full_name"], "flags" => $scores["flags"], "availability" => $scores["availability"]);
+                array_push($rankings, $ranking);
+            }
+
+            usort($rankings, function ($team1, $team2) {
+                if ($team1["flags"] + $team1["availability"] < $team2["flags"] + $team2["availability"])
+                    return 1;
+                else if ($team1["flags"] + $team1["availability"] > $team2["flags"] + $team2["availability"])
+                    return -1;
+                else if ($team1["full_name"] < $team2["full_name"])
+                    return -1;
+                else if ($team1["full_name"] > $team2["full_name"])
+                    return 1;
+                else
+                    return 0;
+            });
+        }
+        else {
+            $rows = fetchAll("SELECT teams.team_id,teams.full_name,UNIX_TIMESTAMP(x.ts) AS ts FROM teams LEFT JOIN (SELECT team_id,MAX(ts) AS ts FROM solved GROUP BY team_id)x ON teams.team_id=x.team_id WHERE teams.login_name!=:admin_login_name ORDER BY x.ts DESC", array("admin_login_name" => ADMIN_LOGIN_NAME));
+            foreach ($rows as $row)
+                $teams[$row["team_id"]] = array("full_name" => $row["full_name"], "ts" => $row["ts"]);
+
+            foreach ($teams as $team_id => $team) {
+                $scores = getScores($team_id);
+                $ranking = array("team_id" => $team_id, "full_name" => $team["full_name"], "cash" => $scores["cash"], "awareness" => $scores["awareness"], "ts" => $team["ts"]);
+                array_push($rankings, $ranking);
+            }
+
+            usort($rankings, function ($team1, $team2) {
+                if ($team1["cash"] < $team2["cash"])
+                    return 1;
+                else if ($team1["cash"] > $team2["cash"])
+                    return -1;
+                else if ($team1["awareness"] < $team2["awareness"])
+                    return 1;
+                else if ($team1["awareness"] > $team2["awareness"])
+                    return -1;
+                else if ($team1["ts"] > $team2["ts"])
+                    return 1;
+                else if ($team1["ts"] < $team2["ts"])
+                    return -1;
+                else if ($team1["full_name"] < $team2["full_name"])
+                    return -1;
+                else if ($team1["full_name"] > $team2["full_name"])
+                    return 1;
+                else
+                    return 0;
+            });
+        }
 
         if ($details)
             $result = $rankings;
@@ -375,15 +435,33 @@
     function getPlaces($team_id) {
         $result = array();
         $teams = getTeams();
-        $all = array("cash" => array(), "awareness" => array());
 
-        foreach ($teams as $_) {
-            $current = getScores($_);
-            array_push($all["cash"], $current["cash"]);
-            array_push($all["awareness"], $current["awareness"]);
+        if (getSetting(Setting::CTF_STYLE) === "ad") {
+            $all = array("score" => array());
+
+            foreach ($teams as $_) {
+                $current = getScores($_);
+                array_push($all["score"], $current["flags"] + $current["availability"]);
+            }
+
+            $current = getScores($team_id);
+            $current["score"] = $current["flags"] + $current["availability"];
+
+            $result["cash"] = 1;
+            $result["awareness"] = 1;
+        }
+        else {
+            $all = array("cash" => array(), "awareness" => array());
+
+            foreach ($teams as $_) {
+                $current = getScores($_);
+                array_push($all["cash"], $current["cash"]);
+                array_push($all["awareness"], $current["awareness"]);
+            }
+
+            $current = getScores($team_id);
         }
 
-        $current = getScores($team_id);
         foreach ($all as $key => $_) {
             $previous = -1;
             $place = 0;
@@ -528,7 +606,14 @@
     }
 
     function getSetting($name, $default=null) {
-        $result = fetchScalar("SELECT value FROM settings WHERE name=:name", array("name" => $name));
+        static $memo = array();
+
+        if (array_key_exists($name, $memo))
+            $result = $memo[$name];
+        else {
+            $result = fetchScalar("SELECT value FROM settings WHERE name=:name", array("name" => $name));
+            $memo[$name] = $result;
+        }
 
         if (!is_null($default) && is_null($result))
             $result = $default;
@@ -570,22 +655,28 @@
     }
 
     function checkStartEndTime() {
-        $valid = true;
+        $running = false;
+        $timed = false;
 
         if (strtotime(getSetting(Setting::DATETIME_START)) !== false) {
-            if (strtotime(getSetting(Setting::DATETIME_START)) > time()) {
-                $valid = false;
+            if (strtotime(getSetting(Setting::DATETIME_START)) <= time()) {
+                $running = true;
+                $timed = true;
             }
         }
 
         if (strtotime(getSetting(Setting::DATETIME_END)) !== false) {
             if (strtotime(getSetting(Setting::DATETIME_END)) <= time()) {
-                $valid = false;
+                $running = false;
+                $timed = true;
             }
         }
 
-        return $valid;
+        if (!$timed)
+            if (!is_null(getSetting(Setting::EXPLICIT_START_STOP)))
+                $running = parseBool(getSetting(Setting::EXPLICIT_START_STOP));
 
+        return $running;
     }
 
     function wordMatch($a, $b) {
