@@ -456,7 +456,7 @@
         }
     }
     else if ($_POST["action"] === "pull") {
-        $result = array("chat" => array(), "notifications" => 0);
+        $result = array("chat" => array(), "notifications" => array("count" => 0, "ts" => 0));
         $room = isset($_POST["room"]) ? $_POST["room"] : DEFAULT_ROOM;
 
         $chat_id = isset($_POST["chat_id"]) ? intval($_POST["chat_id"]) : 0;
@@ -492,7 +492,8 @@
             array_push($result["chat"], $_);
         }
 
-        $result["notifications"] = count(getVisibleNotifications($_SESSION["team_id"]));
+        $result["notifications"]["count"] = count(getVisibleNotifications($_SESSION["team_id"]));
+        $result["notifications"]["ts"] = intval(fetchScalar("SELECT UNIX_TIMESTAMP(MAX(ts)) FROM notifications") ?: 0);
 
         echo json_encode($result);
     }

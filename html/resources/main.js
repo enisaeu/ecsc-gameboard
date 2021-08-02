@@ -69,6 +69,10 @@ $(document).ready(function() {
         $("#chat_room").prop("value", localStorage.getItem("chat_room"));
     }
 
+    if ($(".active").html().indexOf("notification_") >= 0) {
+        localStorage.setItem("notification_enter", Math.floor(Date.now() / 1000));
+    }
+
     $(".collapse").on("show.bs.collapse", function(event) {
         localStorage.setItem($(event.target).prop("id"), "show");
     }).on("hide.bs.collapse", function(event) {
@@ -1039,10 +1043,10 @@ function pullMessages(initial) {
                 }
             }
 
-            if (($("#notification_count").length > 0) && ($("#notification_count").text() != result["notifications"])) {
-                if ($("#notification_count").text() < result["notifications"])
-                    $("#notification_count").closest(".nav-link").addClass("highlight");
-                $("#notification_count").text(result["notifications"]);
+            if (($("#notification_count").length > 0) && ($("#notification_count").text() != result["notifications"]["count"])) {
+//                 if ($("#notification_count").text() < result["notifications"]["count"])
+//                     $("#notification_count").closest(".nav-link").addClass("highlight");
+                $("#notification_count").text(result["notifications"]["count"]);
                 if ($(".active").html().indexOf("notification_") >= 0) {
                     var interval = setInterval(function() {
                         if (!(($(document.activeElement).prop("id") == "chat_message") && ($(document.activeElement).val()))) {
@@ -1052,6 +1056,10 @@ function pullMessages(initial) {
                     }, 100);
                 }
             }
+
+            if (result["notifications"]["ts"] && (!localStorage.getItem("notification_enter") || (localStorage.getItem("notification_enter") < result["notifications"]["ts"])))
+                $("#notification_count").closest(".nav-link").addClass("highlight");
+
         }).always(function() {
             $("#chat_messages").removeAttr("pull_lock");
         });
