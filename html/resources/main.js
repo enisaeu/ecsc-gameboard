@@ -101,7 +101,7 @@ $(document).ready(function() {
             });
     };
 
-    $("#datetime_start, #datetime_end").datetimepicker({
+    $("#datetime_start, #datetime_end, [name=endtime]").datetimepicker({
         mask: true,
         onChangeDateTime: dateTimePickerLogic,
         minDate: 0,

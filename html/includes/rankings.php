@@ -7,10 +7,10 @@
         if ($existing)
             $team = fetchAll("SELECT * FROM teams WHERE login_name=:login_name", array("login_name" => $_POST["login_name"]))[0];
         else
-            $team = array("team_id" => "-1", "login_name" => "", "full_name" => "", "country_code" => "", "email" => "", "guest" => "0");
+            $team = array("team_id" => "-1", "login_name" => "", "full_name" => "", "country_code" => "", "email" => "", "endtime" => "", "guest" => "0");
 
         $template = file_get_contents("templates/team.html");
-        $html = format($template, array("action" => $existing ? "Update" : "Create", "team_id" => $team["team_id"], "login_name" => $team["login_name"], "full_name" => $team["full_name"], "email" => $team["email"], "guest_checked" => ($team["guest"] ? " checked" : "")));
+        $html = format($template, array("action" => $existing ? "Update" : "Create", "team_id" => $team["team_id"], "login_name" => $team["login_name"], "full_name" => $team["full_name"], "email" => $team["email"], "endtime" => $team["endtime"], "guest_checked" => ($team["guest"] ? " checked" : "")));
 
         if (!$existing)
             $html = preg_replace('/placeholder="[^"]+" /', "", $html);
@@ -81,6 +81,7 @@
                             team["country_code"] = $("#team_editor label:contains('Country')").prev().val();
                             team["email"] = $("#team_editor label:contains('Email')").prev().val();
                             team["password"] = $("#team_editor label:contains('Password')").prev().val();
+                            team["endtime"] = $("#team_editor label:contains('End time')").prev().val();
                             team["guest"] = $("#team_editor label:contains('Guest')").prev().prop("checked");
 
                             $.post(window.location.href.split('#')[0], {token: document.token, action: "update", team: JSON.stringify(team)}, function(content) {
