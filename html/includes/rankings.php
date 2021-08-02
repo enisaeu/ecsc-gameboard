@@ -22,7 +22,7 @@
             <script>
                 $(document).ready(function() {
                     var existing = %s;
-                    $(".active").text(existing ? "Edit team" : "New team");
+                    $("a.nav-link.active").text(existing ? "Edit team" : "New team");
 
                     $("#team_editor label:contains('Login name'),label:contains('Full name'),label:contains('Email')").prev().change(validator).keyup(validator).focusout(validator).each(validator);
 
