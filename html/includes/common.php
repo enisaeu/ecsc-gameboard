@@ -331,7 +331,7 @@
 
                 // Reference: https://github.com/CTFd/DynamicValueChallenge
                 if (parseBool(getSetting(Setting::DYNAMIC_SCORING))) {
-                    $solves = fetchScalar("SELECT COUNT(*) FROM solved WHERE task_id=:task_id", array("task_id" => $task_id));
+                    $solves = fetchScalar("SELECT COUNT(*) FROM solved JOIN teams ON solved.team_id=teams.team_id WHERE task_id=:task_id AND guest=0", array("task_id" => $task_id));
                     if (($solves > 0) && $solver)
                         $solves -= 1;
                     $threshold = is_numeric(getSetting(Setting::DYNAMIC_SOLVE_THRESHOLD)) ? getSetting(Setting::DYNAMIC_SOLVE_THRESHOLD) : DEFAULT_DYNAMIC_SOLVE_THRESHOLD;
@@ -675,6 +675,16 @@
         if (!$timed)
             if (!is_null(getSetting(Setting::EXPLICIT_START_STOP)))
                 $running = parseBool(getSetting(Setting::EXPLICIT_START_STOP));
+
+        if (!$running) {
+            if (isset($_SESSION["_login_name"])) {
+                $_ = fetchScalar("SELECT endtime FROM teams WHERE login_name=:login_name", array("login_name" => $_SESSION["_login_name"]));
+                if (strtotime($_) !== false) {
+                    if (strtotime($_) > time())
+                        $running = true;
+                }
+            }
+        }
 
         return $running;
     }

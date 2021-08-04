@@ -10,6 +10,7 @@
     if (isset($_POST["token"]) && isset($_SESSION["token"]) && ($_POST["token"] === $_SESSION["token"])) {
         if (isset($_POST["login"]) && isset($_POST["password"])) {
 
+            $_SESSION["_login_name"] = $_POST["login"];
             if ($_POST["login"] !== ADMIN_LOGIN_NAME)
                 $time_out = $error = !checkStartEndTime();
 

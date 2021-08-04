@@ -9,6 +9,7 @@ CREATE TABLE teams (
     country_code CHAR(2),
     email VARCHAR(1024) NOT NULL,
     password_hash VARCHAR(1024) NOT NULL,
+    endtime VARCHAR(1024) DEFAULT NULL,
     guest BOOLEAN NOT NULL DEFAULT 0,
     ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -316,13 +316,13 @@
                 die("Invalid email address");
 
             if ($team["team_id"] == -1) {
-                $success = execute("INSERT INTO teams(login_name, full_name, country_code, email, password_hash) VALUES(:login_name, :full_name, :country_code, :email, :password_hash)", array("login_name" => $team["login_name"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT)));
+                $success = execute("INSERT INTO teams(login_name, full_name, country_code, email, password_hash, guest, endtime) VALUES(:login_name, :full_name, :country_code, :email, :password_hash, :guest, :endtime)", array("login_name" => $team["login_name"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT), "endtime" => $team["endtime"], "guest" => intval($team["guest"])));
             }
             else {
                 if (isset($team["password"]) && ($team["password"] != ""))
-                    $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email, guest=:guest, password_hash=:password_hash WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT), "guest" => intval($team["guest"])));
+                    $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email, endtime=:endtime, guest=:guest, password_hash=:password_hash WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "password_hash" => password_hash($team["password"], PASSWORD_BCRYPT), "endtime" => $team["endtime"], "guest" => intval($team["guest"])));
                 else
-                    $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email, guest=:guest WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "guest" => intval($team["guest"])));
+                    $success = execute("UPDATE teams SET full_name=:full_name, country_code=:country_code, email=:email, endtime=:endtime, guest=:guest WHERE team_id=:team_id", array("team_id" => $team["team_id"], "full_name" => $team["full_name"], "country_code" => $team["country_code"], "email" => $team["email"], "endtime" => $team["endtime"], "guest" => intval($team["guest"])));
             }
 
             if ($success) {
@@ -456,7 +456,7 @@
         }
     }
     else if ($_POST["action"] === "pull") {
-        $result = array("chat" => array(), "notifications" => 0);
+        $result = array("chat" => array(), "notifications" => array("count" => 0, "ts" => 0));
         $room = isset($_POST["room"]) ? $_POST["room"] : DEFAULT_ROOM;
 
         $chat_id = isset($_POST["chat_id"]) ? intval($_POST["chat_id"]) : 0;
@@ -492,7 +492,8 @@
             array_push($result["chat"], $_);
         }
 
-        $result["notifications"] = count(getVisibleNotifications($_SESSION["team_id"]));
+        $result["notifications"]["count"] = count(getVisibleNotifications($_SESSION["team_id"]));
+        $result["notifications"]["ts"] = intval(fetchScalar("SELECT UNIX_TIMESTAMP(MAX(ts)) FROM notifications") ?: 0);
 
         echo json_encode($result);
     }
