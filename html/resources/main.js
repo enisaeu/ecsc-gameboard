@@ -9,7 +9,6 @@ var alerts = {};
 var lastPullUpdate = new Date();
 var chart = null;
 var attackDefense = null;
-var guest = false;
 
 // Reference: https://stackoverflow.com/a/37544400
 if (!String.prototype.endsWith) {
@@ -26,11 +25,6 @@ if (!String.prototype.endsWith) {
 
 $(document).ready(function() {
     attackDefense = $("#settings_table select").val() === "ad";
-
-    if (isAdmin() || window.location.href.includes("/scoreboard#all"))
-        guest = null;
-    else
-        guest = $("title").text().includes("guest");
 
     $(document).ajaxError(function(event, jqXHR, options, status) {
         if (status === "Unauthorized")
@@ -1162,11 +1156,9 @@ function drawLineMomentum() {
                 return;
             }
 
-            if (guest !== null) {
-                result = $.grep(result, function( n, i ) {
-                    return n.guest == guest;
-                });
-            }
+            result = $.grep(result, function( n, i ) {
+                return n.guest == false;
+            });
 
             var MAX_TOP_TEAMS = 10;
             var DEFAULT_FONT_SIZE = 12;
@@ -1238,7 +1230,7 @@ function drawLineMomentum() {
 
             chart = new CanvasJS.Chart("line_momentum", {
                 title: {
-                    text: "Top " + MAX_TOP_TEAMS + " Teams" + (guest ? " (guests)": ""),
+                    text: "Top " + MAX_TOP_TEAMS + " Teams",
                     fontSize: Math.floor(1.20 * DEFAULT_FONT_SIZE),
                     fontFamily: "Arial"
                 },

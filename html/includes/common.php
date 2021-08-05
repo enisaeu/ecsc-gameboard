@@ -450,6 +450,11 @@
             $result["cash"] = 1;
             $result["awareness"] = 1;
         }
+        elseif (fetchScalar("SELECT guest FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))) {
+            $all = array();
+            $result["cash"] = null;
+            $result["awareness"] = null;
+        }
         else {
             $all = array("cash" => array(), "awareness" => array());
 
