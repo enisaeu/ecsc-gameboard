@@ -28,7 +28,7 @@
                     $previous = $scores["cash"];
                 }
 
-                $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $place);
+                $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $place, "guest" => intval($row["guest"]) != 0);
                 array_push($result, $_);
             }
 
@@ -63,7 +63,7 @@
                     $previous = $scores["cash"];
                 }
 
-                $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $place);
+                $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $place, "guest" => intval($row["guest"]) != 0);
                 array_push($result, $_);
             }
 
@@ -79,6 +79,7 @@
                 $entry->addAttribute("country", $_["country"]);
                 $entry->addAttribute("score", (string) $_["score"]);
                 $entry->addAttribute("place", (string) $_["place"]);
+                $entry->addAttribute("guest", $_["guest"] ? "true": "false");
             }
 
     //         die($xml->asXML());
