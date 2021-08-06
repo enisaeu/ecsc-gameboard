@@ -450,6 +450,11 @@
             $result["cash"] = 1;
             $result["awareness"] = 1;
         }
+        elseif (fetchScalar("SELECT guest FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))) {
+            $all = array();
+            $result["cash"] = null;
+            $result["awareness"] = null;
+        }
         else {
             $all = array("cash" => array(), "awareness" => array());
 
@@ -658,6 +663,13 @@
         $running = false;
         $timed = false;
 
+        if (isset($_SESSION["_login_name"])) {
+            $_ = fetchScalar("SELECT endtime FROM teams WHERE login_name=:login_name", array("login_name" => $_SESSION["_login_name"]));
+            if (strtotime($_) !== false) {
+                return strtotime($_) > time();
+            }
+        }
+
         if (strtotime(getSetting(Setting::DATETIME_START)) !== false) {
             if (strtotime(getSetting(Setting::DATETIME_START)) <= time()) {
                 $running = true;
@@ -675,16 +687,6 @@
         if (!$timed)
             if (!is_null(getSetting(Setting::EXPLICIT_START_STOP)))
                 $running = parseBool(getSetting(Setting::EXPLICIT_START_STOP));
-
-        if (!$running) {
-            if (isset($_SESSION["_login_name"])) {
-                $_ = fetchScalar("SELECT endtime FROM teams WHERE login_name=:login_name", array("login_name" => $_SESSION["_login_name"]));
-                if (strtotime($_) !== false) {
-                    if (strtotime($_) > time())
-                        $running = true;
-                }
-            }
-        }
 
         return $running;
     }
