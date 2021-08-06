@@ -23,12 +23,14 @@
                 $row = fetchAll("SELECT * FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
                 $scores = getScores($team_id);
 
-                if ($scores["cash"] !== $previous) {
+                if (intval($row["guest"]) == 0) {
                     $place += 1;
-                    $previous = $scores["cash"];
+                    $_place = $place;
                 }
+                else
+                    $_place = null;
 
-                $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $place);
+                $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $_place, "guest" => intval($row["guest"]) != 0);
                 array_push($result, $_);
             }
 
@@ -58,12 +60,14 @@
                 $row = fetchAll("SELECT * FROM teams WHERE team_id=:team_id", array("team_id" => $team_id))[0];
                 $scores = getScores($team_id);
 
-                if ($scores["cash"] !== $previous) {
+                if (intval($row["guest"]) == 0) {
                     $place += 1;
-                    $previous = $scores["cash"];
+                    $_place = $place;
                 }
+                else
+                    $_place = null;
 
-                $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $place);
+                $_ = array("name" => $row["full_name"], "code" => $row["country_code"], "country" => array_key_exists($row["country_code"], COUNTRIES) ? COUNTRIES[$row["country_code"]] : "", "score" => $scores["cash"], "place" => $_place, "guest" => intval($row["guest"]) != 0);
                 array_push($result, $_);
             }
 
@@ -79,6 +83,7 @@
                 $entry->addAttribute("country", $_["country"]);
                 $entry->addAttribute("score", (string) $_["score"]);
                 $entry->addAttribute("place", (string) $_["place"]);
+                $entry->addAttribute("guest", $_["guest"] ? "true": "false");
             }
 
     //         die($xml->asXML());
