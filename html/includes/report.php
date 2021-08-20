@@ -38,6 +38,7 @@
             table, th, td {
                 border: 1px solid black;
                 border-collapse: collapse;
+                font-size: 10px;
             }
             {awareness}
         </style>
@@ -72,19 +73,20 @@
             table, th, td {
                 border: 1px solid black;
                 border-collapse: collapse;
+                font-size: 10px;
             }
             td {
                 vertical-align: middle;
             }
         </style>
-        <h3>Stats:</h3>
+        <h3>Statistics:</h3>
         <table>
             <tr style="color:white; background-color: red">
-                <th style="width: 20%" align="center">Task</th>
-                <th style="width: 20%" align="left">Contract</th>
-                <th style="width: 20%" align="right">Cash value (€)</th>
-                <th style="width: 20%" align="right">Teams solved</th>
-                <th style="width: 20%" align="right">Avg. solve time</th>
+                <th style="width: 30%" align="left">Task</th>
+                <th style="width: 30%" align="left">Contract</th>
+                <th style="width: 12%" align="right">Cash&nbsp;value (€)</th>
+                <th style="width: 12%" align="right">Teams&nbsp;solved</th>
+                <th style="width: 15%" align="right">Avg.&nbsp;solve&nbsp;time</th>
             </tr>
         ';
 
@@ -96,7 +98,7 @@
 
         $rows = fetchAll("SELECT tasks.task_id,GROUP_CONCAT(DISTINCT teams.login_name ORDER BY teams.login_name ASC SEPARATOR ', ') AS solved_by,COUNT(teams.login_name) AS solved_count,tasks.title AS task_title,cash AS task_cash,tasks.contract_id,contracts.title AS contract_title FROM tasks LEFT JOIN solved ON tasks.task_id=solved.task_id LEFT JOIN teams ON solved.team_id=teams.team_id LEFT JOIN contracts ON tasks.contract_id=contracts.contract_id GROUP BY tasks.task_id ORDER BY solved_count DESC, task_cash ASC");
         foreach ($rows as $row) {
-            $html .= "<tr><td>" . $row["task_title"] . "</td><td>" . $row["contract_title"] . '</td><td align="right">' . $row["task_cash"] . '</td><td align="right">' . $row["solved_count"] . '</td><td align="right">' . (isset($average[$row["task_id"]]) ? secondsToTime($average[$row["task_id"]]) : '-') . "</td></tr>";
+            $html .= "<tr><td>" . $row["task_title"] . "</td><td style='valign: middle; vertical-align:middle'>" . $row["contract_title"] . '</td><td align="right">' . $row["task_cash"] . '</td><td align="right">' . $row["solved_count"] . '</td><td align="right">' . (isset($average[$row["task_id"]]) ? secondsToTime($average[$row["task_id"]]) : '-') . "</td></tr>";
         }
 
 
