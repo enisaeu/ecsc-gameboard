@@ -63,7 +63,7 @@ $(document).ready(function() {
         $("#chat_room").prop("value", localStorage.getItem("chat_room"));
     }
 
-    if ($(".active").html().indexOf("notification_") >= 0) {
+    if (($(".active").length > 0) && ($(".active").html().indexOf("notification_") >= 0)) {
         localStorage.setItem("notification_enter", Math.floor(Date.now() / 1000));
     }
 
@@ -1041,7 +1041,7 @@ function pullMessages(initial) {
 //                 if ($("#notification_count").text() < result["notifications"]["count"])
 //                     $("#notification_count").closest(".nav-link").addClass("highlight");
                 $("#notification_count").text(result["notifications"]["count"]);
-                if ($(".active").html().indexOf("notification_") >= 0) {
+                if (($(".active").length > 0) && ($(".active").html().indexOf("notification_") >= 0)) {
                     var interval = setInterval(function() {
                         if (!(($(document.activeElement).prop("id") == "chat_message") && ($(document.activeElement).val()))) {
                             clearInterval(interval);
