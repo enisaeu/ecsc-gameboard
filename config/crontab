@@ -1,0 +1,1 @@
+*/1 * * * * test -f /var/www/.cron && php /var/www/.cron

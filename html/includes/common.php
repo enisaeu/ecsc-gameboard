@@ -10,10 +10,10 @@
     register_shutdown_function("fatal_handler");
 
     define("DEBUG", file_exists("../.debug"));
-    define("MYSQL_SERVER", "localhost");
-    define("MYSQL_USERNAME", "ecsc");
-    define("MYSQL_PASSWORD", "changeme!");
-    define("MYSQL_DATABASE", "ecsc");
+    define("MYSQL_SERVER", "database");
+    define("MYSQL_USERNAME", getenv('MYSQL_USER'));
+    define("MYSQL_PASSWORD", getenv('MYSQL_PASSWORD'));
+    define("MYSQL_DATABASE", getenv('MYSQL_DATABASE'));
     define("PATHDIR", dirname(preg_replace("/[^a-zA-Z0-9\/._-]/", "", $_SERVER["PHP_SELF"])));
     define("MOMENTUM_STEPS", 30);
     define("MIN_CASH_VALUE", 0);
@@ -544,7 +544,7 @@
         if ($args !== null)
             foreach ($args as $key => $value) {
                 $key = ":" . $key;
-                $stmt->bindValue($key, $value); 
+                $stmt->bindValue($key, $value);
             }
 
         $stmt->execute();
@@ -566,7 +566,7 @@
         if ($args !== null)
             foreach ($args as $key => $value) {
                 $key = ":" . $key;
-                $stmt->bindValue($key, $value); 
+                $stmt->bindValue($key, $value);
             }
 
         try {
