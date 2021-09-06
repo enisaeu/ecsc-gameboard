@@ -37,6 +37,7 @@
     define("DEFAULT_INITIAL_AVAILABILITY", 100000);
     define("DEFAULT_DYNAMIC_SOLVE_THRESHOLD", 20);
     define("DEFAULT_DYNAMIC_MAXIMUM_DECAY", 50);
+    define("APCU_TIMEOUT", 1);
 
     if (isset($_SERVER['REMOTE_ADDR']))
         // Reference: https://stackoverflow.com/a/2886224
@@ -237,7 +238,7 @@
             $result["availability"] = $initial_availability;
         }
 
-        apcu_store($key, $result, 1);    // NOTE: 1 second timeout
+        apcu_store($key, $result, APCU_TIMEOUT);
 
         return $result;
     }
