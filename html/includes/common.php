@@ -195,6 +195,13 @@
     }
 
     function getScores($team_id, $ts=null) {
+        $key = "scores_" . $team_id . "_" . $ts;
+
+        $result = apcu_fetch($key);
+
+        if ($result !== false)
+            return $result;
+
         $result = array("cash" => 0, "awareness" => 0);
         $solved = getSolvedTasks($team_id, $ts);
         if (count($solved) > 0) {
@@ -229,6 +236,8 @@
             $result["flags"] = 0;
             $result["availability"] = $initial_availability;
         }
+
+        apcu_store($key, $result, 1);    // NOTE: 1 second timeout
 
         return $result;
     }
