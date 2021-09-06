@@ -1056,7 +1056,8 @@ function pullMessages(initial) {
             }
 
             if (result["notifications"]["ts"] && (!localStorage.getItem("notification_enter") || (localStorage.getItem("notification_enter") < result["notifications"]["ts"])))
-                $("#notification_count").closest(".nav-link").addClass("highlight");
+                if (!isAdmin())
+                    $("#notification_count").closest(".nav-link").addClass("highlight");
 
         }).always(function() {
             $("#chat_messages").removeAttr("pull_lock");
