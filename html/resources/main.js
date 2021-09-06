@@ -779,8 +779,12 @@ function showAwardCashBox(login_name, full_name) {
             }).fail(function(jqXHR) {
                 alert("Something went wrong ('" + jqXHR.responseText + "')!");
             });
-        else
-            wrongValueEffect(input);
+        else {
+            if (message.length == 0)
+                wrongValueEffect($(dialog).find("textarea"));
+            else
+                wrongValueEffect(input);
+        }
     });
 
     dialog.modal();
