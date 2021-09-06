@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:hirsute
 RUN apt-get update && apt-get install -y git
 COPY . /var/www
 RUN cd /var/www && ./setup.sh
