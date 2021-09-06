@@ -155,7 +155,7 @@ CREATE TABLE attack_defense (
 CREATE FUNCTION last_update()
     RETURNS INT
     READS SQL DATA
-    RETURN (SELECT UNIX_TIMESTAMP(MAX(UPDATE_TIME)) AS last_update FROM information_schema.tables WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME NOT IN ('cache', 'logs') GROUP BY TABLE_SCHEMA);
+    RETURN (SELECT UNIX_TIMESTAMP(MAX(UPDATE_TIME)) AS last_update FROM information_schema.tables WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME NOT IN ('cache', 'logs'));
 
 ###
 
