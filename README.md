@@ -22,7 +22,7 @@ As in real life, you may sometimes choose to accept a contract from an NGO that 
 
 The team that will win the challenge will be the one with more cash in its wallet. 
 
-![Screenshot](https://i.imgur.com/6jpxLsm.png)
+![Screenshot](https://i.imgur.com/ddSOx7a.png)
 
 ## Concepts
 
@@ -50,7 +50,7 @@ Afterwards access the HTTP administrative pages by using default credentials:
 
 Administration pages (accessible by usage of username `admin`) are consisting of three main panels: **Teams**, **Contracts** and **Notifications**.
 
-![Administration pages](https://i.imgur.com/eFoGTo9.png)
+![Administration pages](https://i.imgur.com/JmuGesV.png)
 
 ### Teams
 
