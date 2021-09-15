@@ -66,17 +66,17 @@ For example, by clicking on a *New team* action, inside the teams scoreboard, th
 
 Inside **Contracts** panel, Administrator is able to add, delete and update individual contracts. Each contract can consist of individual tasks, where each task represents (scored) part of the contract.
 
-![New contract](https://i.imgur.com/FXDVsZq.png)
+![New contract](https://i.imgur.com/DId9hD6.png)
 
 For example, by clicking on a *New contract* button the following dialog appears:
 
-![New contract details](https://i.imgur.com/dMjvREy.png)
+![New contract details](https://i.imgur.com/EoGTREn.png)
 
 ### Notifications
 
 Inside **Notifications** panel, Administrator can send (mass) notifications to all teams.
 
-![New notification](https://i.imgur.com/nnzfJta.png)
+![New notification](https://i.imgur.com/bF9bwZU.png)
 
 For example, by clicking on a *New notification* button the following dialog appears:
 
