@@ -60,7 +60,7 @@ Inside **Teams** panel, Administrator is able to add, delete and update individu
 
 For example, by clicking on a *New team* action, inside the teams scoreboard, the following dialog appears:
 
-![New team details](https://i.imgur.com/16oSjt0.png)
+![New team details](https://i.imgur.com/Qb8S5yn.png)
 
 ### Contracts
 
