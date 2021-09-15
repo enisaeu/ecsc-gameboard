@@ -48,7 +48,7 @@ Afterwards access the HTTP administrative pages by using default credentials:
 
 ## Administration
 
-Administration pages (accessible by usage of username `admin`) are consisting of three main panels: **Teams**, **Contracts** and **Notifications**.
+Administration pages (accessible by usage of username `admin`) are consisting of three main panels: **Teams**, **Contracts**, **Notifications**, **Logs** and **Stats**.
 
 ![Administration pages](https://i.imgur.com/JmuGesV.png)
 
@@ -81,3 +81,15 @@ Inside **Notifications** panel, Administrator can send (mass) notifications to a
 For example, by clicking on a *New notification* button the following dialog appears:
 
 ![New notification details](https://i.imgur.com/LxBJOLd.png)
+
+### Logs
+
+Inside **Logs** panel, Administrator can find all log messages produced by the platform.
+
+![Logs](https://i.imgur.com/LcCa2oH.png)
+
+### Stats
+
+Inside **Stats** panel, Administrator can find all relevant statistics regarding the competition itself.
+
+![Stats](https://i.imgur.com/747TJwN.png)
