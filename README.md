@@ -1,6 +1,6 @@
 # European Cyber Security Challenge Gameboard
 
-![CI](https://github.com/enisaeu/ecsc-gameboard/actions/workflows/main.yml/badge.svg) [![License](https://img.shields.io/badge/license-EUPL--1.2-red.svg)](https://eupl.eu/) [![Twitter](https://img.shields.io/badge/twitter-@enisa__eu-blue.svg)](https://twitter.com/enisa_eu)
+[![CI](https://github.com/enisaeu/ecsc-gameboard/actions/workflows/main.yml/badge.svg)](https://github.com/enisaeu/ecsc-gameboard/actions) [![License](https://img.shields.io/badge/license-EUPL--1.2-red.svg)](https://eupl.eu/) [![Twitter](https://img.shields.io/badge/twitter-@enisa__eu-blue.svg)](https://twitter.com/enisa_eu)
 
 ## Description
 
