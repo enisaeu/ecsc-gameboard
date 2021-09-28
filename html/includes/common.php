@@ -81,6 +81,7 @@
         const EXPLICIT_START_STOP = "explicit_start_stop";
         const DYNAMIC_SOLVE_THRESHOLD = "dynamic_solve_threshold";
         const DYNAMIC_MAXIMUM_DECAY = "dynamic_maximum_decay";
+        const HIDE_TEAM_SCORES = "hide_team_scores";
     }
 
     abstract class Cache {
@@ -238,6 +239,15 @@
             $result["availability"] = $initial_availability;
         }
 
+        if (parseBool(getSetting(Setting::HIDE_TEAM_SCORES))) {
+            if (!isAdmin() && ($team_id != $_SESSION["team_id"])) {
+                $result["cash"] = 0;
+                $result["awareness"] = 0;
+                $result["flags"] = 0;
+                $result["availability"] = $initial_availability;
+            }
+        }
+
         apcu_store($key, $result, APCU_TIMEOUT);
 
         return $result;
@@ -376,7 +386,11 @@
         $rankings = array();
 
         if (getSetting(Setting::CTF_STYLE) === "ad") {
-            $rows = fetchAll("SELECT teams.team_id,teams.full_name FROM teams WHERE teams.login_name!=:admin_login_name", array("admin_login_name" => ADMIN_LOGIN_NAME));
+            if (parseBool(getSetting(Setting::HIDE_TEAM_SCORES)) && !isAdmin())
+                $rows = fetchAll("SELECT teams.team_id,teams.full_name FROM teams WHERE teams.team_id=:team_id", array("team_id" => $_SESSION["team_id"]));
+            else
+                $rows = fetchAll("SELECT teams.team_id,teams.full_name FROM teams WHERE teams.login_name!=:admin_login_name", array("admin_login_name" => ADMIN_LOGIN_NAME));
+
             foreach ($rows as $row)
                 $teams[$row["team_id"]] = array("full_name" => $row["full_name"]);
 
@@ -400,7 +414,11 @@
             });
         }
         else {
-            $rows = fetchAll("SELECT teams.team_id,teams.full_name,UNIX_TIMESTAMP(x.ts) AS ts FROM teams LEFT JOIN (SELECT team_id,MAX(ts) AS ts FROM solved GROUP BY team_id)x ON teams.team_id=x.team_id WHERE teams.login_name!=:admin_login_name ORDER BY x.ts DESC", array("admin_login_name" => ADMIN_LOGIN_NAME));
+            if (parseBool(getSetting(Setting::HIDE_TEAM_SCORES)) && !isAdmin())
+                $rows = fetchAll("SELECT teams.team_id,teams.full_name,UNIX_TIMESTAMP(x.ts) AS ts FROM teams LEFT JOIN (SELECT team_id,MAX(ts) AS ts FROM solved GROUP BY team_id)x ON teams.team_id=x.team_id WHERE teams.team_id=:team_id", array("team_id" => $_SESSION["team_id"]));
+            else
+                $rows = fetchAll("SELECT teams.team_id,teams.full_name,UNIX_TIMESTAMP(x.ts) AS ts FROM teams LEFT JOIN (SELECT team_id,MAX(ts) AS ts FROM solved GROUP BY team_id)x ON teams.team_id=x.team_id WHERE teams.login_name!=:admin_login_name ORDER BY x.ts DESC", array("admin_login_name" => ADMIN_LOGIN_NAME));
+
             foreach ($rows as $row)
                 $teams[$row["team_id"]] = array("full_name" => $row["full_name"], "ts" => $row["ts"]);
 
