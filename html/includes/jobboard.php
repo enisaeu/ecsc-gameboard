@@ -14,7 +14,7 @@
             continue;   // contracts without tasks should not be displayed to the user
         else
             $row = $row[0];
-        $html = format($template, array("title" => $row["title"], "values" => generateValuesHtml(getDynamicScore(null, $contract_id), $row["awareness"]), "description" => $row["description"], "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
+        $html = format($template, array("title" => $row["title"], "values" => generateValuesHtml(getDynamicScore(null, $contract_id), $row["awareness"]), "description" => nl2br($row["description"]), "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
 
         if (!checkStartEndTime()) {
             $html = str_replace(" type=\"submit\"", " disabled=\"disabled\" style=\"pointer-events: none\"", $html);

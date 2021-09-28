@@ -648,8 +648,11 @@
         return execute("DELETE FROM tasks WHERE task_id=:task_id", array("task_id" => $task_id));
     }
 
-    function cleanReflectedValue($value) {
-        return nl2br(htmlspecialchars($value, ENT_QUOTES, "utf-8"), false);
+    function cleanReflectedValue($value, $newlines=true) {
+        $result = htmlspecialchars($value, ENT_QUOTES, "utf-8");
+        if ($newlines)
+            $result = nl2br($result, false);
+        return $result;
     }
 
     function breakLongWords($value) {

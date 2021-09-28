@@ -85,7 +85,7 @@
 
             $title = "<input name='contract_id' value='" . cleanReflectedValue($_POST["contract_id"]) . "' type='hidden'><input name='title' value='" . cleanReflectedValue($contract["title"]) . "' class='form-control' style='display: block'><label class='info-label'>Contract title</label>";
             $categories = "<input name='categories' value='" . cleanReflectedValue($contract["categories"]) . "' class='form-control'><label class='info-label'>Contract categories (Note: comma-splitted)</label><div class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' id='hidden'><label class='custom-control-label' for='hidden'>Hidden</label></div><div class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input' id='constraints_checkbox'><label class='custom-control-label' for='constraints_checkbox'>Constraints</label></div>";
-            $description = "<textarea name='description' class='form-control' style='display: block'>" . cleanReflectedValue($contract["description"]) . "</textarea><label class='info-label'>Contract description</label>";
+            $description = "<textarea name='description' class='form-control' style='display: block'>" . cleanReflectedValue($contract["description"], false) . "</textarea><label class='info-label'>Contract description</label>";
 
             $template = file_get_contents("templates/accepted.html");
             $html = format($template, array("title" => $title, "categories" => $categories, "cash" => "", "awareness" => "", "description" => $description, "contract_id" => cleanReflectedValue($_POST["contract_id"])));
@@ -310,7 +310,7 @@ END;
                         $note .= "</p>";
                     }
                     $html = str_replace("</b>", '</b><button class="close" data-dismiss="modal" aria-label="Delete contract" title="Delete contract" data-toggle="tooltip"><span aria-hidden="true">×</span></button>', $template);
-                    $html = format($html, array("title" => $row["title"], "values" => generateValuesHtml($row["cash"], $row["awareness"], $dynamic) . "<span style='float: right; font-size: 95%'><i class='fas fa-download' title='Export (JSON)' data-toggle='tooltip'></i></span>", "description" => $row["description"] . $note, "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
+                    $html = format($html, array("title" => $row["title"], "values" => generateValuesHtml($row["cash"], $row["awareness"], $dynamic) . "<span style='float: right; font-size: 95%'><i class='fas fa-download' title='Export (JSON)' data-toggle='tooltip'></i></span>", "description" => nl2br($row["description"]) . $note, "categories" => generateCategoriesHtml(explode(',', $row["categories"])), "contract_id" => $contract_id));
                     $html = preg_replace("/Take contract/s", "Edit contract", $html);
                     $html = preg_replace("/btn-success/s", "btn-primary", $html);
                     if ($row["hidden"]) {
