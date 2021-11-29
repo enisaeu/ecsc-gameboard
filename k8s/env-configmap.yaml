@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  MYSQL_DATABASE: scoreboard
+  MYSQL_PASSWORD: gameboard
+  MYSQL_ROOT_PASSWORD: foobar
+  MYSQL_USER: gameboard
+  MYSQL_HOST: mysql.mysql
+kind: ConfigMap
+metadata:
+  name: env
