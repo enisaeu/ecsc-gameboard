@@ -10,7 +10,7 @@
     register_shutdown_function("fatal_handler");
 
     define("DEBUG", file_exists("../.debug"));
-    define("MYSQL_SERVER", "database");
+    define("MYSQL_SERVER", getenv('MYSQL_HOST'));
     define("MYSQL_USERNAME", getenv('MYSQL_USER'));
     define("MYSQL_PASSWORD", getenv('MYSQL_PASSWORD'));
     define("MYSQL_DATABASE", getenv('MYSQL_DATABASE'));
