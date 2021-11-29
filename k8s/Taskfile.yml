@@ -1,0 +1,45 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  kubectl: kubectl
+
+tasks:
+  install-mysql:
+    desc: Add bitnami helm repository.
+    cmds:
+      - kubectl create namespace mysql --dry-run=client -o yaml | kubectl apply -f -
+      - kubectl config set-context --current --namespace=mysql
+      - kubectl create configmap -n mysql gameboard-init-script --from-file=../schema/main.sql --dry-run=client -o yaml | kubectl apply -f -
+      - helm repo add bitnami https://charts.bitnami.com/bitnami
+      - helm repo update
+      - helm uninstall mysql || true
+      - helm install --create-namespace mysql bitnami/mysql -f mysql/values.yaml -n mysql
+
+  install-gameboard:
+    desc: Install ECSC gameboard.
+    deps: [install-mysql]
+    cmds:
+      - kubectl create namespace gameboard --dry-run=client -o yaml | kubectl apply -f -
+      - kubectl config set-context --current --namespace=gameboard
+      - kubectl apply -f env-configmap.yaml --namespace=gameboard
+      - kubectl apply -f gameboard-deployment.yaml --namespace=gameboard
+      - kubectl apply -f gameboard-service.yaml --namespace=gameboard
+
+  install-monitoring:
+    desc: Install monitoring tools.
+    cmds:
+      - kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+      - helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+      - helm repo add stable https://charts.helm.sh/stable
+      - helm repo update
+      - helm install prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring
+  
+  delete-all:
+    desc: CAUTION Delete everything.
+    cmds:
+      - helm uninstall mysql -n mysql
+      - helm uninstall prometheus-stack -n monitoring
+      - kubectl delete pvc data-mysql-0 -n mysql
+      - kubectl delete ns mysql gameboard monitoring
