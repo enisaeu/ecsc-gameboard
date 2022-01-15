@@ -28,10 +28,10 @@ spec:
         resources:
           requests:
             cpu: 100m
-            memory: 100Mi
+            memory: 500Mi
           limits:
             cpu: 100m
-            memory: 100Mi
+            memory: 1000Mi
         livenessProbe:
           tcpSocket:
             port: 80
