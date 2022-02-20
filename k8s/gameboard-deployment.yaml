@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  gameboard
+  namespace: gameboard
+  labels:
+    app:  gameboard
+spec:
+  selector:
+    matchLabels:
+      app: gameboard
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  gameboard
+    spec:
+      containers:
+      - name:  gameboard
+        image:  csidiropoulos/ecsc-gameboard:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 500Mi
+          limits:
+            cpu: 100m
+            memory: 1000Mi
+        livenessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_DATABASE
+                  name: env
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_PASSWORD
+                  name: env
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_ROOT_PASSWORD
+                  name: env
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_USER
+                  name: env
+            - name: MYSQL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: MYSQL_HOST
+                  name: env           
+        ports:
+        - containerPort:  80
+          name:  gameboard
+      restartPolicy: Always

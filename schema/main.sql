@@ -1,12 +1,5 @@
-# mysql -t -u root -p < main.sql
-
-DROP DATABASE IF EXISTS ecsc;
-
-CREATE DATABASE ecsc CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; -- Reference: https://dba.stackexchange.com/a/76789
-CREATE USER IF NOT EXISTS ecsc@localhost IDENTIFIED BY 'changeme!';
-GRANT ALL ON ecsc.* TO ecsc@localhost;
-
-USE ecsc;
+CREATE DATABASE if NOT EXIStS scoreboard;
+USE scoreboard;
 
 ###
 

@@ -1,0 +1,100 @@
+# https://taskfile.dev
+
+version: '3'
+
+dotenv: ['.env']
+
+tasks:
+  default:
+    cmds:
+      - task -l
+  deploy-infrastructure:
+    desc: Bring up the infrastructure on AWS.
+    cmds:
+      - sed -i "s/aws_kube_worker_num       = 4/aws_kube_worker_num       = 1/g" kubespray/contrib/terraform/aws/terraform.tfvars
+      - terraform -chdir=kubespray/contrib/terraform/aws init
+      - terraform -chdir=kubespray/contrib/terraform/aws apply {{.CLI_ARGS}}
+    deps:
+      - clone-kubespray
+
+  destroy-infrastructure:
+    desc: Destroy everything.
+    cmds:
+      - terraform -chdir=kubespray/contrib/terraform/aws destroy
+
+  install-k8s:
+    desc: Bring up k8s on AWS.
+    # deps: [deploy-infrastructure]
+    cmds:
+      - virtualenv kubespray
+      - kubespray/bin/pip install -r kubespray/requirements.txt
+      - ANSIBLE_HOST_KEY_CHECKING=False kubespray/bin/ansible-playbook -i kubespray/inventory/hosts kubespray/cluster.yml -b --become-user=root --flush-cache
+        -e '{"ansible_user":"admin","kubeconfig_localhost":"True","persistent_volumes_enabled":"True","cloud_provider":"aws","aws_ebs_csi_enabled":"True","helm_enabled":"True"}'
+      - mkdir -p ~/.kube
+      - ssh -F kubespray/ssh-bastion.conf admin@{{.CONTROLLER_IP}} "sudo chmod 644 /etc/kubernetes/admin.conf"
+      - scp -F kubespray/ssh-bastion.conf admin@{{.CONTROLLER_IP}}:/etc/kubernetes/admin.conf ~/.kube/aws_config
+      - > 
+        sed -i "s^server:.*^server: https://{{.LB_HOST}}:6443^" ~/.kube/aws_config
+    vars:
+      CONTROLLER_HOST_NAME:
+        sh: cat kubespray/inventory/hosts | grep "\[kube_control_plane\]" -A 1 | tail -n 1
+      CONTROLLER_IP:
+        sh: cat kubespray/inventory/hosts | grep {{.CONTROLLER_HOST_NAME}} | grep ansible_host | cut -d'=' -f2
+      LB_HOST:
+        sh: cat kubespray/inventory/hosts | grep apiserver_loadbalancer_domain_name | cut -d'"' -f2
+ 
+  clone-kubespray:
+    desc: Clone the kubespray repo v2.17.1
+    cmds:
+      - git clone --depth 1 --branch v2.17.1 https://github.com/kubernetes-sigs/kubespray
+    status:
+      - test -d kubespray
+
+  k8s-requirements:
+    desc: Install k8s requirements.
+    cmds:
+      - kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.0/deploy/static/provider/aws/deploy.yaml
+      - aws iam create-policy --policy-name aws-ebs --policy-document file://aws-ebs-policy.json || true
+      - aws iam attach-role-policy --policy-arn {{.EBS_POLICY_ARN}} --role-name kubernetes-devtest-master
+      - aws iam attach-role-policy --policy-arn {{.EBS_POLICY_ARN}} --role-name kubernetes-devtest-node
+    vars:
+      EBS_POLICY_ARN:
+        sh: aws iam list-policies --query 'Policies[?PolicyName==`aws-ebs`].Arn' --output text
+
+  install-mysql:
+    desc: Add bitnami helm repository.
+    deps: [k8s-requirements]
+    cmds:
+      - kubectl create namespace mysql --dry-run=client -o yaml | kubectl apply -f -
+      - kubectl config set-context --current --namespace=mysql
+      - kubectl create configmap -n mysql gameboard-init-script --from-file=../schema/main.sql --dry-run=client -o yaml | kubectl apply -f -
+      - helm repo add bitnami https://charts.bitnami.com/bitnami
+      - helm uninstall mysql || true
+      - helm install --create-namespace mysql bitnami/mysql -f mysql/values.yaml -n mysql
+
+  install-gameboard:
+    desc: Install ECSC gameboard.
+    deps: [install-mysql]
+    cmds:
+      - kubectl create namespace gameboard --dry-run=client -o yaml | kubectl apply -f -
+      - kubectl config set-context --current --namespace=gameboard
+      - kubectl apply -f env-configmap.yaml --namespace=gameboard
+      - kubectl apply -f gameboard-deployment.yaml --namespace=gameboard
+      - kubectl apply -f gameboard-service.yaml --namespace=gameboard
+
+  install-monitoring:
+    desc: Install monitoring tools.
+    cmds:
+      - kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+      - helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+      - helm repo add stable https://charts.helm.sh/stable
+      - helm repo update
+      - helm install prometheus-stack prometheus-community/kube-prometheus-stack --set grafana.service.type="LoadBalancer" -n monitoring
+  
+  delete-all:
+    desc: CAUTION Delete everything.
+    cmds:
+      - helm uninstall mysql -n mysql
+      - helm uninstall prometheus-stack -n monitoring
+      - kubectl delete pvc data-mysql-0 -n mysql
+      - kubectl delete ns mysql gameboard monitoring

@@ -1,0 +1,25 @@
+version: '3.6'
+
+#
+# Don't forget to create .env! See example.env
+#
+
+services:
+  scoreboard:
+    build: .
+    ports:
+     - "8000:80"
+    depends_on:
+      - "database"
+    links:
+      - "database"
+    env_file:
+      - .env
+
+  database:
+    image: mysql:5
+    volumes:
+      - ./schema/main.sql:/docker-entrypoint-initdb.d/main.sql
+    env_file:
+      - .env
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci

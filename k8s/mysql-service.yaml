@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysql
+  namespace: gameboard
+spec:
+  type: ExternalName
+  externalName: mysql.mysql.svc.cluster.local
+  ports:
+  - port: 3306
