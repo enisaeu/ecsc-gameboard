@@ -1,3 +1,4 @@
+CREATE DATABASE if NOT EXIStS scoreboard;
 USE scoreboard;
 
 ###
