@@ -46,6 +46,12 @@ Afterwards access the HTTP administrative pages by using default credentials:
 
 `admin`:`changeme!`
 
+### Docker
+Prerequisites: [Docker](https://docs.docker.com/engine/install/) & [docker-compose](https://docs.docker.com/compose/install/)  
+Copy example.env to .env file.  
+Bring up the application by issuing the following command:  
+`docker-compose up`
+
 ## Administration
 
 Administration pages (accessible by usage of username `admin`) are consisting of three main panels: **Teams**, **Contracts**, **Notifications**, **Logs** and **Stats**.
